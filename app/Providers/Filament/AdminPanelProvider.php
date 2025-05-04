@@ -53,6 +53,16 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->colors([
+                'danger' => Color::Rose,
+                'gray' => Color::Gray,
+                'info' => Color::Blue,
+                'primary' => Color::Lime,
+                'success' => Color::Emerald,
+                'warning' => Color::Orange,
+            ])
+            ->spa();
     }
 }
