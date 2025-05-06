@@ -13,6 +13,52 @@ class Customer extends Model
         'logo'
     ];
 
+    /**
+     * Mendapatkan semua rules validasi untuk model Customer
+     */
+    public static function getValidationRules($record = null)
+    {
+        return [
+            'name_customer' => [
+                'required',
+                'min:5',
+                'max:50',
+                function ($attribute, $value, $fail) use ($record) {
+                    if (!self::validateUniqueName($value, $record?->id)) {
+                        $fail('This customer name already exists.');
+                    }
+                }
+            ]
+        ];
+    }
+
+    /**
+     * Mendapatkan pesan validasi kustom
+     */
+    public static function getValidationMessages()
+    {
+        return [
+            'required' => 'The customer field is required.',
+            'min:5' => 'Customer name must be at least 5 characters.',
+            'max:50' => 'Customer name maximum 50 characters.'
+        ];
+    }
+
+    /**
+     * Validasi nama customer yang unik tanpa memperhatikan spasi
+     */
+    public static function validateUniqueName($value, $ignoreId = null)
+    {
+        $normalizedValue = preg_replace('/\s+/', '', $value);
+        $query = static::whereRaw('REPLACE(name_customer, " ", "") = ?', [$normalizedValue]);
+
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        return !$query->exists();
+    }
+
     // Mutator to capitalize the name_customer field
     // public function setNameCustomerAttribute($value)
     // {

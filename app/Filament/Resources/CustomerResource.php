@@ -35,12 +35,10 @@ class CustomerResource extends Resource
             ->schema([
                 TextInput::make('name_customer')
                     ->label('Customer')
-                    ->unique(ignoreRecord: true)
-                    ->required()
-                    ->minLength(5)
-                    ->maxLength(100)
                     ->autocapitalize('characters')
-                    ->dehydrateStateUsing(fn($state) => strtoupper($state)),
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                    ->rules(fn($record) => Customer::getValidationRules($record)['name_customer'])
+                    ->validationMessages(Customer::getValidationMessages()),
                 FileUpload::make('logo')
                     ->label('Logo')
                     ->required()
@@ -52,7 +50,7 @@ class CustomerResource extends Resource
                             $customerName = $get('name_customer') ?? ($record?->name_customer ?? 'customer');
                             $safeName = \Illuminate\Support\Str::slug($customerName);
                             $extension = $file->getClientOriginalExtension();
-                            return "customer-logo-{$safeName}." . $extension;
+                            return "logo-{$safeName}." . $extension;
                         }
                     ),
             ])->columns(1);
@@ -66,6 +64,7 @@ class CustomerResource extends Resource
                     ->rowIndex(),
                 TextColumn::make('name_customer')
                     ->label('Customer')
+                    ->copyable()
                     ->searchable(),
                 ImageColumn::make('logo')
             ])->defaultSort('updated_at', 'desc')

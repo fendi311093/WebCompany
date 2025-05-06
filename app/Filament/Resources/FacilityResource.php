@@ -66,9 +66,10 @@ class FacilityResource extends Resource
             ->columns([
                 TextColumn::make('No')
                     ->rowIndex(),
-                TextColumn::make('title'),
+                TextColumn::make('title')
+                    ->searchable(),
                 ImageColumn::make('photo')
-            ])
+            ])->defaultSort('updated_at', 'desc')
             ->filters([
                 //
             ])
