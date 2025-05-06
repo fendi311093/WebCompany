@@ -6,6 +6,8 @@ use App\Filament\Resources\FacilityResource\Pages;
 use App\Filament\Resources\FacilityResource\RelationManagers;
 use App\Models\Facility;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,7 +15,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Support\RawJs;
 
 class FacilityResource extends Resource
 {
@@ -33,13 +34,19 @@ class FacilityResource extends Resource
                     ->minLength(6)
                     ->maxLength(150)
                     ->unique(ignoreRecord: true)
-                    ->autocapitalize(),
-                TextInput::make('description')
+                    ->autocapitalize('characters'),
+                RichEditor::make('description')
+                    ->disableGrammarly()
+                    ->disableToolbarButtons([
+                        'link',
+                        'attachFiles'
+                    ]),
+                FileUpload::make('photo')
                     ->required()
-                    ->mask(RawJs::make('$money($input)'))
-                    ->stripCharacters(',')
-                    ->numeric(),
-            ]);
+                    ->image()
+                    ->imageEditor()
+                    ->directory('Photo_Facility')
+            ])->columns(1);
     }
 
     public static function table(Table $table): Table

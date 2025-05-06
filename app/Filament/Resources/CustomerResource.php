@@ -36,7 +36,11 @@ class CustomerResource extends Resource
                 TextInput::make('name_customer')
                     ->label('Customer')
                     ->unique(ignoreRecord: true)
-                    ->required(),
+                    ->required()
+                    ->minLength(5)
+                    ->maxLength(100)
+                    ->autocapitalize('characters')
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state)),
                 FileUpload::make('logo')
                     ->label('Logo')
                     ->required()
@@ -60,7 +64,7 @@ class CustomerResource extends Resource
                     ->label('Customer')
                     ->searchable(),
                 ImageColumn::make('logo')
-            ])->defaultSort('created_at', 'desc')
+            ])->defaultSort('updated_at', 'desc')
             ->filters([
                 //
             ])

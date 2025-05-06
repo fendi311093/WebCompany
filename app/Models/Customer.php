@@ -13,65 +13,76 @@ class Customer extends Model
         'logo'
     ];
 
+    // Mutator to capitalize the name_customer field
+    // public function setNameCustomerAttribute($value)
+    // {
+    //     $this->attributes['name_customer'] = ucwords(strtolower($value));
+    // }
+
     protected static function booted()
     {
         parent::booted();
 
         static::saved(function ($customer) {
-            // Jika tidak ada logo, keluarkan segera.
-            if (!$customer->logo) {
-                return;
-            }
-
-            $file = storage_path('app/public/' . $customer->logo);
-
-            // Pastikan file logo ada.
-            if (!file_exists($file)) {
-                return;
-            }
-
-            $maxFileSize = 1024 * 1024; // 1 MB
-
-            // Jika ukuran file sudah di bawah atau sama dengan batas, tidak perlu optimasi.
-            if (filesize($file) <= $maxFileSize) {
-                return;
-            }
-
-            // Buat instance ImageManager dengan driver yang sesuai (misalnya GD atau Imagick)
-            $manager = new ImageManager(new Driver());
-            $image = $manager->read($file);
-            // Ubah ukuran gambar sehingga lebarnya 800 piksel (proporsional)
-            $image->scale(width: 800);
-
-            $quality = 80;
-            // Lakukan penyimpanan dan kompresi hingga ukuran file di bawah batas atau kualitas mencapai 30
-            while (filesize($file) > $maxFileSize && $quality >= 30) {
-                $image->save($file, quality: $quality);
-                clearstatcache(true, $file); // Refresh informasi file
-                $quality -= 5;
-            }
+            self::optimizeLogoIfNeeded($customer);
         });
 
         static::deleting(function ($customer) {
-            if ($customer->logo) {
-                $file = storage_path('app/public/' . $customer->logo);
-                if (file_exists($file)) {
-                    unlink($file);
-                }
-            }
+            self::deleteLogoFile($customer->logo);
         });
 
-        // Hapus file lama jika logo diganti
         static::updating(function ($customer) {
-            if ($customer->isDirty('logo')) { // jika field logo berubah
-                $oldLogo = $customer->getOriginal('logo');
-                if ($oldLogo) {
-                    $oldFile = storage_path('app/public/' . $oldLogo);
-                    if (file_exists($oldFile)) {
-                        unlink($oldFile);
-                    }
-                }
+            if ($customer->isDirty('logo')) {
+                self::deleteLogoFile($customer->getOriginal('logo'));
             }
         });
+    }
+
+    /**
+     * Optimasi file logo jika melebihi batas ukuran.
+     */
+    protected static function optimizeLogoIfNeeded($customer)
+    {
+        if (!$customer->logo) {
+            return;
+        }
+
+        $file = storage_path('app/public/' . $customer->logo);
+
+        if (!file_exists($file)) {
+            return;
+        }
+
+        $maxFileSize = 1024 * 1024; // 1 MB
+
+        if (filesize($file) <= $maxFileSize) {
+            return;
+        }
+
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        $image = $manager->read($file);
+        $image->scale(width: 800);
+
+        $quality = 80;
+        while (filesize($file) > $maxFileSize && $quality >= 30) {
+            $image->save($file, quality: $quality);
+            clearstatcache(true, $file);
+            $quality -= 5;
+        }
+    }
+
+    /**
+     * Hapus file logo dari storage.
+     */
+    protected static function deleteLogoFile($logo)
+    {
+        if (!$logo) {
+            return;
+        }
+
+        $file = storage_path('app/public/' . $logo);
+        if (file_exists($file)) {
+            unlink($file);
+        }
     }
 }
