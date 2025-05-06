@@ -48,8 +48,12 @@ class CustomerResource extends Resource
                     ->imageEditor()
                     ->directory('customer_logo')
                     ->getUploadedFileNameForStorageUsing(
-                        fn(TemporaryUploadedFile $file): string => (string) str($file->getClientOriginalName())
-                            ->prepend('customer-logo-'),
+                        function (TemporaryUploadedFile $file, $record, $get): string {
+                            $customerName = $get('name_customer') ?? ($record?->name_customer ?? 'customer');
+                            $safeName = \Illuminate\Support\Str::slug($customerName);
+                            $extension = $file->getClientOriginalExtension();
+                            return "customer-logo-{$safeName}." . $extension;
+                        }
                     ),
             ])->columns(1);
     }
