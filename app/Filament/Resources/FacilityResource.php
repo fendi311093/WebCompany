@@ -12,9 +12,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class FacilityResource extends Resource
 {
@@ -46,6 +49,14 @@ class FacilityResource extends Resource
                     ->image()
                     ->imageEditor()
                     ->directory('Photo_Facility')
+                    ->getUploadedFileNameForStorageUsing(
+                        function (TemporaryUploadedFile $file, $record, $get): string {
+                            $facilityName = $get('title') ?? ($record?->title ?? 'Facility');
+                            $saveName = \Illuminate\Support\Str::slug($facilityName);
+                            $extension = $file->getClientOriginalExtension();
+                            return "facility-{$saveName}." . $extension;
+                        }
+                    ),
             ])->columns(1);
     }
 
@@ -53,7 +64,10 @@ class FacilityResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('No')
+                    ->rowIndex(),
+                TextColumn::make('title'),
+                ImageColumn::make('photo')
             ])
             ->filters([
                 //

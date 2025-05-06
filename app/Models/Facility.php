@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
 
 class Facility extends Model
 {
@@ -18,33 +16,67 @@ class Facility extends Model
     {
         parent::booted();
 
+        // Event Lisener
         static::saved(function ($facility) {
-            // Jika tidak ada logo, keluarkan segera
-            if (!$facility->photo) {
-                return;
-            }
-
-            $file = storage_path('app/public/' . $facility->phoot);
-
-            // cek file logo ada
-            if (!file_exists($file)) {
-                return;
-            }
-
-            $maxFileSize = 1024 * 1024; // 1Mb
-
-            // Jika ukuran file sudah dibawah atau sama dengan 1Mb, tidak perlu rezise
-            if (filesize($file) <= $maxFileSize) {
-                return;
-            }
-
-            // Pakai Library Intervention proses rezise
-            $manager = new ImageManager(new Driver());
-            $image = $manager->read($file);
-            // ubah ukuran jadi 800 pixel
-            $image->scale(width: 800);
-
-            $quality = 80;
+            self::resizePhotoIfNeeded($facility);
         });
+
+        static::deleting(function ($facility) {
+            self::deletePhotoFile($facility->photo);
+        });
+
+        static::updating(function ($facility) {
+            if ($facility->isDirty('photo')) {
+                self::deletePhotoFile($facility->getOriginal('photo'));
+            }
+        });
+    }
+
+    // Resize ukuran foto
+    protected static function resizePhotoIfNeeded($facility)
+    {
+        // Cek apakah ada photo
+        if (!$facility->photo) {
+            return;
+        }
+
+        $file = storage_path('app/public/' . $facility->photo);
+
+        //Cek di lokasi foto
+        if (!file_exists($file)) {
+            return;
+        }
+
+        $maxFileSize = 1024 * 1024; // 1Mb
+
+        // cek ukuran file, Kurang dari 1Mb tidak dilakukan proses resize
+        if (filesize($file) <= $maxFileSize) {
+            return;
+        }
+
+        // Proses resize file lebih dari sama dengan 1Mb
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        $image = $manager->read($file);
+        $image->scale(width: 800);
+
+        $quality = 80;
+        while (filesize($file) > $maxFileSize && $quality >= 30) {
+            $image->save($file, quality: $quality);
+            clearstatcache(true, $file);
+            $quality -= 5;
+        }
+    }
+
+    // Hapus photo dari storage
+    protected static function deletePhotoFile($photo)
+    {
+        if (!$photo) {
+            return;
+        }
+
+        $file = storage_path('app/public/' . $photo);
+        if (file_exists($file)) {
+            unlink($file);
+        }
     }
 }
