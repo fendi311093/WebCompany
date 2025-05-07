@@ -18,6 +18,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Filament\Forms\Components\MarkdownEditor;
+use Illuminate\Support\Str;
 
 class FacilityResource extends Resource
 {
@@ -33,13 +35,12 @@ class FacilityResource extends Resource
         return $form
             ->schema([
                 TextInput::make('title')
+                    ->autocapitalize('characters')
+                    ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                    ->rules(fn($record) => Facility::getValidationRules($record)['title'])
+                    ->validationMessages(Facility::getValidationMessages()['title']),
+                MarkdownEditor::make('description')
                     ->required()
-                    ->minLength(6)
-                    ->maxLength(150)
-                    ->unique(ignoreRecord: true)
-                    ->autocapitalize('characters'),
-                RichEditor::make('description')
-                    ->disableGrammarly()
                     ->disableToolbarButtons([
                         'link',
                         'attachFiles'
@@ -67,14 +68,17 @@ class FacilityResource extends Resource
                 TextColumn::make('No')
                     ->rowIndex(),
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->searchable()
+                    ->copyable()
+                    ->description(fn(Facility $record): string => Str::limit($record->description, 50)),
                 ImageColumn::make('photo')
             ])->defaultSort('updated_at', 'desc')
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->modalAutofocus(false),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

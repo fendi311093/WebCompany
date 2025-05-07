@@ -12,6 +12,60 @@ class Facility extends Model
         'photo',
     ];
 
+    /**
+     * Mendapatkan semua rules validasi untuk model Faciliy
+     */
+    public static function getValidationRules($record = null)
+    {
+        return [
+            'title' => [
+                'required',
+                'min:5',
+                'max:50',
+                function ($attribute, $value, $fail) use ($record) {
+                    if (!self::validateUniqueName($value, $record?->id)) {
+                        $fail('This title already exists.');
+                    }
+                }
+            ],
+            'description' => [
+                'required'
+            ]
+        ];
+    }
+
+    /**
+     * Mendapatkan pesan validasi kustom
+     */
+    public static function getValidationMessages()
+    {
+        return [
+            'title' => [
+                'required' => 'The title field is required.',
+                'min:5' => 'Title field must be at least 5 characters.',
+                'max:50' => 'Title feild maximum 50 characters.'
+            ],
+            'description' => [
+                'required' => 'The description field is required.'
+            ]
+        ];
+    }
+
+    /**
+     * Validasi nama customer yang unik tanpa memperhatikan spasi
+     */
+    public static function validateUniqueName($title, $ignoreId = null)
+    {
+        $normalizedValue = preg_replace('/\s+/', '', $title);
+        $query = static::whereRaw('REPLACE(title, " ", "") = ?', [$normalizedValue]);
+
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        return !$query->exists();
+    }
+
     protected static function booted()
     {
         parent::booted();

@@ -47,9 +47,9 @@ class Customer extends Model
     /**
      * Validasi nama customer yang unik tanpa memperhatikan spasi
      */
-    public static function validateUniqueName($value, $ignoreId = null)
+    public static function validateUniqueName($customerName, $ignoreId = null)
     {
-        $normalizedValue = preg_replace('/\s+/', '', $value);
+        $normalizedValue = preg_replace('/\s+/', '', $customerName);
         $query = static::whereRaw('REPLACE(name_customer, " ", "") = ?', [$normalizedValue]);
 
         if ($ignoreId) {
