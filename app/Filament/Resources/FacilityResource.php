@@ -40,7 +40,6 @@ class FacilityResource extends Resource
                     ->rules(fn($record) => Facility::getValidationRules($record)['title'])
                     ->validationMessages(Facility::getValidationMessages()['title']),
                 MarkdownEditor::make('description')
-                    ->required()
                     ->disableToolbarButtons([
                         'link',
                         'attachFiles'
@@ -88,7 +87,7 @@ class FacilityResource extends Resource
             ])
             ->emptyStateHeading('No posts yet')
             ->emptyStateDescription('Once you create a facility, it will appear here')
-            ->emptyStateIcon('heroicon-o-clipboard-document-list');;
+            ->emptyStateIcon('heroicon-o-clipboard-document-list');
     }
 
     public static function getPages(): array
