@@ -16,6 +16,11 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Rules\ValidationProfil;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Notifications\Notification;
+use Filament\Tables\Columns\ImageColumn;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ProfilResource extends Resource
 {
@@ -32,22 +37,41 @@ class ProfilResource extends Resource
             ->schema([
                 Section::make()->schema([
                     TextInput::make('name_company')
-                        ->label('Name Company'),
+                        ->label('Name Company')
+                        ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                        ->rules(fn($record) => Profil::getValidationRules($record)['name_company']),
                     TextInput::make('phone')
-                        ->numeric(),
-                ])->columns(2),
+                        ->numeric()
+                        ->rules(fn($record) => Profil::getValidationRules($record)['phone']),
+                ])->columns(2)
+                    ->inlineLabel(),
                 Section::make()->schema([
                     MarkdownEditor::make('address')
                         ->disableToolbarButtons([
                             'link',
                             'attachFiles'
-                        ]),
-                    FileUpload::make('photo'),
+                        ])
+                        ->rules(fn($record) => Profil::getValidationRules($record)['address']),
+                    FileUpload::make('photo')
+                        ->required()
+                        ->image()
+                        ->maxSize(11000)
+                        ->imageEditor()
+                        ->directory('Photo_Profil')
+                        ->getUploadedFileNameForStorageUsing(
+                            function (TemporaryUploadedFile $file, $record, $get): string {
+                                $profilName = $get('name_company') ?? ($record?->name_company ?? 'Profil');
+                                $saveName = \Illuminate\Support\Str::slug($profilName);
+                                $extension = $file->getClientOriginalExtension();
+                                return "Profil-{$saveName}." . $extension;
+                            }
+                        ),
                     MarkdownEditor::make('description')
                         ->disableToolbarButtons([
                             'link',
                             'attachFiles'
-                        ]),
+                        ])
+                        ->rules(fn($record) => Profil::getValidationRules($record)['description']),
                 ])
             ]);
     }
@@ -56,13 +80,20 @@ class ProfilResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('No')
+                    ->rowIndex(),
+                TextColumn::make('name_company')
+                    ->label('Name Company'),
+                TextColumn::make('address'),
+                TextColumn::make('phone'),
+                ImageColumn::make('photo')
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->modalAutofocus(false),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -79,6 +110,7 @@ class ProfilResource extends Resource
     {
         return [
             'index' => Pages\ManageProfils::route('/'),
+            'create' => Pages\CreateProfil::route('/create'),
         ];
     }
 }

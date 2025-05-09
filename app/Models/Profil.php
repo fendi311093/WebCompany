@@ -3,6 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+
+use function PHPUnit\Framework\fileExists;
 
 class Profil extends Model
 {
@@ -13,4 +17,94 @@ class Profil extends Model
         'photo',
         'description'
     ];
+
+    public static function getValidationRules($record = null)
+    {
+        return [
+            'name_company' => [
+                'required',
+                'min:5',
+                'max:50',
+            ],
+            'address' => [
+                'required'
+            ],
+            'phone' => [
+                'required'
+            ],
+            'description' => [
+                'required'
+            ],
+        ];
+    }
+
+    protected static function booted()
+    {
+        parent::booted();
+
+        // Event Lisener
+        static::saving(function ($profil) {
+            self::resizePhotoIfNeeded($profil);
+        });
+
+        static::updating(function ($profil) {
+            if ($profil->isDirty('photo')) {
+                self::deletePhotoFile($profil->getOriginal('photo'));
+            }
+        });
+
+        static::deleting(function ($profil) {
+            self::deletePhotoFile($profil->photo);
+        });
+    }
+
+    // Resize ukuran foto
+    protected static function resizePhotoIfNeeded($profil)
+    {
+        //Cek di field input apakah ada foto
+        if (!$profil->photo) {
+            return;
+        }
+
+        //Lokasi foto
+        $fileLocation = storage_path('app/public/' . $profil->photo);
+
+        //Cek apakah ada foto di lokasi penyimpanan
+        if (!file_exists($fileLocation)) {
+            return;
+        }
+
+        $maxFileSize = 1024 * 1024; //1Mb
+
+        //Ukuran file dibawah 1Mb tidak dilakukan proses resize
+        if (filesize($fileLocation) <= $maxFileSize) {
+            return;
+        }
+
+        //Proses resize
+        $manager = new ImageManager(new Driver());
+        $photo = $manager->read($fileLocation);
+        $photo->scale(width: 800);
+
+        $quality = 80;
+        while (filesize($fileLocation) > $maxFileSize && $quality >= 30) {
+            $photo->save($fileLocation, quality: $quality);
+            clearstatcache(true, $fileLocation);
+            $quality -= 5;
+        }
+    }
+
+    //Hapus foto dari storage
+    protected static function deletePhotoFile($photo)
+    {
+        //Cek apakah ada foto
+        if (!$photo) {
+            return;
+        }
+
+        $fileLocation = storage_path('app/public/' . $photo);
+        if (file_exists($fileLocation)) {
+            unlink($fileLocation);
+        }
+    }
 }
