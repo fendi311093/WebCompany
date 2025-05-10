@@ -20,7 +20,7 @@
 
 <body class="bg-neutral-900">
     @livewire('partials.header')
-    <Main>
+    <Main id="content">
         {{ $slot }}
     </Main>
     @livewire('partials.footer')
