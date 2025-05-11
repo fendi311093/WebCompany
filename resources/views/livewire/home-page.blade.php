@@ -62,14 +62,17 @@
     <!-- End Slider -->
 
     <!-- Clients -->
-    <div class="px-4 sm:px-6 lg:px-8">
+    <div class="bg-gray-500 shadow px-4 sm:px-6 lg:px-8 my-8">
         <div
-            class="relative py-6 md:py-10 overflow-hidden border-b border-gray-200 dark:border-neutral-700 before:absolute before:top-0 before:start-0 before:z-10 before:w-20 before:h-full before:bg-linear-to-r before:from-white before:to-transparent after:absolute after:top-0 after:end-0 after:w-20 after:h-full after:bg-linear-to-l after:from-white after:to-transparent dark:before:from-neutral-900 dark:after:from-neutral-900">
+            class="relative py-6 md:py-10 overflow-hidden dark:border-neutral-700 before:absolute before:top-0 before:start-0 before:z-10 before:w-20 before:h-full before:bg-linear-to-r before:from-white before:to-transparent after:absolute after:top-0 after:end-0 after:w-20 after:h-full after:bg-linear-to-l after:from-white after:to-transparent dark:before:from-neutral-900 dark:after:from-neutral-900">
+            <div class="mb-4">
+                <h2 class="text-2xl font-semibold text-white">Our Customers</h2>
+            </div>
             <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
                 @if ($customers->count() > 0)
                     @foreach ($customers as $customer)
                         <img src="{{ url('storage/' . $customer->logo) }}" alt="{{ $customer->name_customer }}"
-                            class="h-10 md:h-14 w-auto mx-4 object-contain grayscale hover:grayscale-0 transition duration-300" />
+                            class="h-10 md:h-14 w-auto mx-4 object-contain transition duration-300" />
                     @endforeach
                 @else
                     <div class="text-red-500">Tidak ada data customer!</div>
@@ -77,5 +80,5 @@
             </div>
         </div>
     </div>
+    <!-- End Clients -->
 </div>
-<!-- End Clients -->
