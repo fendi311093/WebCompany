@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Gallery extends Model
 {
     protected $fillable = [
-        'title',
-        'photo',
+        'description',
         'is_published'
     ];
 

@@ -9,12 +9,12 @@ class Slider extends Model
 {
     protected $fillable = [
         'slide_number',
-        'gallery_id',
+        'photo_id',
         'is_active'
     ];
 
-    public function gallery(): BelongsTo
+    public function photo(): BelongsTo
     {
-        return $this->belongsTo(Gallery::class, 'gallery_id');
+        return $this->belongsTo(Photo::class, 'photo_id');
     }
 }
