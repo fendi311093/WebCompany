@@ -11,7 +11,6 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class UploadPhotos extends Page implements HasForms
 {
@@ -21,7 +20,6 @@ class UploadPhotos extends Page implements HasForms
 
     protected static string $view = 'filament.resources.photo-uploader-resource.pages.upload-photos';
 
-    // Variabel untuk menyimpan data form
     public $photos = null;
 
     public function mount(): void
@@ -47,16 +45,13 @@ class UploadPhotos extends Page implements HasForms
 
     public function create(): void
     {
-        // Validasi form
+        // Ambil data form
         $formData = $this->form->getState();
 
-        // Debug form data
-        Log::info('Form data:', $formData);
-
-        // Dapatkan foto dari formData
+        // Dapatkan array foto
         $photos = $formData['photos'] ?? [];
 
-        // Jika tidak ada foto
+        // Jika tidak ada foto yang dipilih
         if (empty($photos)) {
             Notification::make()
                 ->title('Tidak ada foto dipilih')
@@ -65,12 +60,6 @@ class UploadPhotos extends Page implements HasForms
             return;
         }
 
-        // Log photos array
-        Log::info('Photos array:', [
-            'count' => count($photos),
-            'content' => $photos
-        ]);
-
         $count = 0;
 
         try {
@@ -78,26 +67,17 @@ class UploadPhotos extends Page implements HasForms
 
             // Loop untuk setiap file
             foreach ($photos as $filePath) {
-                Log::info('Processing file path:', [
-                    'path' => $filePath
-                ]);
-
                 if (is_string($filePath) && !empty($filePath)) {
                     // Buat record foto baru
                     $photo = new Photo();
                     $photo->file_path = $filePath;
                     $photo->save();
 
-                    Log::info('Photo created with ID: ' . $photo->id);
                     $count++;
                 }
             }
 
             DB::commit();
-
-            // Debug total di database
-            $totalInDb = Photo::count();
-            Log::info("Total photos in database: $totalInDb");
 
             // Notifikasi sukses
             Notification::make()
@@ -112,14 +92,9 @@ class UploadPhotos extends Page implements HasForms
         } catch (\Exception $e) {
             DB::rollBack();
 
-            // Log error
-            Log::error('Error uploading photos: ' . $e->getMessage());
-            Log::error($e->getTraceAsString());
-
-            // Tampilkan notifikasi error
             Notification::make()
                 ->title('Error')
-                ->body('Error: ' . $e->getMessage())
+                ->body('Gagal menyimpan foto: ' . $e->getMessage())
                 ->danger()
                 ->send();
         }
