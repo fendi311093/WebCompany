@@ -5,19 +5,11 @@
             <li>Klik area di bawah atau tombol "Browse" untuk memilih foto</li>
             <li>Anda dapat memilih lebih dari satu foto sekaligus</li>
             <li>Setiap foto akan disimpan dengan ID unik di database</li>
-            <li>Klik tombol "Upload" setelah selesai memilih</li>
+            <li>Klik tombol "Upload" untuk mengunggah foto yang dipilih</li>
         </ol>
     </div>
 
-    <form wire:submit.prevent="create">
+    <div class="w-full">
         {{ $this->form }}
-
-        <div class="mt-6 flex justify-center">
-            <x-filament::button type="submit" color="success" icon="heroicon-o-arrow-up-tray" size="lg"
-                class="px-8 py-2" wire:loading.attr="disabled" wire:target="create">
-                <span wire:loading wire:target="create">Uploading...</span>
-                <span wire:loading.remove wire:target="create">Upload</span>
-            </x-filament::button>
-        </div>
-    </form>
+    </div>
 </x-filament-panels::page>

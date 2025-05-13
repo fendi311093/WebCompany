@@ -4,6 +4,8 @@ namespace App\Filament\Resources\PhotosResource\Pages;
 
 use App\Filament\Resources\PhotosResource;
 use App\Models\Photo;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action as FormAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -11,6 +13,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
+use Filament\Support\Enums\Alignment;
 use Illuminate\Support\Facades\DB;
 
 class UploadPhotos extends Page implements HasForms
@@ -22,7 +25,6 @@ class UploadPhotos extends Page implements HasForms
     protected static string $view = 'filament.resources.photos-resource.pages.upload-photos';
 
     public $photos = null;
-    public $isUploading = false;
 
     public function mount(): void
     {
@@ -45,27 +47,33 @@ class UploadPhotos extends Page implements HasForms
                             ->visibility('public')
                             ->downloadable()
                             ->imageResizeMode('cover')
-                    ])
+                            ->helperText('Pilih minimal satu foto untuk upload.')
+                    ]),
+
+                Actions::make([
+                    FormAction::make('upload')
+                        ->label('Upload')
+                        ->icon('heroicon-o-arrow-up-tray')
+                        ->color('success')
+                        ->size('sm')
+                        ->action('create')
+                ])
+                ->alignment(Alignment::Left)
             ]);
     }
 
     public function create(): void
     {
-        $this->isUploading = true;
-
         // Ambil data form
-        $formData = $this->form->getState();
+        $data = $this->form->getState();
 
-        // Dapatkan array foto
-        $photos = $formData['photos'] ?? [];
-
-        // Jika tidak ada foto yang dipilih
-        if (empty($photos)) {
+        // Validasi apakah ada foto yang dipilih
+        if (empty($data['photos'])) {
             Notification::make()
-                ->title('Tidak ada foto dipilih')
+                ->title('Error')
+                ->body('Tidak ada foto yang dipilih. Silakan pilih minimal satu foto.')
                 ->danger()
                 ->send();
-            $this->isUploading = false;
             return;
         }
 
@@ -74,14 +82,12 @@ class UploadPhotos extends Page implements HasForms
         try {
             DB::beginTransaction();
 
-            // Loop untuk setiap file
-            foreach ($photos as $filePath) {
+            // Simpan setiap foto ke database
+            foreach ($data['photos'] as $filePath) {
                 if (is_string($filePath) && !empty($filePath)) {
-                    // Buat record foto baru
                     $photo = new Photo();
                     $photo->file_path = $filePath;
                     $photo->save();
-
                     $count++;
                 }
             }
@@ -100,14 +106,13 @@ class UploadPhotos extends Page implements HasForms
             $this->form->fill();
         } catch (\Exception $e) {
             DB::rollBack();
-
+            
+            // Notifikasi gagal
             Notification::make()
                 ->title('Error')
                 ->body('Gagal menyimpan foto: ' . $e->getMessage())
                 ->danger()
                 ->send();
         }
-
-        $this->isUploading = false;
     }
 }
