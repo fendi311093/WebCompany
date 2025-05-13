@@ -17,14 +17,6 @@ class ListPhotos extends ListRecords
         return [
             Actions\CreateAction::make()
                 ->label('New photo'),
-
-            Action::make('uploadMultiple')
-                ->label('Upload Multiple Photos')
-                ->icon('heroicon-o-camera')
-                ->color('success')
-                ->size(ActionSize::Large)
-                ->url(route('filament.admin.resources.multi-photo-uploader.index'))
-                ->openUrlInNewTab(false),
         ];
     }
 }

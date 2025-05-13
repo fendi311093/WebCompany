@@ -19,7 +19,7 @@ class PhotosResource extends Resource
 {
     protected static ?string $model = Photo::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-camera';
 
     public static function form(Form $form): Form
     {
@@ -65,7 +65,7 @@ class PhotosResource extends Resource
     {
         return [
             'index' => Pages\ListPhotos::route('/'),
-            'create' => Pages\CreatePhoto::route('/create'),
+            'create' => Pages\UploadPhotos::route('/create'),
             'edit' => Pages\EditPhoto::route('/{record}/edit'),
         ];
     }
