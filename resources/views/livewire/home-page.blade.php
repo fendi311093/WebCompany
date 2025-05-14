@@ -38,16 +38,16 @@
                                     <!-- Content -->
                                     <div class="mt-auto relative z-10 w-full md:w-2/3 p-6 md:p-10">
                                         <span
-                                            class="inline-block mb-2 px-3 py-1 bg-primary-500 text-white text-2xl font-semibold rounded-full">
+                                            class="inline-block mb-1 px-3 py-1 bg-primary-500 text-white text-2xl font-semibold rounded-full">
                                             24/7 Service
                                         </span>
-                                        <h2 class="text-white text-2xl md:text-4xl font-bold mb-4">
+                                        <p class="text-white text-xl md:text-4xl font-bold mb-4">
                                             We are open for 24 hours from Monday to Sunday.
-                                        </h2>
+                                        </p>
                                         <a href="#"
                                             class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-white text-black hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none py-3 px-4">
                                             Lihat Detail
-                                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                            <svg class="w-2 h-3" xmlns="http://www.w3.org/2000/svg" fill="none"
                                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -138,11 +138,11 @@
     @endif
 
     <!-- Clients -->
-    <div class="bg-gray-500 shadow px-4 sm:px-6 lg:px-8 my-8">
-        <div
-            class="relative py-6 md:py-10 overflow-hidden dark:border-neutral-700 before:absolute before:top-0 before:start-0 before:z-10 before:w-20 before:h-full before:bg-linear-to-r before:from-white before:to-transparent after:absolute after:top-0 after:end-0 after:w-20 after:h-full after:bg-linear-to-l after:from-white after:to-transparent dark:before:from-neutral-900 dark:after:from-neutral-900">
-            <div class="mb-4">
-                <h2 class="text-2xl font-semibold text-white">Our Customers</h2>
+    <div class="bg-gray-600 shadow-md px-4 sm:px-6 lg:px-8 py-6 mt-1">
+        <div class="container mx-auto">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-semibold text-white">Our Customers</h2>
+                <p class="text-white mb-4">Companies that have collaborated with us</p>
             </div>
             <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
                 @if ($customers->count() > 0)
@@ -157,4 +157,104 @@
         </div>
     </div>
     <!-- End Clients -->
+
+    <!-- Card Blog -->
+    <div class="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+        <!-- Title -->
+        <div class="max-w-2xl mx-auto text-center mb-10 lg:mb-14">
+            <h2 class="text-2xl font-bold md:text-4xl md:leading-tight dark:text-white">Insights</h2>
+            <p class="mt-1 text-gray-600 dark:text-neutral-400">Stay in the know with insights from industry experts.
+            </p>
+        </div>
+        <!-- End Title -->
+
+        <!-- Grid -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Card -->
+            <a class="group flex flex-col focus:outline-hidden" href="#">
+                <div class="relative pt-[50%] sm:pt-[70%] rounded-xl overflow-hidden">
+                    <img class="size-full absolute top-0 start-0 object-cover group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out rounded-xl"
+                        src="https://images.unsplash.com/photo-1586232702178-f044c5f4d4b7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
+                        alt="Blog Image">
+                    <span
+                        class="absolute top-0 end-0 rounded-se-xl rounded-es-xl text-xs font-medium bg-gray-800 text-white py-1.5 px-3 dark:bg-neutral-900">
+                        Sponsored
+                    </span>
+                </div>
+
+                <div class="mt-7">
+                    <h3
+                        class="text-xl font-semibold text-gray-800 group-hover:text-gray-600 dark:text-neutral-300 dark:group-hover:text-white">
+                        Studio by Preline
+                    </h3>
+                    <p class="mt-3 text-gray-800 dark:text-neutral-200">
+                        Produce professional, reliable streams easily leveraging Preline's innovative broadcast studio
+                    </p>
+                    <p
+                        class="mt-5 inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 group-hover:underline group-focus:underline font-medium dark:text-blue-500">
+                        Read more
+                        <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m9 18 6-6-6-6" />
+                        </svg>
+                    </p>
+                </div>
+            </a>
+            <!-- End Card -->
+
+            <!-- Card -->
+            <a class="group flex flex-col focus:outline-hidden" href="#">
+                <div class="relative pt-[50%] sm:pt-[70%] rounded-xl overflow-hidden">
+                    <img class="size-full absolute top-0 start-0 object-cover group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out rounded-xl"
+                        src="https://images.unsplash.com/photo-1542125387-c71274d94f0a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
+                        alt="Blog Image">
+                </div>
+
+                <div class="mt-7">
+                    <h3
+                        class="text-xl font-semibold text-gray-800 group-hover:text-gray-600 dark:text-neutral-300 dark:group-hover:text-white">
+                        Onsite
+                    </h3>
+                    <p class="mt-3 text-gray-800 dark:text-neutral-200">
+                        Optimize your in-person experience with best-in-class capabilities like badge printing and lead
+                        retrieval
+                    </p>
+                    <p
+                        class="mt-5 inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 group-hover:underline group-focus:underline font-medium dark:text-blue-500">
+                        Read more
+                        <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m9 18 6-6-6-6" />
+                        </svg>
+                    </p>
+                </div>
+            </a>
+            <!-- End Card -->
+
+            <!-- Card -->
+            <a class="group relative flex flex-col w-full min-h-60 bg-[url('https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80')] bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-hidden focus:shadow-lg transition"
+                href="#">
+                <div class="flex-auto p-4 md:p-6">
+                    <h3 class="text-xl text-white/90 group-hover:text-white"><span class="font-bold">Preline</span>
+                        Press publishes books about economic and technological advancement.</h3>
+                </div>
+                <div class="pt-0 p-4 md:p-6">
+                    <div
+                        class="inline-flex items-center gap-2 text-sm font-medium text-white group-hover:text-white/70 group-focus:text-white/70">
+                        Visit the site
+                        <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m9 18 6-6-6-6" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
+            <!-- End Card -->
+        </div>
+        <!-- End Grid -->
+    </div>
+    <!-- End Card Blog -->
 </div>
