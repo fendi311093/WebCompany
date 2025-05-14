@@ -57,7 +57,7 @@ class UploadPhotos extends Page implements HasForms
                         ->color('success')
                         ->size('sm')
                         ->action('create')
-                ])
+                    ])
                 ->alignment(Alignment::Left)
             ]);
     }
@@ -106,7 +106,7 @@ class UploadPhotos extends Page implements HasForms
             $this->form->fill();
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             // Notifikasi gagal
             Notification::make()
                 ->title('Error')
