@@ -30,12 +30,30 @@ class SliderResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('photo_id')
                             ->label('Pilih Foto')
-                            ->options(function () {
-                                return Photo::all()->pluck('file_path', 'id');
+                            ->options(function (?Slider $record = null) {
+                                // Ambil semua ID foto yang sudah digunakan di slider
+                                $usedPhotoIds = $record
+                                    ? Slider::where('id', '!=', $record->id)->pluck('photo_id')->toArray()
+                                    : Slider::pluck('photo_id')->toArray();
+
+                                // Query foto yang belum digunakan atau foto yang sedang diedit
+                                $query = Photo::query();
+                                if (!empty($usedPhotoIds)) {
+                                    $query->whereNotIn('id', $usedPhotoIds);
+
+                                    // Jika sedang mengedit data, tambahkan foto yang digunakan pada slider ini
+                                    if ($record && $record->photo_id) {
+                                        $query->orWhere('id', $record->photo_id);
+                                    }
+                                }
+
+                                // Return hasil query
+                                return $query->get()->pluck('file_path', 'id');
                             })
                             ->required()
                             ->searchable()
                             ->reactive()
+                            ->helperText('Hanya menampilkan foto yang belum digunakan pada slider lain')
                             ->afterStateUpdated(fn($state, callable $set) => $set('preview', $state))
                             ->afterStateHydrated(fn($state, callable $set) => $set('preview', $state))
                             ->columnSpanFull(),
@@ -70,7 +88,7 @@ class SliderResource extends Resource
                 Tables\Columns\ImageColumn::make('photo.file_path')
                     ->label('Foto')
                     ->disk('public')
-                    ->height(60),
+                    ->square(),
 
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Status Aktif')

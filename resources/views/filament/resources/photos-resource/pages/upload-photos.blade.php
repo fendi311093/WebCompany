@@ -11,5 +11,5 @@
 
     <div class="w-full">
         {{ $this->form }}
-    </div>
+        </div>
 </x-filament-panels::page>
