@@ -17,6 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Rules\ValidationProfil;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
@@ -43,15 +44,20 @@ class ProfilResource extends Resource
                     TextInput::make('phone')
                         ->numeric()
                         ->rules(fn($record) => Profil::getValidationRules($record)['phone']),
-                ])->columns(2)
-                    ->inlineLabel(),
-                Section::make()->schema([
-                    MarkdownEditor::make('address')
-                        ->disableToolbarButtons([
-                            'link',
-                            'attachFiles'
-                        ])
-                        ->rules(fn($record) => Profil::getValidationRules($record)['address']),
+                    FileUpload::make('logo')
+                        ->required()
+                        ->image()
+                        ->maxSize(11000)
+                        ->imageEditor()
+                        ->directory('Logo_Profil')
+                        ->getUploadedFileNameForStorageUsing(
+                            function (TemporaryUploadedFile $file, $record, $get): string {
+                                $profilName = $get('name_company') ?? ($record?->name_company ?? 'Logo');
+                                $saveName = \Illuminate\Support\Str::slug($profilName);
+                                $extension = $file->getClientOriginalExtension();
+                                return "Logo-{$saveName}." . $extension;
+                            }
+                        ),
                     FileUpload::make('photo')
                         ->required()
                         ->image()
@@ -66,6 +72,15 @@ class ProfilResource extends Resource
                                 return "Profil-{$saveName}." . $extension;
                             }
                         ),
+                ])->columns(2)
+                    ->inlineLabel(),
+                Section::make()->schema([
+                    MarkdownEditor::make('address')
+                        ->disableToolbarButtons([
+                            'link',
+                            'attachFiles'
+                        ])
+                        ->rules(fn($record) => Profil::getValidationRules($record)['address']),
                     MarkdownEditor::make('description')
                         ->disableToolbarButtons([
                             'link',
@@ -84,17 +99,21 @@ class ProfilResource extends Resource
                     ->rowIndex(),
                 TextColumn::make('name_company')
                     ->label('Name Company'),
-                TextColumn::make('address'),
+                TextColumn::make('address')
+                    ->words(4),
                 TextColumn::make('phone'),
+                ImageColumn::make('logo'),
                 ImageColumn::make('photo')
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->modalAutofocus(false),
-                Tables\Actions\DeleteAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                        ->modalAutofocus(false),
+                    Tables\Actions\DeleteAction::make(),
+                ])->tooltip('Actions')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

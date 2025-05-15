@@ -138,7 +138,7 @@
     @endif
 
     <!-- Clients -->
-    <div class="bg-slate-200">
+    <div class="bg-slate-600">
         <div class="max-w-screen-2xl px-4 xl:px-0 py-3 mx-auto">
             <div class="container mx-auto">
                 <div class="text-center mb-6">
