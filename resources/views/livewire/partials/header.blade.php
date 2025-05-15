@@ -6,11 +6,12 @@
         <div class="flex items-center justify-between">
             <div class="flex items-center">
                 <!-- Logo -->
-                <a class="flex-none inline-block font-semibold focus:outline-hidden focus:opacity-80" href="/"
+                <a wire:navigate href="/"
+                    class="flex-none inline-block font-semibold focus:outline-hidden focus:opacity-80 logo-header"
                     aria-label="WebCompany">
                     @if ($companyLogo->logo)
                         <img src="{{ asset('storage/' . $companyLogo->logo) }}" alt="Logo"
-                            class="h-12 max-w-[120px] w-auto object-contain rounded bg-white shadow mr-4" />
+                            class="h-12 md:h-12 max-w-[160px] w-auto object-contain rounded mr-4 transition-all duration-300" />
                     @else
                         <span class="text-white text-xl">WebCompany</span>
                     @endif

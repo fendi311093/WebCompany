@@ -25,3 +25,12 @@
         text-wrap: balance;
     }
 }
+
+.logo-header:hover img {
+    transform: scale(1.08);
+    box-shadow: none;
+}
+
+.logo-header img {
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s cubic-bezier(0.4,0,0.2,1);
+}
