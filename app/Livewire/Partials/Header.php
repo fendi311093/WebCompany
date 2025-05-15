@@ -2,12 +2,18 @@
 
 namespace App\Livewire\Partials;
 
+use App\Models\Profil;
 use Livewire\Component;
 
 class Header extends Component
 {
     public function render()
     {
-        return view('livewire.partials.header');
+        // Ambil logo perusahaan
+        $companyLogo = Profil::first();
+
+        return view('livewire.partials.header', [
+            'companyLogo' => $companyLogo,
+        ]);
     }
 }

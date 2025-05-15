@@ -14,13 +14,20 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## MENU PROFIL COMPANY
+   -[ProfilResource.php]
+        ->[CreateResource.php], ada beberap Fitur :
+            - mencegah pembuatan lebih dari satu data profil di database
+                Penjelasan Kode
+                - [mutateFormDataBeforeCreate(array $data): array] → Fungsi ini dipanggil sebelum data disimpan ke database dalam proses create.
+                - [Profil::count() > 0] → Mengecek apakah sudah ada data profil di database. Jika ada (count() > 0), maka proses pembuatan data baru akan dicegah.
+                - [Notification::make()] → Membuat dan menampilkan notifikasi ke pengguna, memberitahu bahwa hanya boleh ada satu profil.
+                - [$this->halt();] → Menghentikan eksekusi sebelum data benar-benar disimpan ke database.
+        ->Model [Profil.php], Fitur :
+            - Library resize image (https://image.intervention.io/v3/getting-started/installation)
+            - Resize photo jika [> 1Mb]
+            - Delete photo di storage ketika proses Edit & Delete data
+            - Custom validasi rule
 
 ## Laravel Sponsors
 
