@@ -46,10 +46,12 @@
             class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow md:block"
             aria-labelledby="hs-navbar-floating-dark-collapse">
             <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-y-3 py-2 md:py-0 md:ps-7">
-                <a class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300"
-                    href="https://preline.co/templates/agency/index.html" aria-current="page">Home</a>
-                <a class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300"
-                    href="#">Stories</a>
+                <a wire:navigate
+                    class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300"
+                    href="/" aria-current="page">Home</a>
+                <a wire:navigate
+                    class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300"
+                    href="/About-Us">About Us</a>
                 <a class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300"
                     href="#">Reviews</a>
                 <a class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300"
