@@ -44,6 +44,7 @@ module.exports = {
     require('@tailwindcss/typography'),
     require('@tailwindcss/aspect-ratio'),
     require('preline/plugin'),
+    require('@tailwindcss/typography'),
   ],
   darkMode: 'class',
 } 
