@@ -21,7 +21,7 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 Penjelasan Kode - [mutateFormDataBeforeCreate(array $data): array] → Fungsi ini dipanggil sebelum data disimpan ke database dalam proses create. - [Profil::count() > 0] → Mengecek apakah sudah ada data profil di database. Jika ada (count() > 0), maka proses pembuatan data baru akan dicegah. - [Notification::make()] → Membuat dan menampilkan notifikasi ke pengguna, memberitahu bahwa hanya boleh ada satu profil. - [$this->halt();] → Menghentikan eksekusi sebelum data benar-benar disimpan ke database.
 ->Model [Profil.php], Fitur : - Library resize image (https://image.intervention.io/v3/getting-started/installation) - Resize photo jika [> 1Mb] - Delete photo di storage ketika proses Edit & Delete data - Custom validasi rule
 
-## FrontEnd
+### FrontEnd
 
     Solusi untuk style markdown tampil di blade
     - Install plugin tailwind [Typography]
@@ -34,16 +34,25 @@ Penjelasan Kode - [mutateFormDataBeforeCreate(array $data): array] → Fungsi in
             {!! str($profil->description)->markdown()->sanitizeHtml() !!}
         </div>
 
-### Premium Partners
+### BackEnd
 
--   **[Vehikl](https://vehikl.com/)**
--   **[Tighten Co.](https://tighten.co)**
--   **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
--   **[64 Robots](https://64robots.com)**
--   **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
--   **[DevSquad](https://devsquad.com/hire-laravel-developers)**
--   **[Redberry](https://redberry.international/laravel-development/)**
--   **[Active Logic](https://activelogic.com)**
+-   **[PageResource.php]
+       Menghubungkan 3 table ke dalam [PageResource]
+       - Gunakan [morph]
+          1. [Migration Page]
+              [$table->morphs('source')] Akan membuwat source_type & source_id bersamaan yg nanti digunakan untuk menyimpan relasi dari 3
+              table tersebut
+          2. [Relasi Morph di 3 model]
+             - Di model Profil, Content & Customer :
+              public function Pages()
+              {
+                return $this->morphMany(Page::class, 'source');
+              }
+             - Di Model [Page]
+              public function source()
+              {
+                  return $this->morphTo();
+              }
 
 ## Contributing
 
