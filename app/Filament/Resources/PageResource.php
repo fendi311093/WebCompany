@@ -14,6 +14,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -48,17 +49,25 @@ class PageResource extends Resource
                     ->label('Select Page')
                     ->preload()
                     ->searchable()
-                    ->
                     ->options(function (callable $get) {
                         $sourceType = $get('source_type');
+
+                        // Get existing source_ids for the selected type
+                        $existingSourceId = Page::where('source_type', $sourceType)
+                            ->pluck('source_id')
+                            ->toArray();
+
                         if ($sourceType === 'App\Models\Profil') {
-                            return Profil::all()->pluck('name_company', 'id');
+                            return Profil::whereNotIn('id', $existingSourceId)
+                                ->pluck('name_company', 'id');
                         }
                         if ($sourceType === 'App\Models\Customer') {
-                            return Customer::all()->pluck('name_customer', 'id');
+                            return Customer::whereNotIn('id', $existingSourceId)
+                                ->pluck('name_customer', 'id');
                         }
                         if ($sourceType === 'App\Models\Content') {
-                            return Content::all()->pluck('title', 'id');
+                            return Content::whereNotIn('id', $existingSourceId)
+                                ->pluck('title', 'id');
                         }
                         return [];
                     })
@@ -75,6 +84,8 @@ class PageResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('No')
+                    ->rowIndex(),
                 TextColumn::make('source_type')
                     ->label('Source Type')
                     ->formatStateUsing(fn($state): string => match ($state) {
@@ -83,7 +94,7 @@ class PageResource extends Resource
                         'App\Models\Content' => 'Content',
                         default => $state ?? '-',
                     }),
-                TextColumn::make('source') // Relasi 'source' yg berasal dari model profil, customer, content
+                TextColumn::make('source')
                     ->label('Source Data')
                     ->formatStateUsing(function ($record) {
                         if (!$record->source) return '-';
