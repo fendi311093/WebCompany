@@ -13,6 +13,11 @@ class Customer extends Model
         'logo'
     ];
 
+    public function Pages()
+    {
+        return $this->morphMany(Page::class, 'source');
+    }
+
     /**
      * Mendapatkan semua rules validasi untuk model Customer
      */

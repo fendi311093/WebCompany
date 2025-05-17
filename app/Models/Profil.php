@@ -19,6 +19,11 @@ class Profil extends Model
         'description'
     ];
 
+    public function Pages()
+    {
+        return $this->morphMany(Page::class, 'source');
+    }
+
     public static function getValidationRules($record = null)
     {
         return [
