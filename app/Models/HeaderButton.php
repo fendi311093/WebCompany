@@ -19,7 +19,7 @@ class HeaderButton extends Model
 
     public function Pages(): BelongsTo
     {
-        return $this->belongsTo(Page::class, 'page_id');
+        return $this->belongsTo(Page::class, 'page_id', 'id');
     }
 
     public static function ValidationRules($record = null): array

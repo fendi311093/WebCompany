@@ -16,6 +16,6 @@ class Page extends Model
 
     public function HeaderButtons(): HasMany
     {
-        return $this->hasMany(Page::class, 'page_id');
+        return $this->hasMany(HeaderButton::class, 'page_id', 'id');
     }
 }
