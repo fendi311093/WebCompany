@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Validation\Rule;
 
 class HeaderButton extends Model
 {
@@ -10,9 +12,15 @@ class HeaderButton extends Model
         'title',
         'slug',
         'position',
+        'page_id',
         'is_active',
         'icon',
     ];
+
+    public function Pages(): BelongsTo
+    {
+        return $this->belongsTo(Page::class, 'page_id');
+    }
 
     public static function ValidationRules($record = null): array
     {
@@ -27,7 +35,7 @@ class HeaderButton extends Model
                 'required',
                 'string',
                 'max:255',
-                'unique:header_buttons,slug',
+                Rule::unique('header_buttons', 'slug')->ignore($record),
             ],
             'position' => [
                 'required',

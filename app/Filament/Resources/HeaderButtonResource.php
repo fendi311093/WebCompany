@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\HeaderButtonResource\Pages;
 use App\Filament\Resources\HeaderButtonResource\RelationManagers;
 use App\Models\HeaderButton;
+use App\Models\Page;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
@@ -18,6 +19,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Set;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\Str;
 
 class HeaderButtonResource extends Resource
@@ -34,7 +36,8 @@ class HeaderButtonResource extends Resource
                     TextInput::make('title')
                         ->live(onBlur: true)
                         ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
-                        ->rules(fn($record) => HeaderButton::ValidationRules($record)['title']),
+                        ->rules(fn($record) => HeaderButton::ValidationRules($record)['title'])
+                        ->dehydrateStateUsing(fn(String $state): String => strtoupper($state)),
                     TextInput::make('slug')
                         ->rules(fn($record) => HeaderButton::ValidationRules($record)['slug'])
                         ->disabled()
@@ -53,6 +56,22 @@ class HeaderButtonResource extends Resource
                             9 => 'Nav Button 9',
                             10 => 'Nav Button 10',
                         ]),
+                    Select::make('page_id')
+                        ->label('Select Page')
+                        ->options(function () {
+                            return Page::with('source')->get()->mapWithKeys(function ($page) {
+                                $label = match ($page->source_type) {
+                                    'App\Models\Profil' => $page->source->name_company,
+                                    'App\Models\Customer' => $page->source->name_customer,
+                                    'App\Models\Content' => $page->source->title,
+                                    default => 'Unknown'
+                                };
+                                return [$page->id => $label];
+                            });
+                        })
+                        ->searchable()
+                        ->preload()
+                        ->required(),
                     Toggle::make('is_active')
                         ->label('Link Active')
                         ->default(true)
@@ -65,13 +84,17 @@ class HeaderButtonResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('No')
+                    ->rowIndex(),
+                TextColumn::make('title')
+                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->modalAutofocus(false),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
