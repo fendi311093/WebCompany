@@ -47,11 +47,11 @@
             aria-labelledby="hs-navbar-floating-dark-collapse">
             <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-y-3 py-2 md:py-0 md:ps-7">
                 <a wire:navigate href="{{ route('Home') }}"
-                    class="{{ request()->routeIs('Home') ? 'group inline-flex items-center gap-x-2 py-2 px-3 bg-[#ff0] font-medium text-sm text-neutral-800 rounded-full focus:outline-hidden' : 'pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300' }}">Home</a>
-                
+                    class="{{ request()->routeIs('Home') ? 'group inline-flex items-center gap-x-2 py-2 px-3 bg-[#ff0] font-medium text-sm text-neutral-800 rounded-full focus:outline-hidden' : 'pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300' }}">HOME</a>
+
                 @foreach ($headerButtons as $button)
                     <a wire:navigate href="{{ url('/' . $button->slug) }}"
-                        class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300">
+                        class="{{ request()->is($button->slug) ? 'group inline-flex items-center gap-x-2 py-2 px-3 bg-[#ff0] font-medium text-sm text-neutral-800 rounded-full focus:outline-hidden' : 'pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300' }}">
                         {{ $button->title }}
                     </a>
                 @endforeach

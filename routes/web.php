@@ -8,6 +8,5 @@ use App\Livewire\ViewDinamis;
 
 Route::get('/', HomePage::class)->name('Home');
 
-
 // Route dinamis untuk header button
 Route::get('/{slug}', ViewDinamis::class)->where('slug', '^[a-zA-Z0-9-_]+$');

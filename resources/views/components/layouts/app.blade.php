@@ -18,9 +18,11 @@
     @livewireStyles
 </head>
 
-<body class="bg-neutral-900">
+{{-- Mengatur layout flex untuk memastikan footer tetap berada di bagian bawah halaman --}}
+
+<body class="bg-neutral-900 flex flex-col min-h-screen">
     @livewire('partials.header')
-    <Main id="content">
+    <Main id="content" class="flex-1">
         {{ $slot }}
     </Main>
     @livewire('partials.footer')
