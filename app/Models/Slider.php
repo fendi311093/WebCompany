@@ -17,4 +17,9 @@ class Slider extends Model
     {
         return $this->belongsTo(Photo::class, 'photo_id');
     }
+
+    public static function getUsedSliderNumber($value): bool
+    {
+        return self::where('slide_number', $value)->exists();
+    }
 }

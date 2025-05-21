@@ -18,4 +18,9 @@ class Page extends Model
     {
         return $this->hasMany(HeaderButton::class, 'page_id', 'id');
     }
+
+    public function dropdownMenus(): HasMany
+    {
+        return $this->hasMany(DropdownMenu::class, 'page_id', 'id');
+    }
 }

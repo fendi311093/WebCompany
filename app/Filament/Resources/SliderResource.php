@@ -6,9 +6,16 @@ use App\Filament\Resources\SliderResource\Pages;
 use App\Models\Photo;
 use App\Models\Slider;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -17,19 +24,20 @@ class SliderResource extends Resource
     protected static ?string $model = Slider::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
-
     protected static ?string $navigationLabel = 'Slider';
-
-    protected static ?string $navigationGroup = 'Konten';
+    protected static ?string $modelLabel = 'Slider';
+    protected static ?string $pluralLabel = 'List Sliders';
+    protected static ?string $navigationGroup = 'Website Settings';
+    protected static ?int $navigationSort = 21;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Slider')
+                Forms\Components\Section::make('')
                     ->schema([
-                        Forms\Components\Select::make('photo_id')
-                            ->label('Pilih Foto')
+                        Select::make('photo_id')
+                            ->label('Select Photo')
                             ->options(function (?Slider $record = null) {
                                 // Ambil semua ID foto yang sudah digunakan di slider
                                 $usedPhotoIds = $record
@@ -53,27 +61,27 @@ class SliderResource extends Resource
                             ->required()
                             ->searchable()
                             ->reactive()
-                            ->helperText('Hanya menampilkan foto yang belum digunakan pada slider lain')
+                            ->helperText('Only show photos that are not used in other sliders')
                             ->afterStateUpdated(fn($state, callable $set) => $set('preview', $state))
-                            ->afterStateHydrated(fn($state, callable $set) => $set('preview', $state))
-                            ->columnSpanFull(),
-
-                        Forms\Components\ViewField::make('preview')
-                            ->label('Preview Foto')
-                            ->view('filament.forms.components.photo-preview')
-                            ->columnSpanFull(),
-
-                        Forms\Components\Select::make('slide_number')
-                            ->label('Posisi Slider')
+                            ->afterStateHydrated(fn($state, callable $set) => $set('preview', $state)),
+                        Select::make('slide_number')
+                            ->label('Slider Position')
                             ->options(array_combine(range(1, 10), range(1, 10)))
                             ->required()
-                            ->default(1),
-
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Aktif')
-                            ->default(true),
-                    ])
-                    ->columns(2),
+                            ->disableOptionWhen(fn($value) => Slider::getUsedSliderNumber($value)),
+                        Toggle::make('is_active')
+                            ->label('Active')
+                            ->default(true)
+                            ->onColor('success')
+                            ->offColor('danger')
+                            ->onIcon('heroicon-m-check-badge')
+                            ->offIcon('heroicon-m-x-circle'),
+                    ])->columns(2)
+                    ->inlineLabel(),
+                Section::make()->schema([
+                    ViewField::make('preview')
+                        ->view('filament.forms.components.photo-preview'),
+                ])
             ]);
     }
 
@@ -81,40 +89,36 @@ class SliderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('slide_number')
-                    ->label('Posisi Slider')
+                TextColumn::make('No')
+                    ->rowIndex(),
+                TextColumn::make('slide_number')
+                    ->label('Slider Position')
+                    ->formatStateUsing(fn($state) => match ($state) {
+                        1 => 'SLIDER 1',
+                        2 => 'SLIDER 2',
+                        3 => 'SLIDER 3',
+                        4 => 'SLIDER 4',
+                        5 => 'SLIDER 5',
+                        6 => 'SLIDER 6',
+                        7 => 'SLIDER 7',
+                        8 => 'SLIDER 8',
+                        9 => 'SLIDER 9',
+                        10 => 'SLIDER 10',
+                        default => 'UNKNOWN'
+                    })
                     ->sortable(),
-
-                Tables\Columns\ImageColumn::make('photo.file_path')
-                    ->label('Foto')
+                ImageColumn::make('photo.file_path')
+                    ->label('Photo')
                     ->disk('public')
                     ->square(),
-
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Status Aktif')
-                    ->boolean()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Dibuat pada')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Diperbarui pada')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('is_active')
-                    ->label('Status')
-                    ->options([
-                        '1' => 'Aktif',
-                        '0' => 'Tidak Aktif',
-                    ]),
-            ])
+                ToggleColumn::make('is_active')
+                    ->label('Active')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->onIcon('heroicon-m-check-badge')
+                    ->offIcon('heroicon-m-x-circle')
+            ])->defaultSort('updated_at', 'desc')
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

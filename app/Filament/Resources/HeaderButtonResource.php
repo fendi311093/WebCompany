@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\HeaderButtonResource\Pages;
 use App\Filament\Resources\HeaderButtonResource\RelationManagers;
+use App\Filament\Resources\HeaderButtonResource\RelationManagers\DropdownMenuRelationManager;
 use App\Models\HeaderButton;
 use App\Models\Page;
 use Filament\Forms;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Set;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Support\Str;
 
 class HeaderButtonResource extends Resource
@@ -27,6 +29,8 @@ class HeaderButtonResource extends Resource
     protected static ?string $model = HeaderButton::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Website Settings';
+    protected static ?int $navigationSort = 22;
 
     public static function form(Form $form): Form
     {
@@ -45,17 +49,18 @@ class HeaderButtonResource extends Resource
                     Select::make('position')
                         ->rules(fn($record) => HeaderButton::ValidationRules($record)['position'])
                         ->options([
-                            1 => 'Nav Button 1',
-                            2 => 'Nav Button 2',
-                            3 => 'Nav Button 3',
-                            4 => 'Nav Button 4',
-                            5 => 'Nav Button 5',
-                            6 => 'Nav Button 6',
-                            7 => 'Nav Button 7',
-                            8 => 'Nav Button 8',
-                            9 => 'Nav Button 9',
-                            10 => 'Nav Button 10',
-                        ]),
+                            1 => 'NAV BUTTON 1',
+                            2 => 'NAV BUTTON 2',
+                            3 => 'NAV BUTTON 3',
+                            4 => 'NAV BUTTON 4',
+                            5 => 'NAV BUTTON 5',
+                            6 => 'NAV BUTTON 6',
+                            7 => 'NAV BUTTON 7',
+                            8 => 'NAV BUTTON 8',
+                            9 => 'NAV BUTTON 9',
+                            10 => 'NAV BUTTON 10',
+                        ])
+                        ->disableOptionWhen(fn($value) => HeaderButton::getUsedPosition($value)),
                     Select::make('page_id')
                         ->label('Select Page')
                         ->options(function () {
@@ -75,6 +80,10 @@ class HeaderButtonResource extends Resource
                     Toggle::make('is_active')
                         ->label('Link Active')
                         ->default(true)
+                        ->onIcon('heroicon-m-check-badge')
+                        ->offIcon('heroicon-m-x-circle')
+                        ->onColor('success')
+                        ->offColor('danger')
                         ->inline(false),
                 ])->columns(2)
             ]);
@@ -88,13 +97,35 @@ class HeaderButtonResource extends Resource
                     ->rowIndex(),
                 TextColumn::make('title')
                     ->searchable(),
-            ])
+                TextColumn::make('position')
+                    ->formatStateUsing(fn($state) => match ($state) {
+                        1 => 'NAV BUTTON 1',
+                        2 => 'NAV BUTTON 2',
+                        3 => 'NAV BUTTON 3',
+                        4 => 'NAV BUTTON 4',
+                        5 => 'NAV BUTTON 5',
+                        6 => 'NAV BUTTON 6',
+                        7 => 'NAV BUTTON 7',
+                        8 => 'NAV BUTTON 8',
+                        9 => 'NAV BUTTON 9',
+                        10 => 'NAV BUTTON 10',
+                        default => 'Unknown',
+                    }),
+                TextColumn::make('page_id')
+                    ->label('Page Contents')
+                    ->formatStateUsing(fn($state) => Page::find($state)->source->name_company),
+                ToggleColumn::make('is_active')
+                    ->label('Active')
+                    ->onIcon('heroicon-m-check-badge')
+                    ->offIcon('heroicon-m-x-circle')
+                    ->onColor('success')
+                    ->offColor('danger'),
+            ])->defaultSort('updated_at', 'desc')
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->modalAutofocus(false),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -108,6 +139,14 @@ class HeaderButtonResource extends Resource
     {
         return [
             'index' => Pages\ManageHeaderButtons::route('/'),
+            'edit' => Pages\EditHeaderButtons::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            DropdownMenuRelationManager::class,
         ];
     }
 }

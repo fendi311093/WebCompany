@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('header_buttons', function (Blueprint $table) {
+        Schema::create('dropdown_menus', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
-            $table->integer('position');
+            $table->foreignId('headerButton_id')->constrained('header_buttons')->cascadeOnDelete();
             $table->foreignId('page_id')->constrained('pages')->cascadeOnDelete();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('header_buttons');
+        Schema::dropIfExists('dropdown_menus');
     }
 };

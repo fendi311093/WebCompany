@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Validation\Rule;
 
 class HeaderButton extends Model
@@ -20,6 +22,16 @@ class HeaderButton extends Model
     public function Pages(): BelongsTo
     {
         return $this->belongsTo(Page::class, 'page_id', 'id');
+    }
+
+    public function dropdownMenus(): HasMany
+    {
+        return $this->hasMany(DropdownMenu::class, 'headerButton_id', 'id');
+    }
+
+    public static function getUsedPosition($value): bool
+    {
+        return Self::where('position', $value)->exists();
     }
 
     public static function ValidationRules($record = null): array

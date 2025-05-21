@@ -63,6 +63,7 @@ class AdminPanelProvider extends PanelProvider
                 'success' => Color::Emerald,
                 'warning' => Color::Orange,
             ])
-            ->spa();
+            ->spa()
+            ->sidebarCollapsibleOnDesktop();
     }
 }
