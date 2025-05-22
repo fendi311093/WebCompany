@@ -19,6 +19,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -30,9 +31,9 @@ class PageResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Page';
     protected static ?string $modelLabel = 'Page';
-    protected static ?string $pluralLabel = 'List Page';
+    protected static ?string $pluralLabel = 'List Pages';
     protected static ?string $navigationGroup = 'Website Settings';
-    protected static ?int $navigationSort = 23;
+    protected static ?int $navigationSort = 22;
 
     public static function form(Form $form): Form
     {
@@ -91,9 +92,9 @@ class PageResource extends Resource
                 TextColumn::make('source_type')
                     ->label('Source Type')
                     ->formatStateUsing(fn($state): string => match ($state) {
-                        'App\Models\Profil' => 'Profil',
-                        'App\Models\Customer' => 'Customer',
-                        'App\Models\Content' => 'Content',
+                        'App\Models\Profil' => 'PROFIL',
+                        'App\Models\Customer' => 'CUSTOMER',
+                        'App\Models\Content' => 'CONTENT',
                         default => $state ?? '-',
                     }),
                 TextColumn::make('source')
@@ -108,9 +109,12 @@ class PageResource extends Resource
                             default => '-',
                         };
                     }),
-                IconColumn::make('is_active')
-                    ->label('Status')
-                    ->boolean(),
+                ToggleColumn::make('is_active')
+                    ->label('Active')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->onIcon('heroicon-m-check-badge')
+                    ->offIcon('heroicon-m-x-circle')
             ])
             ->filters([
                 //

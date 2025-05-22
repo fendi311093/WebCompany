@@ -20,6 +20,11 @@ class PhotosResource extends Resource
     protected static ?string $model = Photo::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-camera';
+    protected static ?string $navigationLabel = 'Photos';
+    protected static ?string $modelLabel = 'Photos';
+    protected static ?string $pluralLabel = 'List Photos';
+    protected static ?string $navigationGroup = 'Media';
+    protected static ?int $navigationSort = 11;
 
     public static function form(Form $form): Form
     {

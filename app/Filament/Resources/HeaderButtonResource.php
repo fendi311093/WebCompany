@@ -28,9 +28,12 @@ class HeaderButtonResource extends Resource
 {
     protected static ?string $model = HeaderButton::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
     protected static ?string $navigationGroup = 'Website Settings';
-    protected static ?int $navigationSort = 22;
+    protected static ?string $navigationLabel = 'Navigation';
+    protected static ?string $modelLabel = 'Navigation';
+    protected static ?string $pluralLabel = 'List Navigations';
+    protected static ?int $navigationSort = 23;
 
     public static function form(Form $form): Form
     {
