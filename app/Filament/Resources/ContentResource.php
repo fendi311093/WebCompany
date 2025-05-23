@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -46,15 +47,7 @@ class ContentResource extends Resource
                     ->imageEditor()
                     ->required()
                     ->maxSize(11000)
-                    ->directory('contents')
-                    ->getUploadedFileNameForStorageUsing(
-                        function (TemporaryUploadedFile $file, $record, $get): string {
-                            $contentName = $get('title') ?? ($record?->title ?? 'Content');
-                            $saveName = \Illuminate\Support\Str::slug($contentName);
-                            $extension = $file->getClientOriginalExtension();
-                            return "{$saveName}." . $extension;
-                        }
-                    ),
+                    ->directory('contents'),
                 Toggle::make('is_active')
                     ->label('Is Active')
                     ->default(true)
@@ -73,7 +66,8 @@ class ContentResource extends Resource
                     ->rowIndex(),
                 TextColumn::make('title')
                     ->searchable(),
-                ImageColumn::make('photo')
+                ImageColumn::make('photo'),
+                ToggleColumn::make('is_active')
             ])
             ->filters([
                 //

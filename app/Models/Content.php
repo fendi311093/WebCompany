@@ -41,7 +41,7 @@ class Content extends Model
 
             // Jika hanya photo yang berubah
             if ($content->isDirty('photo')) {
-                self::resizePhotoIfNeeded($content);
+            self::resizePhotoIfNeeded($content);
                 return true;
             }
 
@@ -83,12 +83,12 @@ class Content extends Model
 
         // Jika ukuran file lebih dari 1MB, lakukan resize
         if (filesize($fileLocation) > $maxFileSize) {
-            $photo->scale(width: 800);
-            $quality = 80; // Ukuran kualitas foto
-            while (filesize($fileLocation) > $maxFileSize && $quality >= 30) {
-                $photo->save($fileLocation, quality: $quality);
-                clearstatcache(true, $fileLocation);
-                $quality -= 5;
+        $photo->scale(width: 800);
+        $quality = 80; // Ukuran kualitas foto
+        while (filesize($fileLocation) > $maxFileSize && $quality >= 30) {
+            $photo->save($fileLocation, quality: $quality);
+            clearstatcache(true, $fileLocation);
+            $quality -= 5;
             }
         } else {
             // Untuk file kecil, tetap simpan ulang untuk memastikan konsistensi

@@ -164,39 +164,46 @@
         <div class="max-w-screen-2xl px-4 xl:px-0 py-6 mx-auto">
             <div class="border border-neutral-800 rounded-xl">
                 <div class="p-4 lg:p-8 bg-gradient-to-bl from-neutral-800 via-neutral-900 to-neutral-950 rounded-xl">
-                    
                     <!-- Grid -->
-                    <div class="flex flex-wrap justify-center items-center gap-8">
-                        <!-- Card -->
-                        <a class="group flex flex-col focus:outline-hidden" href="#">
-                            <div class="relative aspect-[1/1] rounded-xl overflow-hidden">
-                                <img class="w-full h-full absolute top-0 start-0 object-cover group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out rounded-xl"
-                                    src="https://images.unsplash.com/photo-1542125387-c71274d94f0a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
-                                    alt="Blog Image">
-                            </div>
-                            <div class="mt-2">
-                                <h3
-                                    class="text-xl font-semibold text-gray-400 group-hover:text-gray-300 transition-colors">
-                                    Onsite
-                                </h3>
-                                <p class="mt-3 text-gray-200">
-                                    Optimize your in-person experience...
-                                </p>
-                                <p
-                                    class="mt-5 inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 group-hover:underline group-focus:underline font-medium dark:text-blue-500">
-                                    Read more
-                                    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24"
-                                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="m9 18 6-6-6-6" />
-                                    </svg>
-                                </p>
-                            </div>
-                        </a>
-                        <!-- End Card -->
+                    <div class="flex flex-wrap justify-center items-stretch gap-8">
+                        @if ($contents->count() > 0)
+                            @foreach ($contents as $content)
+                                <!-- Card -->
+                                <a class="group flex flex-col h-full focus:outline-hidden w-full sm:w-[calc(50%-2rem)] lg:w-[calc(33.333%-2rem)]"
+                                    href="#">
+                                    <div class="relative w-full h-64 rounded-xl overflow-hidden bg-neutral-800">
+                                        <img class="w-full h-full object-cover object-center bg-neutral-800 rounded-xl group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out"
+                                            src="{{ url('storage/' . $content->photo) }}" alt="{{ $content->title }}"
+                                            loading="lazy">
+                                    </div>
+                                    <div class="mt-4 flex flex-col h-full">
+                                        <h3
+                                            class="text-xl font-semibold text-gray-400 group-hover:text-gray-300 transition-colors line-clamp-2">
+                                            {{ $content->title }}
+                                        </h3>
+                                        <p class="mt-3 text-gray-200 line-clamp-3">
+                                            {{ $content->description }}
+                                        </p>
+                                        <p
+                                            class="mt-5 inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 group-hover:underline group-focus:underline font-medium dark:text-blue-500">
+                                            Read more
+                                            <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
+                                                width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="m9 18 6-6-6-6" />
+                                            </svg>
+                                        </p>
+                                    </div>
+                                </a>
+                                <!-- End Card -->
+                            @endforeach
+                        @else
+                            <div class="text-red-500">No content data!</div>
+                        @endif
                     </div>
                     <!-- End Grid -->
-                    
+
                 </div>
             </div>
         </div>
