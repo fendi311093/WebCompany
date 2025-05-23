@@ -159,7 +159,7 @@
     </div>
     <!-- End Clients -->
 
-    <!-- Stats -->
+    <!-- Main Content -->
     <div class="bg-neutral-900">
         <div class="max-w-screen-2xl px-4 xl:px-0 py-6 mx-auto">
             <div class="border border-neutral-800 rounded-xl">
@@ -174,7 +174,7 @@
                                     src="https://images.unsplash.com/photo-1542125387-c71274d94f0a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
                                     alt="Blog Image">
                             </div>
-                            <div class="mt-7">
+                            <div class="mt-2">
                                 <h3
                                     class="text-xl font-semibold text-gray-400 group-hover:text-gray-300 transition-colors">
                                     Onsite
@@ -201,5 +201,5 @@
             </div>
         </div>
     </div>
-    <!-- End Stats -->
+    <!-- End Main Content -->
 </div>

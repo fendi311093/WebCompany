@@ -33,7 +33,7 @@ class HeaderButtonResource extends Resource
     protected static ?string $navigationLabel = 'Navigation';
     protected static ?string $modelLabel = 'Navigation';
     protected static ?string $pluralLabel = 'List Navigations';
-    protected static ?int $navigationSort = 23;
+    protected static ?int $navigationSort = 24;
 
     public static function form(Form $form): Form
     {
