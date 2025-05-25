@@ -3,28 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Validation\Rule;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
 class Content extends Model
 {
-    protected $fillable = ['title', 'description', 'photo', 'is_active'];
+    protected $fillable = ['title', 'description', 'photo', 'is_active', 'is_page_active', 'style_view'];
 
     public function Pages()
     {
         return $this->morphMany(Page::class, 'source');
     }
 
-    public static function getValidationRules($record = null): array
+    public static function validateUniqueName($title, $ignoreId = null)
     {
-        return [
-            'title' => [
-                'required',
-                'max:100',
-                Rule::unique('contents', 'title')->ignore($record)
-            ],
-        ];
+        $normalizedValue = preg_replace('/\s+/', '', $title);
+        $query = static::whereRaw('REPLACE(title, " ", "") = ?', [$normalizedValue]);
+
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        return !$query->exists();
     }
 
     protected static function booted()
@@ -41,7 +41,7 @@ class Content extends Model
 
             // Jika hanya photo yang berubah
             if ($content->isDirty('photo')) {
-            self::resizePhotoIfNeeded($content);
+                self::resizePhotoIfNeeded($content);
                 return true;
             }
 
@@ -83,12 +83,12 @@ class Content extends Model
 
         // Jika ukuran file lebih dari 1MB, lakukan resize
         if (filesize($fileLocation) > $maxFileSize) {
-        $photo->scale(width: 800);
-        $quality = 80; // Ukuran kualitas foto
-        while (filesize($fileLocation) > $maxFileSize && $quality >= 30) {
-            $photo->save($fileLocation, quality: $quality);
-            clearstatcache(true, $fileLocation);
-            $quality -= 5;
+            $photo->scale(width: 800);
+            $quality = 80; // Ukuran kualitas foto
+            while (filesize($fileLocation) > $maxFileSize && $quality >= 30) {
+                $photo->save($fileLocation, quality: $quality);
+                clearstatcache(true, $fileLocation);
+                $quality -= 5;
             }
         } else {
             // Untuk file kecil, tetap simpan ulang untuk memastikan konsistensi

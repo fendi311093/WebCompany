@@ -8,6 +8,8 @@ use App\Models\Content;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -20,6 +22,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Illuminate\Support\Str;
 
 class ContentResource extends Resource
 {
@@ -36,26 +39,70 @@ class ContentResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('title')
-                    ->rules(fn($record) => Content::getValidationRules($record)['title'])
-                    ->dehydrateStateUsing(fn($state) => strtoupper($state)),
-                MarkdownEditor::make('description')
-                    ->required()
-                    ->disableToolbarButtons(['link', 'attachFiles']),
-                FileUpload::make('photo')
-                    ->image()
-                    ->imageEditor()
-                    ->required()
-                    ->maxSize(11000)
-                    ->directory('contents'),
-                Toggle::make('is_active')
-                    ->label('Is Active')
-                    ->default(true)
-                    ->onColor('info')
-                    ->offColor('danger')
-                    ->onIcon('heroicon-o-check-badge')
-                    ->offIcon('heroicon-o-x-circle')
-            ])->columns(1);
+                Section::make()->schema([
+                    TextInput::make('title')
+                        ->required()
+                        ->maxLength(50)
+                        ->unique(ignoreRecord: true)
+                        ->validationMessages([
+                            'unique' => fn($state): string => "The title content {$state} already exists"
+                        ])
+                        ->dehydrateStateUsing(fn($state) => strtoupper($state)),
+                    MarkdownEditor::make('description')
+                        ->required()
+                        ->disableToolbarButtons(['link', 'attachFiles']),
+                    FileUpload::make('photo')
+                        ->image()
+                        ->imageEditor()
+                        ->required()
+                        ->maxSize(11000)
+                        ->directory('contents'),
+                    Toggle::make('is_active')
+                        ->label('Content is Active')
+                        ->inline()
+                        ->default(true)
+                        ->onColor('info')
+                        ->offColor('danger')
+                        ->onIcon('heroicon-o-check-badge')
+                        ->offIcon('heroicon-o-x-circle'),
+                ])->columns(1)
+                    ->columnSpanFull()
+                    ->inlineLabel(),
+                Section::make()->schema([
+                    Toggle::make('is_page_active')
+                        ->label('Page is Active')
+                        ->default(false)
+                        ->onColor('info')
+                        ->offColor('danger')
+                        ->onIcon('heroicon-o-check-badge')
+                        ->offIcon('heroicon-o-x-circle')
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            if (!$state) {
+                                $set('style_view', 0);
+                            }
+                        }),
+                    Select::make('style_view')
+                        ->label('Style View')
+                        ->searchable()
+                        ->options([
+                            0 => 'No Style',
+                            1 => 'Style 1',
+                            2 => 'Style 2',
+                        ])
+                        ->visible(fn(callable $get) => $get('is_page_active') == true)
+                        ->required(fn(callable $get) => $get('is_page_active') == true)
+                        ->default(0)
+                        ->dehydrateStateUsing(function ($state, callable $get) {
+                            return $get('is_page_active') ? $state : 0;
+                        })
+                        ->validationMessages([
+                            'required' => 'Style View is required '
+                        ])
+                ])->columns(2)
+                    ->columnSpanFull()
+                    ->inlineLabel()
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -65,9 +112,15 @@ class ContentResource extends Resource
                 TextColumn::make('No')
                     ->rowIndex(),
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->searchable()
+                    ->description(fn(Content $record): string => Str::limit($record->description, 50)),
                 ImageColumn::make('photo'),
                 ToggleColumn::make('is_active')
+                    ->label('Content is Active')
+                    ->onIcon('heroicon-o-check-badge')
+                    ->offIcon('heroicon-o-x-circle')
+                    ->onColor('success')
+                    ->offColor('danger')
             ])
             ->filters([
                 //
