@@ -41,15 +41,17 @@ class ContentResource extends Resource
             ->schema([
                 Section::make()->schema([
                     TextInput::make('title')
-                        ->required()
-                        ->maxLength(50)
-                        ->unique(ignoreRecord: true)
-                        ->validationMessages([
-                            'unique' => fn($state): string => "The title content {$state} already exists"
-                        ])
+                        // ->unique(ignoreRecord: true)
+                        ->rules(fn($record) => Content::getValidationRules($record)['title'])
+                        ->validationMessages(Content::getValidationMessages()['title'])
+                        // ->validationMessages([
+                        //     'required' => 'The title content is required',
+                        //     'unique' => fn($state): string => "The title content {$state} already exists"
+                        // ])
                         ->dehydrateStateUsing(fn($state) => strtoupper($state)),
                     MarkdownEditor::make('description')
-                        ->required()
+                        ->rules(fn($record) => Content::getValidationRules($record)['description'])
+                        ->validationMessages(Content::getValidationMessages()['description'])
                         ->disableToolbarButtons(['link', 'attachFiles']),
                     FileUpload::make('photo')
                         ->image()

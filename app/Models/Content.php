@@ -15,7 +15,38 @@ class Content extends Model
         return $this->morphMany(Page::class, 'source');
     }
 
-    public static function validateUniqueName($title, $ignoreId = null)
+    public static function getValidationRules($record = null)
+    {
+        return [
+            'title' => [
+                'required',
+                'min:3',
+                'regex:/^[^\s].*$/',
+                'unique:contents,title,' . $record?->id,
+                'max:50',
+                fn($attribute, $value, $fail) => !self::validateUniqueName($value, $record?->id)
+                    ? $fail("The title content {$value} already exists ... !")
+                    : null,
+            ],
+            'description' => ['required'],
+        ];
+    }
+
+    public static function getValidationMessages()
+    {
+        return [
+            'title' => [
+                'required' => 'The title content is required ...!',
+                'min'   => 'The title content must be at least 3 characters ...!',
+                'max' => 'The title content must not exceed 50 characters ...!',
+                'regex' => 'The title content must not start with a space ...!',
+                'unique' => fn($state): string => "The title content {$state} already exists ... !"
+            ],
+            'description' => ['required' => 'The description content is required...!']
+        ];
+    }
+
+    protected static function validateUniqueName($title, $ignoreId = null)
     {
         $normalizedValue = preg_replace('/\s+/', '', $title);
         $query = static::whereRaw('REPLACE(title, " ", "") = ?', [$normalizedValue]);
