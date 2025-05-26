@@ -149,11 +149,4 @@ class ContentResource extends Resource
             'edit' => Pages\EditContent::route('/{record}/edit'),
         ];
     }
-
-    public static function getRecordSubNavigation(Page $page): array
-    {
-        return $page->generateNavigationItems([
-            Pages
-        ]);
-    }
 }
