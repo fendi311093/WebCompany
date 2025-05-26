@@ -66,4 +66,17 @@ class HeaderButton extends Model
             ]
         ];
     }
+
+    public static function getPageOptions(): array
+    {
+        return Page::with('source')->get()->mapWithKeys(function ($page) {
+            $label = match ($page->source_type) {
+                'App\Models\Profil' => $page->source->name_company,
+                'App\Models\Customer' => $page->source->name_customer,
+                'App\Models\Content' => $page->source->title,
+                default => 'Unknown'
+            };
+            return [$page->id => $label];
+        })->toArray();
+    }
 }

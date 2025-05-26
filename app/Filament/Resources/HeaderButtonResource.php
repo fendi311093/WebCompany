@@ -66,17 +66,7 @@ class HeaderButtonResource extends Resource
                         ->disableOptionWhen(fn($value) => HeaderButton::getUsedPosition($value)),
                     Select::make('page_id')
                         ->label('Select Page')
-                        ->options(function () {
-                            return Page::with('source')->get()->mapWithKeys(function ($page) {
-                                $label = match ($page->source_type) {
-                                    'App\Models\Profil' => $page->source->name_company,
-                                    'App\Models\Customer' => $page->source->name_customer,
-                                    'App\Models\Content' => $page->source->title,
-                                    default => 'Unknown'
-                                };
-                                return [$page->id => $label];
-                            });
-                        })
+                        ->options(HeaderButton::getPageOptions())
                         ->searchable()
                         ->preload()
                         ->required(),
@@ -116,7 +106,7 @@ class HeaderButtonResource extends Resource
                     }),
                 TextColumn::make('page_id')
                     ->label('Page Contents')
-                    ->formatStateUsing(fn($state) => Page::find($state)->source->name_company),
+                    ->formatStateUsing(fn($state) => HeaderButton::getPageOptions($state)),
                 ToggleColumn::make('is_active')
                     ->label('Active')
                     ->onIcon('heroicon-m-check-badge')

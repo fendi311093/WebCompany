@@ -52,28 +52,7 @@ class PageResource extends Resource
                     ->label('Select Page')
                     ->preload()
                     ->searchable()
-                    ->options(function (callable $get) {
-                        $sourceType = $get('source_type');
-
-                        // Get existing source_ids for the selected type
-                        $existingSourceId = Page::where('source_type', $sourceType)
-                            ->pluck('source_id')
-                            ->toArray();
-
-                        if ($sourceType === 'App\Models\Profil') {
-                            return Profil::whereNotIn('id', $existingSourceId)
-                                ->pluck('name_company', 'id');
-                        }
-                        if ($sourceType === 'App\Models\Customer') {
-                            return Customer::whereNotIn('id', $existingSourceId)
-                                ->pluck('name_customer', 'id');
-                        }
-                        if ($sourceType === 'App\Models\Content') {
-                            return Content::whereNotIn('id', $existingSourceId)
-                                ->pluck('title', 'id');
-                        }
-                        return [];
-                    })
+                    ->options(fn(callable $get) => Page::getSourceOptions($get('source_type')))
                     ->required()
                     ->visible(fn(callable $get) => filled($get('source_type'))),
                 Toggle::make('is_active')
