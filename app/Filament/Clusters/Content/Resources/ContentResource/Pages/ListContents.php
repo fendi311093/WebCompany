@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\ContentResource\Pages;
+namespace App\Filament\Clusters\Content\Resources\ContentResource\Pages;
 
-use App\Filament\Resources\ContentResource;
+use App\Filament\Clusters\Content\Resources\ContentResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ManageRecords;
+use Filament\Resources\Pages\ListRecords;
 
-class ManageContents extends ManageRecords
+class ListContents extends ListRecords
 {
     protected static string $resource = ContentResource::class;
 

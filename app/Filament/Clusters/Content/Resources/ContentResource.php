@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Clusters\Content\Resources;
 
-use App\Filament\Resources\ContentResource\Pages;
-use App\Filament\Resources\ContentResource\RelationManagers;
-use App\Models\Content;
+use App\Filament\Clusters\Content;
+use App\Filament\Clusters\Content\Resources\ContentResource\Pages;
+use App\Filament\Clusters\Content\Resources\ContentResource\RelationManagers;
+use App\Models\Content as ContentModel;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
@@ -13,7 +14,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
-use Filament\Resources\Pages\Page;
+use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
@@ -22,19 +23,18 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Illuminate\Support\Str;
 
 class ContentResource extends Resource
 {
-    protected static ?string $model = Content::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
+    protected static ?string $model = ContentModel::class;
+    protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
+    protected static ?string $cluster = Content::class;
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
     protected static ?string $navigationLabel = 'Contents';
-    protected static ?string $navigationGroup = 'Website Settings';
-    protected static ?int $navigationSort = 23;
     protected static ?string $modelLabel = 'Content';
-    protected static ?string $pluralLabel = 'List Contents';
+    protected static ?string $pluralModelLabel = 'List Contents';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -43,8 +43,8 @@ class ContentResource extends Resource
                 Section::make()->schema([
                     TextInput::make('title')
                         ->unique(ignoreRecord: true)
-                        ->rules(fn($record) => Content::getValidationRules($record)['title'])
-                        ->validationMessages(Content::getValidationMessages()['title'])
+                        ->rules(fn($record) => ContentModel::getValidationRules($record)['title'])
+                        ->validationMessages(ContentModel::getValidationMessages()['title'])
                         ->dehydrateStateUsing(fn($state) => strtoupper($state))
                         ->afterStateUpdated(fn($set, $state) => $set('slug', Str::slug($state)))
                         ->live(onBlur: true),
@@ -52,8 +52,8 @@ class ContentResource extends Resource
                         ->disabled()
                         ->dehydrated(),
                     MarkdownEditor::make('description')
-                        ->rules(fn($record) => Content::getValidationRules($record)['description'])
-                        ->validationMessages(Content::getValidationMessages()['description'])
+                        ->rules(fn($record) => ContentModel::getValidationRules($record)['description'])
+                        ->validationMessages(ContentModel::getValidationMessages()['description'])
                         ->disableToolbarButtons(['link', 'attachFiles']),
                     FileUpload::make('photo')
                         ->image()
@@ -117,7 +117,7 @@ class ContentResource extends Resource
                     ->rowIndex(),
                 TextColumn::make('title')
                     ->searchable()
-                    ->description(fn(Content $record): string => Str::limit($record->description, 50)),
+                    ->description(fn(ContentModel $record): string => Str::limit($record->description, 50)),
                 ImageColumn::make('photo'),
                 ToggleColumn::make('is_active')
                     ->label('Card is Active')
@@ -142,10 +142,18 @@ class ContentResource extends Resource
             ->emptyStateIcon('heroicon-o-computer-desktop');
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageContents::route('/'),
+            'index' => Pages\ListContents::route('/'),
+            'create' => Pages\CreateContent::route('/create'),
             'edit' => Pages\EditContent::route('/{record}/edit'),
         ];
     }
