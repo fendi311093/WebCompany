@@ -41,14 +41,15 @@ class ContentResource extends Resource
             ->schema([
                 Section::make()->schema([
                     TextInput::make('title')
-                        // ->unique(ignoreRecord: true)
+                        ->unique(ignoreRecord: true)
                         ->rules(fn($record) => Content::getValidationRules($record)['title'])
                         ->validationMessages(Content::getValidationMessages()['title'])
-                        // ->validationMessages([
-                        //     'required' => 'The title content is required',
-                        //     'unique' => fn($state): string => "The title content {$state} already exists"
-                        // ])
-                        ->dehydrateStateUsing(fn($state) => strtoupper($state)),
+                        ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                        ->afterStateUpdated(fn($set, $state) => $set('slug', Str::slug($state)))
+                        ->live(onBlur: true),
+                    TextInput::make('slug')
+                        ->disabled()
+                        ->dehydrated(),
                     MarkdownEditor::make('description')
                         ->rules(fn($record) => Content::getValidationRules($record)['description'])
                         ->validationMessages(Content::getValidationMessages()['description'])
@@ -60,7 +61,7 @@ class ContentResource extends Resource
                         ->maxSize(11000)
                         ->directory('contents'),
                     Toggle::make('is_active')
-                        ->label('Content is Active')
+                        ->label('Card is Active')
                         ->inline()
                         ->default(true)
                         ->onColor('info')
@@ -118,7 +119,7 @@ class ContentResource extends Resource
                     ->description(fn(Content $record): string => Str::limit($record->description, 50)),
                 ImageColumn::make('photo'),
                 ToggleColumn::make('is_active')
-                    ->label('Content is Active')
+                    ->label('Card is Active')
                     ->onIcon('heroicon-o-check-badge')
                     ->offIcon('heroicon-o-x-circle')
                     ->onColor('success')

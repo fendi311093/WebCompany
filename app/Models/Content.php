@@ -8,7 +8,7 @@ use Intervention\Image\ImageManager;
 
 class Content extends Model
 {
-    protected $fillable = ['title', 'description', 'photo', 'is_active', 'is_page_active', 'style_view'];
+    protected $fillable = ['title', 'slug', 'description', 'photo', 'is_active', 'is_page_active', 'style_view'];
 
     public function Pages()
     {
@@ -64,20 +64,7 @@ class Content extends Model
 
         // Event Listener
         static::saving(function ($content) {
-            // Cek apakah ada perubahan pada field yang diisi
-            if ($content->isDirty('title') || $content->isDirty('description') || $content->isDirty('is_active')) {
-                self::resizePhotoIfNeeded($content);
-                return true;
-            }
-
-            // Jika hanya photo yang berubah
-            if ($content->isDirty('photo')) {
-                self::resizePhotoIfNeeded($content);
-                return true;
-            }
-
-            // Jika tidak ada perubahan apapun
-            return false;
+            self::resizePhotoIfNeeded($content);
         });
 
         static::updating(function ($content) {
