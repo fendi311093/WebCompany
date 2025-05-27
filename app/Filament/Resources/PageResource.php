@@ -109,7 +109,10 @@ class PageResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn(Builder $query) => $query->with(['source']));
+            // ->modifyQueryUsing(fn(Builder $query) => $query->with(['source']))
+            ->emptyStateHeading('No Page Found')
+            ->emptyStateDescription('Create a new page to get started')
+            ->emptyStateIcon('heroicon-0-folder');
     }
 
     public static function getRelations(): array

@@ -52,19 +52,22 @@ class PageResource extends Resource
                     ->preload()
                     ->searchable()
                     ->options(function (callable $get) {
-                        $sourceType = $get('source_type');
-                        if ($sourceType === 'App\Models\Profil') {
-                            return Profil::all()->pluck('name_company', 'id');
+                        static $options = [];
+                        $type = $get('source_type');
+                        if (!isset($options[$type])) {
+                            $options[$type] = Page::getAllSourceIds($type);
                         }
-                        if ($sourceType === 'App\Models\Customer') {
-                            return Customer::all()->pluck('name_customer', 'id');
-                        }
-                        if ($sourceType === 'App\Models\Content') {
-                            return ModelsContent::all()->pluck('title', 'id');
-                        }
-                        return [];
+                        return $options[$type];
                     })
                     ->required()
+                    ->disableOptionWhen(function ($value, callable $get) {
+                        static $used = [];
+                        $type = $get('source_type');
+                        if (!isset($used[$type])) {
+                            $used[$type] = Page::getUsedSourceIds($type);
+                        }
+                        return in_array($value, $used[$type]);
+                    })
                     ->visible(fn(callable $get) => filled($get('source_type'))),
                 Toggle::make('is_active')
                     ->label('Page is Active')
@@ -120,7 +123,10 @@ class PageResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn(Builder $query) => $query->with(['source']));
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['source']))
+            ->emptyStateHeading('No Page Found')
+            ->emptyStateDescription('Create a new page to get started')
+            ->emptyStateIcon('heroicon-o-queue-list');
     }
 
     public static function getPages(): array
