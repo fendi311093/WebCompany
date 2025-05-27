@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
             $table->morphs('source');
+            $table->tinyInteger('style_view');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

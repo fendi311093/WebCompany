@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Page extends Model
 {
-    protected $fillable = ['source_type', 'source_id', 'is_active'];
+    protected $fillable = ['source_type', 'source_id', 'style_view', 'is_active'];
 
     public function source()
     {

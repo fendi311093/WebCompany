@@ -16,6 +16,7 @@ use Filament\Forms\Form;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
@@ -68,10 +69,24 @@ class PageResource extends Resource
                         }
                         return in_array($value, $used[$type]);
                     })
-                    ->visible(fn(callable $get) => filled($get('source_type'))),
+                    ->visible(fn(callable $get) => filled($get('source_type')))
+                    ->reactive(),
+                Select::make('style_view')
+                    ->label('Style Page')
+                    ->required()
+                    ->options([
+                        1 => 'Style 1',
+                        2 => 'Style 2'
+                    ])
+                    ->default(1)
+                    ->visible(fn(callable $get) => filled($get('source_id'))),
                 Toggle::make('is_active')
                     ->label('Page is Active')
-                    ->default(true),
+                    ->default(true)
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->onIcon('heroicon-o-check-badge')
+                    ->offIcon('heroicon-o-x-circle'),
             ])->columns(1)
             ->inlineLabel();
     }
@@ -101,6 +116,17 @@ class PageResource extends Resource
                             'App\Models\Content' => $record->source->title,
                             default => '-',
                         };
+                    }),
+                TextColumn::make('style_view')
+                    ->label('Style')
+                    ->badge()
+                    ->formatStateUsing(fn(Int $state): string => match ($state) {
+                        1 => 'Style 1',
+                        2 => 'Style 2',
+                    })
+                    ->color(fn(Int $state): string => match ($state) {
+                        1 => 'success',
+                        2 => 'primary'
                     }),
                 ToggleColumn::make('is_active')
                     ->label('Active')
