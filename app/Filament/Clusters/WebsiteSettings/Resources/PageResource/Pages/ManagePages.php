@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Clusters\Content\Resources\PageResource\Pages;
+namespace App\Filament\Clusters\WebsiteSettings\Resources\PageResource\Pages;
 
-use App\Filament\Clusters\Content\Resources\PageResource;
+use App\Filament\Clusters\WebsiteSettings\Resources\PageResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ManageRecords;
 

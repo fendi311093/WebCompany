@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Clusters\Content\Resources;
+namespace App\Filament\Clusters\WebsiteSettings\Resources;
 
-use App\Filament\Clusters\Content;
-use App\Filament\Clusters\Content\Resources\ContentResource\Pages;
-use App\Filament\Clusters\Content\Resources\ContentResource\RelationManagers;
-use App\Models\Content as ContentModel;
+use App\Filament\Clusters\WebsiteSettings;
+use App\Filament\Clusters\WebsiteSettings\Resources\ContentResource\Pages;
+use App\Filament\Clusters\WebsiteSettings\Resources\ContentResource\RelationManagers;
+use App\Models\Content;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
@@ -27,9 +27,9 @@ use Illuminate\Support\Str;
 
 class ContentResource extends Resource
 {
-    protected static ?string $model = ContentModel::class;
+    protected static ?string $model = Content::class;
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
-    protected static ?string $cluster = Content::class;
+    protected static ?string $cluster = WebsiteSettings::class;
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
     protected static ?string $navigationLabel = 'Contents';
     protected static ?string $modelLabel = 'Content';
@@ -43,8 +43,8 @@ class ContentResource extends Resource
                 Section::make()->schema([
                     TextInput::make('title')
                         ->unique(ignoreRecord: true)
-                        ->rules(fn($record) => ContentModel::getValidationRules($record)['title'])
-                        ->validationMessages(ContentModel::getValidationMessages()['title'])
+                        ->rules(fn($record) => Content::getValidationRules($record)['title'])
+                        ->validationMessages(Content::getValidationMessages()['title'])
                         ->dehydrateStateUsing(fn($state) => strtoupper($state))
                         ->afterStateUpdated(fn($set, $state) => $set('slug', Str::slug($state)))
                         ->live(onBlur: true),
@@ -52,8 +52,8 @@ class ContentResource extends Resource
                         ->disabled()
                         ->dehydrated(),
                     MarkdownEditor::make('description')
-                        ->rules(fn($record) => ContentModel::getValidationRules($record)['description'])
-                        ->validationMessages(ContentModel::getValidationMessages()['description'])
+                        ->rules(fn($record) => Content::getValidationRules($record)['description'])
+                        ->validationMessages(Content::getValidationMessages()['description'])
                         ->disableToolbarButtons(['link', 'attachFiles']),
                     FileUpload::make('photo')
                         ->image()
@@ -117,7 +117,7 @@ class ContentResource extends Resource
                     ->rowIndex(),
                 TextColumn::make('title')
                     ->searchable()
-                    ->description(fn(ContentModel $record): string => Str::limit($record->description, 50)),
+                    ->description(fn(Content $record): string => Str::limit($record->description, 50)),
                 ImageColumn::make('photo'),
                 ToggleColumn::make('is_active')
                     ->label('Card is Active')

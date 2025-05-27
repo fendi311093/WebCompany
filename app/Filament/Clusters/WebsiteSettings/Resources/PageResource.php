@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Clusters\Content\Resources;
+namespace App\Filament\Clusters\WebsiteSettings\Resources;
 
-use App\Filament\Clusters\Content;
-use App\Filament\Clusters\Content\Resources\PageResource\Pages;
-use App\Filament\Clusters\Content\Resources\PageResource\RelationManagers;
-use App\Models\Content as ModelsContent;
+use App\Filament\Clusters\WebsiteSettings;
+use App\Filament\Clusters\WebsiteSettings\Resources\PageResource\Pages;
+use App\Filament\Clusters\WebsiteSettings\Resources\PageResource\RelationManagers;
+use App\Models\Content;
 use App\Models\Customer;
 use App\Models\Page;
 use App\Models\Profil;
@@ -27,7 +27,7 @@ class PageResource extends Resource
 {
     protected static ?string $model = Page::class;
     protected static ?string $navigationIcon = 'heroicon-o-queue-list';
-    protected static ?string $cluster = Content::class;
+    protected static ?string $cluster = WebsiteSettings::class;
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
     protected static ?int $navigationSort = 2;
 
