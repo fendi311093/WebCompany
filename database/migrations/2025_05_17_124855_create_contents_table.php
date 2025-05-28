@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('contents', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('title')->unique();
+            $table->string('slug');
             $table->text('description');
             $table->string('photo');
             $table->boolean('is_active')->default(true);

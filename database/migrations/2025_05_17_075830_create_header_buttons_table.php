@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('header_buttons', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('slug')->unique();
-            $table->integer('position');
             $table->foreignId('page_id')->constrained('pages')->cascadeOnDelete();
-            $table->boolean('is_active')->default(true);
+            $table->tinyInteger('type_button');
+            $table->tinyInteger('position_header');
+            $table->tinyInteger('position_sub_header');
+            $table->string('name_button');
+            $table->boolean('is_active_button')->default(true);
+            $table->boolean('is_active_url')->default(false);
+            $table->string('url');
             $table->timestamps();
         });
     }

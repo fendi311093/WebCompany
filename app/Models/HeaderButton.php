@@ -11,12 +11,13 @@ use Illuminate\Validation\Rule;
 class HeaderButton extends Model
 {
     protected $fillable = [
-        'title',
-        'slug',
-        'position',
         'page_id',
+        'type_button',
+        'position_header',
+        'position_sub_header',
+        'name_button',
+        'url',
         'is_active',
-        'icon',
     ];
 
     public function Pages(): BelongsTo
@@ -24,47 +25,62 @@ class HeaderButton extends Model
         return $this->belongsTo(Page::class, 'page_id', 'id');
     }
 
-    public function dropdownMenus(): HasMany
-    {
-        return $this->hasMany(DropdownMenu::class, 'headerButton_id', 'id');
-    }
-
     public static function getUsedPosition($value): bool
     {
         return Self::where('position', $value)->exists();
     }
 
-    public static function ValidationRules($record = null): array
+    public static function getValidationRules($record = null): array
     {
         return [
-            'title' => [
-                'required',
-                'string',
-                'max:15',
-                'regex:/^[a-zA-Z\s]+$/',
-            ],
-            'slug' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('header_buttons', 'slug')->ignore($record),
-            ],
-            'position' => [
+            'type_button' => [
                 'required',
             ],
+            'page_id' => [
+                'required',
+            ],
+            'name_button' => [
+                'required',
+                'min:3',
+                'regex:/^[^\s].*$/',
+                'max:30',
+                'unique:header_buttons,name_button,' . $record?->id,
+                fn($attribute, $value, $fail) => !self::validateUniqueName($value, $record?->id)
+                    ? $fail("The name button {$value} already exists ... !")
+                    : null,
+            ]
         ];
     }
 
     public static function getValidationMessages(): array
     {
         return [
-            'title' => [
-                'required' => 'The title field is required.',
-                'string' => 'The title field must be a string.',
-                'max' => 'The title field must be less than 15 characters.',
-                'regex' => 'The title field must contain only letters and spaces.',
+            'type_button' => [
+                'required' => 'The type button is required, Please select type button',
+            ],
+            'page_id' => [
+                'required' => 'The page is required, Please select page'
+            ],
+            'name_button' => [
+                'required' => 'The name button is required, Please enter name button',
+                'min' => 'The name button must be at least 3 characters',
+                'regex' => 'The name button must not start with a space',
+                'max' => 'The name button must not exceed 30 characters',
+                'unique' => fn($state): string => "The name {$state} already exists"
             ]
         ];
+    }
+
+    protected static function validateUniqueName($name, $ignoreId = null)
+    {
+        $normalizedValue = preg_replace('/\s+/', '', $name);
+        $query = static::whereRaw('REPLACE(name_button, " ", "") = ?', [$normalizedValue]);
+
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        return !$query->exists();
     }
 
     public static function getPageOptions(): array
