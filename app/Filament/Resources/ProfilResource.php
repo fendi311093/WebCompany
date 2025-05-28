@@ -31,6 +31,7 @@ class ProfilResource extends Resource
     protected static ?string $navigationLabel = 'Profil Company';
     protected static ?string $modelLabel = 'Profil';
     protected static ?string $pluralLabel = 'Profil Company';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

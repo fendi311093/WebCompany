@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Clusters\WebsiteSettings\Resources;
 
-use App\Filament\Resources\SliderResource\Pages;
+use App\Filament\Clusters\WebsiteSettings\Resources\SliderResource\Pages;
+use App\Filament\Clusters\WebsiteSettings;
 use App\Models\Photo;
 use App\Models\Slider;
 use Filament\Forms;
@@ -11,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;
+use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
@@ -27,8 +29,10 @@ class SliderResource extends Resource
     protected static ?string $navigationLabel = 'Slider';
     protected static ?string $modelLabel = 'Slider';
     protected static ?string $pluralLabel = 'List Sliders';
-    protected static ?string $navigationGroup = 'Website Settings';
-    protected static ?int $navigationSort = 21;
+    protected static ?string $cluster = WebsiteSettings::class;
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {

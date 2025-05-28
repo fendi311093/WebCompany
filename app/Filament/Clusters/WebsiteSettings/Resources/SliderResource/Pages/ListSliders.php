@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\SliderResource\Pages;
+namespace App\Filament\Clusters\WebsiteSettings\Resources\SliderResource\Pages;
 
-use App\Filament\Resources\SliderResource;
+use App\Filament\Clusters\WebsiteSettings\Resources\SliderResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
