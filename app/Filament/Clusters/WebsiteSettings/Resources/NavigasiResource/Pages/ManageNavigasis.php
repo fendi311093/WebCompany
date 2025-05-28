@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Clusters\Content\Resources\NavigasiResource\Pages;
+namespace App\Filament\Clusters\WebsiteSettings\Resources\NavigasiResource\Pages;
 
-use App\Filament\Clusters\Content\Resources\NavigasiResource;
+use App\Filament\Clusters\WebsiteSettings\Resources\NavigasiResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ManageRecords;
 

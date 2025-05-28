@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Clusters\Content\Resources;
+namespace App\Filament\Clusters\WebsiteSettings\Resources;
 
-use App\Filament\Clusters\Content;
-use App\Filament\Clusters\Content\Resources\NavigasiResource\Pages;
-use App\Filament\Clusters\Content\Resources\NavigasiResource\RelationManagers;
+use App\Filament\Clusters\WebsiteSettings;
+use App\Filament\Clusters\WebsiteSettings\Resources\NavigasiResource\Pages;
+use App\Filament\Clusters\WebsiteSettings\Resources\NavigasiResource\RelationManagers;
 use App\Models\HeaderButton;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -21,7 +21,7 @@ class NavigasiResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
 
-    protected static ?string $cluster = Content::class;
+    protected static ?string $cluster = WebsiteSettings::class;
 
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
