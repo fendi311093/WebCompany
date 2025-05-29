@@ -63,6 +63,7 @@ class NavigasiResource extends Resource
                         ->label('Position Header')
                         ->required()
                         ->default(0)
+                        ->disableOptionWhen(fn($value) => in_array($value, HeaderButton::getUsedPositionHeader()))
                         ->options([
                             0 => 'None',
                             1 => 'Navigation 1',
@@ -81,6 +82,7 @@ class NavigasiResource extends Resource
                         ->label('Position Sub Header')
                         ->required()
                         ->default(0)
+                        ->disableOptionWhen(fn($value) => in_array($value, HeaderButton::getUsedPositionSubHeader()))
                         ->options([
                             0 => 'None',
                             1 => 'Sub Navigation 1',
@@ -101,7 +103,7 @@ class NavigasiResource extends Resource
                     ->icon('heroicon-m-information-circle')
                     ->iconColor('success')
                     ->schema([
-                        Grid::make(2)->schema([
+                        Grid::make(3)->schema([
                             Select::make('page_id')
                                 ->label('Page')
                                 ->placeholder('Please select page')
@@ -115,17 +117,22 @@ class NavigasiResource extends Resource
                                 ->label('Name Button')
                                 ->rules(fn($record) => HeaderButton::getValidationRules($record)['name_button'])
                                 ->validationMessages(HeaderButton::getValidationMessages()['name_button'])
-                                ->dehydrateStateUsing(fn($state) => strtoupper($state)),
-                            Toggle::make('is_active_button')
-                                ->label('Active Button')
-                                ->default(true)
-                                ->onColor('primary')
-                                ->offColor('danger')
-                                ->onIcon('heroicon-o-check-badge')
-                                ->offIcon('heroicon-o-x-circle')
-                                ->inlineLabel(),
+                                ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                                ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state)))
+                                ->live(onBlur: true),
+                            TextInput::make('slug')
+                                ->disabled()
+                                ->dehydrated(),
                         ]),
-                        Grid::make()->schema([
+                        Toggle::make('is_active_button')
+                            ->label('Active Button')
+                            ->default(true)
+                            ->onColor('primary')
+                            ->offColor('danger')
+                            ->onIcon('heroicon-o-check-badge')
+                            ->offIcon('heroicon-o-x-circle')
+                            ->columns(1),
+                        Grid::make(2)->schema([
                             Toggle::make('is_active_url')
                                 ->label('Adding URL')
                                 ->default(false)
@@ -146,7 +153,8 @@ class NavigasiResource extends Resource
                                 ->suffixIcon('heroicon-m-globe-alt')
                                 ->visible(fn(callable $get) => $get('is_active_url') == true)
                                 ->required(fn(callable $get) => $get('is_active_url') == true),
-                        ])->inlineLabel()
+                        ])
+                            ->columns(1),
                     ])
             ]);
     }

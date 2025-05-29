@@ -17,7 +17,9 @@ return new class extends Migration
             $table->tinyInteger('type_button');
             $table->tinyInteger('position_header')->default(0);
             $table->tinyInteger('position_sub_header')->default(0);
+            $table->string('parent_navigation')->nullable();
             $table->string('name_button')->unique();
+            $table->string('slug');
             $table->boolean('is_active_button')->default(true);
             $table->boolean('is_active_url')->default(false);
             $table->string('url')->nullable();

@@ -15,7 +15,9 @@ class HeaderButton extends Model
         'type_button',
         'position_header',
         'position_sub_header',
+        'parent_navigation',
         'name_button',
+        'slug',
         'url',
         'is_active_url',
     ];
@@ -138,5 +140,15 @@ class HeaderButton extends Model
     public static function getUsedPageIds(): array
     {
         return Self::pluck('page_id')->toArray();
+    }
+
+    public static function getUsedPositionHeader(): array
+    {
+        return Self::pluck('position_header')->toArray();
+    }
+
+    public static function getUsedPositionSubHeader(): array
+    {
+        return Self::pluck('position_sub_header')->toArray();
     }
 }

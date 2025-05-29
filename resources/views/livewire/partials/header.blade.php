@@ -52,7 +52,7 @@
                 @foreach ($headerButtons as $button)
                     <a wire:navigate href="{{ url('/' . $button->slug) }}"
                         class="{{ request()->is($button->slug) ? 'group inline-flex items-center gap-x-2 py-2 px-3 bg-[#ff0] font-medium text-sm text-neutral-800 rounded-full focus:outline-hidden' : 'pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300' }}">
-                        {{ $button->title }}
+                        {{ $button->name_button }}
                     </a>
                 @endforeach
 
