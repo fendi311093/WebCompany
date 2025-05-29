@@ -16,8 +16,10 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -51,9 +53,9 @@ class NavigasiResource extends Resource
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set) {
                             if ($state == 1) {
-                                $set('position_sub_header', 0);
+                                $set('position_sub_header', 0); // Sub header direset
                             } elseif ($state == 2) {
-                                $set('position_header', 0);
+                                $set('position_header', 0); // Header direset
                             }
                         }),
                     Select::make('position_header')
@@ -73,8 +75,7 @@ class NavigasiResource extends Resource
                             9 => 'Navigation 9',
                             10 => 'Navigation 10',
                         ])
-                        ->visible(fn(callable $get) => $get('type_button') == 1)
-                        ->dehydrated(true),
+                        ->visible(fn(callable $get) => $get('type_button') == 1),
                     Select::make('position_sub_header')
                         ->label('Position Sub Header')
                         ->required()
@@ -92,8 +93,7 @@ class NavigasiResource extends Resource
                             9 => 'Sub Navigation 9',
                             10 => 'Sub Navigation 10',
                         ])
-                        ->visible(fn(callable $get) => $get('type_button') == 2)
-                        ->dehydrated(true),
+                        ->visible(fn(callable $get) => $get('type_button') == 2),
                 ])->columns(2),
                 Section::make()
                     ->description('Turn On adding URL to link to other website addresses')
@@ -142,12 +142,7 @@ class NavigasiResource extends Resource
                                 ->url()
                                 ->suffixIcon('heroicon-m-globe-alt')
                                 ->visible(fn(callable $get) => $get('is_active_url') == true)
-                                ->required(fn(callable $get) => $get('is_active_url') == true)
-                                ->default(null)
-                                ->dehydrateStateUsing(function ($state, callable $get) {
-                                    return $get('is_active_url') ? $state : null;
-                                })
-                                ->dehydrated(true)
+                                ->required(fn(callable $get) => $get('is_active_url') == true),
                         ])->inlineLabel()
                     ])
             ]);
@@ -157,7 +152,20 @@ class NavigasiResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('No')
+                    ->rowIndex(),
                 TextColumn::make('type_button')
+                    ->label('Type Nav')
+                    ->badge()
+                    ->color(fn($record) => match ($record->type_button) {
+                        1 => 'primary',
+                        2 => 'success'
+                    })
+                    ->formatStateUsing(fn($record) => match ($record->type_button) {
+                        1 => 'Top Header',
+                        2 => 'Sub Header'
+                    }),
+                ToggleColumn::make('is_active_url'),
             ])
             ->filters([
                 //

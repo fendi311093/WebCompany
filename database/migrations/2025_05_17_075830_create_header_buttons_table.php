@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('page_id')->constrained('pages')->cascadeOnDelete();
             $table->tinyInteger('type_button');
-            $table->tinyInteger('position_header');
-            $table->tinyInteger('position_sub_header');
-            $table->string('name_button');
+            $table->tinyInteger('position_header')->default(0);
+            $table->tinyInteger('position_sub_header')->default(0);
+            $table->string('name_button')->unique();
             $table->boolean('is_active_button')->default(true);
             $table->boolean('is_active_url')->default(false);
-            $table->string('url');
+            $table->string('url')->nullable();
             $table->timestamps();
         });
     }

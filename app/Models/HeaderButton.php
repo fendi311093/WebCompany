@@ -30,6 +30,10 @@ class HeaderButton extends Model
             } elseif ($model->type_button == 2) {
                 $model->position_header = 0;
             }
+
+            if (empty($model['is_active_url']) || $model['is_active_url'] == 0) {
+                $model['url'] = null;
+            }
         });
 
         static::updating(function ($model) {
@@ -37,6 +41,10 @@ class HeaderButton extends Model
                 $model->position_sub_header = 0;
             } elseif ($model->type_button == 2) {
                 $model->position_header = 0;
+            }
+
+            if (empty($model['is_active_url']) || $model['is_active_url'] == 0) {
+                $model['url'] = null;
             }
         });
     }
