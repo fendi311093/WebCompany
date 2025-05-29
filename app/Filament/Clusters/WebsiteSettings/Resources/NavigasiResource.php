@@ -17,6 +17,7 @@ use Filament\Forms\Form;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -47,9 +48,17 @@ class NavigasiResource extends Resource
                             1 => 'Top Header',
                             2 => 'Sub Header'
                         ])
-                        ->reactive(),
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            if ($state == 1) {
+                                $set('position_sub_header', 0);
+                            } elseif ($state == 2) {
+                                $set('position_header', 0);
+                            }
+                        }),
                     Select::make('position_header')
                         ->label('Position Header')
+                        ->required()
                         ->default(0)
                         ->options([
                             0 => 'None',
@@ -64,9 +73,11 @@ class NavigasiResource extends Resource
                             9 => 'Navigation 9',
                             10 => 'Navigation 10',
                         ])
-                        ->visible(fn(callable $get) => $get('type_button') == 1),
+                        ->visible(fn(callable $get) => $get('type_button') == 1)
+                        ->dehydrated(true),
                     Select::make('position_sub_header')
                         ->label('Position Sub Header')
+                        ->required()
                         ->default(0)
                         ->options([
                             0 => 'None',
@@ -81,7 +92,8 @@ class NavigasiResource extends Resource
                             9 => 'Sub Navigation 9',
                             10 => 'Sub Navigation 10',
                         ])
-                        ->visible(fn(callable $get) => $get('type_button') == 2),
+                        ->visible(fn(callable $get) => $get('type_button') == 2)
+                        ->dehydrated(true),
                 ])->columns(2),
                 Section::make()
                     ->description('Turn On adding URL to link to other website addresses')
@@ -119,13 +131,23 @@ class NavigasiResource extends Resource
                                 ->offColor('danger')
                                 ->onIcon('heroicon-o-check-badge')
                                 ->offIcon('heroicon-o-x-circle')
-                                ->reactive(),
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $set) {
+                                    if (!$state) {
+                                        $set('url', null);
+                                    }
+                                }),
                             TextInput::make('url')
                                 ->label('URL')
-                                ->default('https://example.com')
                                 ->url()
                                 ->suffixIcon('heroicon-m-globe-alt')
                                 ->visible(fn(callable $get) => $get('is_active_url') == true)
+                                ->required(fn(callable $get) => $get('is_active_url') == true)
+                                ->default(null)
+                                ->dehydrateStateUsing(function ($state, callable $get) {
+                                    return $get('is_active_url') ? $state : null;
+                                })
+                                ->dehydrated(true)
                         ])->inlineLabel()
                     ])
             ]);
@@ -135,7 +157,7 @@ class NavigasiResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('type_button')
             ])
             ->filters([
                 //

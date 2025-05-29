@@ -17,8 +17,29 @@ class HeaderButton extends Model
         'position_sub_header',
         'name_button',
         'url',
-        'is_active',
+        'is_active_url',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if ($model->type_button == 1) {
+                $model->position_sub_header = 0;
+            } elseif ($model->type_button == 2) {
+                $model->position_header = 0;
+            }
+        });
+
+        static::updating(function ($model) {
+            if ($model->type_button == 1) {
+                $model->position_sub_header = 0;
+            } elseif ($model->type_button == 2) {
+                $model->position_header = 0;
+            }
+        });
+    }
 
     public function Pages(): BelongsTo
     {
