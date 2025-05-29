@@ -18,6 +18,7 @@ use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
@@ -108,7 +109,8 @@ class NavigasiResource extends Resource
                                 ->validationMessages(HeaderButton::getValidationMessages()['page_id'])
                                 ->options(HeaderButton::getPageOptions())
                                 ->searchable()
-                                ->preload(),
+                                ->preload()
+                                ->disableOptionWhen(fn($value) => in_array($value, HeaderButton::getUsedPageIds())),
                             TextInput::make('name_button')
                                 ->label('Name Button')
                                 ->rules(fn($record) => HeaderButton::getValidationRules($record)['name_button'])
@@ -139,7 +141,8 @@ class NavigasiResource extends Resource
                                 }),
                             TextInput::make('url')
                                 ->label('URL')
-                                ->url()
+                                ->rules(fn($record) => HeaderButton::getValidationRules($record)['url'])
+                                ->validationMessages(HeaderButton::getValidationMessages()['url'])
                                 ->suffixIcon('heroicon-m-globe-alt')
                                 ->visible(fn(callable $get) => $get('is_active_url') == true)
                                 ->required(fn(callable $get) => $get('is_active_url') == true),
@@ -165,7 +168,58 @@ class NavigasiResource extends Resource
                         1 => 'Top Header',
                         2 => 'Sub Header'
                     }),
-                ToggleColumn::make('is_active_url'),
+                TextColumn::make('name_button')
+                    ->label('Name Nav'),
+                TextColumn::make('position_header')
+                    ->label('Header')
+                    ->formatStateUsing(
+                        fn($record) => $record->type_button == 1
+                            ? match ($record->position_header) {
+                                0 => 'None',
+                                1 => 'Position 1',
+                                2 => 'Position 2',
+                                3 => 'Position 3',
+                                4 => 'Position 4',
+                                5 => 'Position 5',
+                                6 => 'Position 6',
+                                7 => 'Position 7',
+                                8 => 'Position 8',
+                                9 => 'Position 9',
+                                10 => 'Position 10',
+                                default => '-',
+                            }
+                            : '-'
+                    ),
+
+                TextColumn::make('position_sub_header')
+                    ->label('Sub Header')
+                    ->formatStateUsing(
+                        fn($record) => $record->type_button == 2
+                            ? match ($record->position_sub_header) {
+                                0 => 'None',
+                                1 => 'Position 1',
+                                2 => 'Position 2',
+                                3 => 'Position 3',
+                                4 => 'Position 4',
+                                5 => 'Position 5',
+                                6 => 'Position 6',
+                                7 => 'Position 7',
+                                8 => 'Position 8',
+                                9 => 'Position 9',
+                                10 => 'Position 10',
+                                default => '-',
+                            }
+                            : '-'
+                    ),
+                ToggleColumn::make('is_active_button')
+                    ->label('Active Nav')
+                    ->onColor('primary')
+                    ->offColor('danger')
+                    ->onIcon('heroicon-o-check-badge')
+                    ->offIcon('heroicon-o-x-circle'),
+                IconColumn::make('is_active_url')
+                    ->label('Active URL')
+                    ->boolean()
             ])
             ->filters([
                 //

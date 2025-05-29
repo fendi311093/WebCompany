@@ -77,6 +77,11 @@ class HeaderButton extends Model
                 fn($attribute, $value, $fail) => !self::validateUniqueName($value, $record?->id)
                     ? $fail("The name button {$value} already exists ... !")
                     : null,
+            ],
+            'url' => [
+                'required',
+                'url',
+                'max:255',
             ]
         ];
     }
@@ -85,7 +90,7 @@ class HeaderButton extends Model
     {
         return [
             'type_button' => [
-                'required' => 'The type button is required, Please select type button',
+                'required' => 'The type button is required, Please select type navigation',
             ],
             'page_id' => [
                 'required' => 'The page is required, Please select page'
@@ -96,6 +101,11 @@ class HeaderButton extends Model
                 'regex' => 'The name button must not start with a space',
                 'max' => 'The name button must not exceed 30 characters',
                 'unique' => fn($state): string => "The name {$state} already exists"
+            ],
+            'url' => [
+                'required' => 'The URL is required. Please enter URL',
+                'url' => 'The URL format is invalid',
+                'max' => "The URL must not exceed 255 characters"
             ]
         ];
     }
@@ -123,5 +133,10 @@ class HeaderButton extends Model
             };
             return [$page->id => $label];
         })->toArray();
+    }
+
+    public static function getUsedPageIds(): array
+    {
+        return Self::pluck('page_id')->toArray();
     }
 }
