@@ -77,7 +77,7 @@ class PageResource extends Resource
                         1 => 'Style 1',
                         2 => 'Style 2'
                     ])
-                    ->default(1)
+                    ->default(1),
                 Toggle::make('is_active')
                     ->label('Page is Active')
                     ->default(true)
