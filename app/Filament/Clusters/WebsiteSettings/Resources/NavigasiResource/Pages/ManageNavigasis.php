@@ -16,16 +16,4 @@ class ManageNavigasis extends ManageRecords
             Actions\CreateAction::make(),
         ];
     }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        if ($data['type_button'] == 1) {
-            $data['position_sub_header'] = 0;
-        }
-        if ($data['type_button'] == 2) {
-            $data['position_header'] = 0;
-        }
-
-        return $data;
-    }
 }

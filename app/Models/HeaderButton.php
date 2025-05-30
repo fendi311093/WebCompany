@@ -126,9 +126,9 @@ class HeaderButton extends Model
     {
         return Page::with('source')->get()->mapWithKeys(function ($page) {
             $label = match ($page->source_type) {
-                'App\Models\Profil' => $page->source->name_company,
-                'App\Models\Customer' => $page->source->name_customer,
-                'App\Models\Content' => $page->source->title,
+                'App\Models\Profil' => 'Profil - ' . $page->source->name_company,
+                'App\Models\Customer' => 'Customer - ' . $page->source->name_customer,
+                'App\Models\Content' => 'Content - ' . $page->source->title,
                 default => 'Unknown'
             };
             return [$page->id => $label];
@@ -140,29 +140,18 @@ class HeaderButton extends Model
         return Self::pluck('page_id')->toArray();
     }
 
-    public function scopeSearchByPageTitle(Builder $query, string $search): Builder
+    public function getPageLabelAttribute() // atribut aksesori 
     {
-        $pageOptions = static::getPageOptions();
-        $pageIds = collect($pageOptions)
-            ->filter(fn($title) => str_contains(strtolower($title), strtolower($search)))
-            ->keys()
-            ->toArray();
-
-        return $query->whereIn('page_id', $pageIds);
-    }
-
-    public function getPageLabelAttribute()
-    {
-        if ($this->Pages && $this->Pages->source) {
-            switch ($this->Pages->source_type) {
-                case 'App\\Models\\Profil':
-                    return $this->Pages->source->name_company;
-                case 'App\\Models\\Customer':
-                    return $this->Pages->source->name_customer;
-                case 'App\\Models\\Content':
-                    return $this->Pages->source->title;
-            }
+        if (!$this->Pages) {
+            return '-';
         }
-        return 'Unknown Page';
+
+        $map = [
+            'App\\Models\\Profil'   => $this->Pages->source->name_company ?? '-',
+            'App\\Models\\Customer' => $this->Pages->source->name_customer ?? '-',
+            'App\\Models\\Content'  => $this->Pages->source->title ?? '-',
+        ];
+
+        return $map[$this->Pages->source_type] ?? '-';
     }
 }

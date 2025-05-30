@@ -6,6 +6,7 @@ use App\Filament\Clusters\WebsiteSettings;
 use App\Filament\Clusters\WebsiteSettings\Resources\NavigasiResource\Pages;
 use App\Filament\Clusters\WebsiteSettings\Resources\NavigasiResource\RelationManagers;
 use App\Models\HeaderButton;
+use App\Models\Page;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
@@ -48,6 +49,7 @@ class NavigasiResource extends Resource
                 Section::make()->schema([
                     TextInput::make('name_button')
                         ->label('Name Button')
+                        ->unique(ignoreRecord: true)
                         ->rules(fn($record) => HeaderButton::getValidationRules($record)['name_button'])
                         ->validationMessages(HeaderButton::getValidationMessages()['name_button'])
                         ->dehydrateStateUsing(fn($state) => strtoupper($state))
@@ -87,7 +89,54 @@ class NavigasiResource extends Resource
                             ->options($pageOptions)
                             ->searchable()
                             ->preload()
-                            ->disableOptionWhen(fn($value) => in_array($value, $usePageIds)),
+                            ->disableOptionWhen(fn($value) => in_array($value, $usePageIds))
+                            ->createOptionForm([
+                                Select::make('source_type')
+                                    ->label('Source Type')
+                                    ->options([
+                                        'App\Models\Profil' => 'Profil',
+                                        'App\Models\Customer' => 'Customer',
+                                        'App\Models\Content' => 'Content',
+                                    ])
+                                    ->required(),
+                                Select::make('source_id')
+                                    ->label('Select Page')
+                                    ->preload()
+                                    ->searchable()
+                                    ->options(function (callable $get) {
+                                        static $options = [];
+                                        $type = $get('source_type');
+                                        if (!isset($options[$type])) {
+                                            $options[$type] = Page::getAllSourceIds($type);
+                                        }
+                                        return $options[$type];
+                                    })
+                                    ->required()
+                                    ->disableOptionWhen(function ($value, callable $get) {
+                                        static $used = [];
+                                        $type = $get('source_type');
+                                        if (!isset($used[$type])) {
+                                            $used[$type] = Page::getUsedSourceIds($type);
+                                        }
+                                        return in_array($value, $used[$type]);
+                                    }),
+                                Select::make('style_view')
+                                    ->label('Style Page')
+                                    ->required()
+                                    ->options([
+                                        1 => 'Style 1',
+                                        2 => 'Style 2'
+                                    ])
+                                    ->default(1),
+                                Toggle::make('is_active')
+                                    ->label('Page is Active')
+                                    ->default(true)
+                                    ->onColor('success')
+                                    ->offColor('danger')
+                                    ->onIcon('heroicon-o-check-badge')
+                                    ->offIcon('heroicon-o-x-circle'),
+                            ])
+                            ->createOptionUsing(fn(array $data) => Page::createPageFromNavigation($data)),
                         Toggle::make('is_active_button')
                             ->label('Active Button')
                             ->default(true)
@@ -131,7 +180,8 @@ class NavigasiResource extends Resource
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
-        return parent::getEloquentQuery()->with('Pages.source');
+        // mengambl data header button beserta data relasi Pages
+        return parent::getEloquentQuery()->with('Pages');
     }
 
     public static function table(Table $table): Table
@@ -146,10 +196,8 @@ class NavigasiResource extends Resource
                     ->sortable(),
                 TextColumn::make('position')
                     ->formatStateUsing(fn($state) => 'Position' . ' - ' . $state),
-                TextColumn::make('page_id')
-                    ->label('Page')
-                    ->formatStateUsing(fn($state, $record) => $record->page_label)
-                    ->searchable(query: fn($query, $search) => $query->searchByPageTitle($search)),
+                TextColumn::make('page_label') // atribut aksesori
+                    ->label('Page'),
                 IconColumn::make('is_active_url')
                     ->label('URL')
                     ->boolean(),
@@ -164,7 +212,9 @@ class NavigasiResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->slideOver()
+                    ->modalAutofocus(false),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

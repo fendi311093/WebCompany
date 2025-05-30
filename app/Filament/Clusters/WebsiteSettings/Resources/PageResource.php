@@ -69,7 +69,6 @@ class PageResource extends Resource
                         }
                         return in_array($value, $used[$type]);
                     })
-                    ->visible(fn(callable $get) => filled($get('source_type')))
                     ->reactive(),
                 Select::make('style_view')
                     ->label('Style Page')
@@ -79,7 +78,6 @@ class PageResource extends Resource
                         2 => 'Style 2'
                     ])
                     ->default(1)
-                    ->visible(fn(callable $get) => filled($get('source_id'))),
                 Toggle::make('is_active')
                     ->label('Page is Active')
                     ->default(true)

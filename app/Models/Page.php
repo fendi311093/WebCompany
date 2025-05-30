@@ -44,4 +44,15 @@ class Page extends Model
     {
         return Page::where('source_type', $sourceType)->pluck('source_id')->toArray();
     }
+
+    public static function createPageFromNavigation(array $data)
+    {
+        $page = self::create([
+            'source_type' => $data['source_type'],
+            'source_id' => $data['source_id'],
+            'style_view' => $data['style_view'],
+            'is_active' => $data['is_active'] ?? true,
+        ]);
+        return $page->id;
+    }
 }
