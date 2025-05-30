@@ -11,15 +11,13 @@ use Illuminate\Validation\Rule;
 class HeaderButton extends Model
 {
     protected $fillable = [
-        'page_id',
-        'type_button',
-        'position_header',
-        'position_sub_header',
-        'parent_navigation',
         'name_button',
         'slug',
-        'url',
+        'position',
+        'page_id',
+        'is_active_button',
         'is_active_url',
+        'url',
     ];
 
     protected static function boot()
@@ -27,24 +25,12 @@ class HeaderButton extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            if ($model->type_button == 1) {
-                $model->position_sub_header = 0;
-            } elseif ($model->type_button == 2) {
-                $model->position_header = 0;
-            }
-
             if (empty($model['is_active_url']) || $model['is_active_url'] == 0) {
                 $model['url'] = null;
             }
         });
 
         static::updating(function ($model) {
-            if ($model->type_button == 1) {
-                $model->position_sub_header = 0;
-            } elseif ($model->type_button == 2) {
-                $model->position_header = 0;
-            }
-
             if (empty($model['is_active_url']) || $model['is_active_url'] == 0) {
                 $model['url'] = null;
             }
@@ -56,20 +42,26 @@ class HeaderButton extends Model
         return $this->belongsTo(Page::class, 'page_id', 'id');
     }
 
-    public static function getUsedPosition($value): bool
+    public function dropdownButton(): HasMany
     {
-        return Self::where('position', $value)->exists();
+        return $this->hasMany(DropdownMenu::class, 'header_button_id', 'id');
+    }
+
+    public static function getUsedPosition($position, $exceptId = null)
+    {
+        $query = self::query()
+            ->where('position', $position);
+
+        if ($exceptId) {
+            $query->where('id', '!=', $exceptId);
+        }
+
+        return $query->exists();
     }
 
     public static function getValidationRules($record = null): array
     {
         return [
-            'type_button' => [
-                'required',
-            ],
-            'page_id' => [
-                'required',
-            ],
             'name_button' => [
                 'required',
                 'min:3',
@@ -79,6 +71,15 @@ class HeaderButton extends Model
                 fn($attribute, $value, $fail) => !self::validateUniqueName($value, $record?->id)
                     ? $fail("The name button {$value} already exists ... !")
                     : null,
+            ],
+            'slug' => [
+                'required',
+            ],
+            'position' => [
+                'required',
+            ],
+            'page_id' => [
+                'required',
             ],
             'url' => [
                 'required',
@@ -91,8 +92,11 @@ class HeaderButton extends Model
     public static function getValidationMessages(): array
     {
         return [
-            'type_button' => [
-                'required' => 'The type button is required, Please select type navigation',
+            'slug' => [
+                'required' => 'The slug is required, Please enter slug',
+            ],
+            'position' => [
+                'required' => 'The position is required, Please select position',
             ],
             'page_id' => [
                 'required' => 'The page is required, Please select page'
@@ -140,15 +144,5 @@ class HeaderButton extends Model
     public static function getUsedPageIds(): array
     {
         return Self::pluck('page_id')->toArray();
-    }
-
-    public static function getUsedPositionHeader(): array
-    {
-        return Self::pluck('position_header')->toArray();
-    }
-
-    public static function getUsedPositionSubHeader(): array
-    {
-        return Self::pluck('position_sub_header')->toArray();
     }
 }

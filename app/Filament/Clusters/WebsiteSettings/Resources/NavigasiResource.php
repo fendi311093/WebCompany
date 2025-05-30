@@ -42,96 +42,62 @@ class NavigasiResource extends Resource
         return $form
             ->schema([
                 Section::make()->schema([
-                    Select::make('type_button')
-                        ->label('Type Navigation')
-                        ->placeholder('Please select type navigation')
-                        ->rules(fn($record) => HeaderButton::getValidationRules($record)['type_button'])
-                        ->validationMessages(HeaderButton::getValidationMessages()['type_button'])
+                    TextInput::make('name_button')
+                        ->label('Name Button')
+                        ->rules(fn($record) => HeaderButton::getValidationRules($record)['name_button'])
+                        ->validationMessages(HeaderButton::getValidationMessages()['name_button'])
+                        ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                        ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state)))
+                        ->live(onBlur: true),
+                    TextInput::make('slug')
+                        ->placeholder('auto generate from name button')
+                        ->rules(fn($record) => HeaderButton::getValidationRules($record)['slug'])
+                        ->validationMessages(HeaderButton::getValidationMessages()['slug'])
+                        ->disabled()
+                        ->dehydrated(),
+                    Select::make('position')
+                        ->label('Position')
+                        ->placeholder('Please select position')
+                        ->rules(fn($record) => HeaderButton::getValidationRules($record)['position'])
+                        ->validationMessages(HeaderButton::getValidationMessages()['position'])
+                        ->searchable()
+                        ->disableOptionWhen(fn($value, $record) => HeaderButton::getUsedPosition($value, $record?->id))
                         ->options([
-                            1 => 'Top Header',
-                            2 => 'Sub Header'
-                        ])
-                        ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set) {
-                            if ($state == 1) {
-                                $set('position_sub_header', 0); // Sub header direset
-                            } elseif ($state == 2) {
-                                $set('position_header', 0); // Header direset
-                            }
-                        }),
-                    Select::make('position_header')
-                        ->label('Position Header')
-                        ->required()
-                        ->default(0)
-                        ->disableOptionWhen(fn($value) => in_array($value, HeaderButton::getUsedPositionHeader()))
-                        ->options([
-                            0 => 'None',
-                            1 => 'Navigation 1',
-                            2 => 'Navigation 2',
-                            3 => 'Navigation 3',
-                            4 => 'Navigation 4',
-                            5 => 'Navigation 5',
-                            6 => 'Navigation 6',
-                            7 => 'Navigation 7',
-                            8 => 'Navigation 8',
-                            9 => 'Navigation 9',
-                            10 => 'Navigation 10',
-                        ])
-                        ->visible(fn(callable $get) => $get('type_button') == 1),
-                    Select::make('position_sub_header')
-                        ->label('Position Sub Header')
-                        ->required()
-                        ->default(0)
-                        ->disableOptionWhen(fn($value) => in_array($value, HeaderButton::getUsedPositionSubHeader()))
-                        ->options([
-                            0 => 'None',
-                            1 => 'Sub Navigation 1',
-                            2 => 'Sub Navigation 2',
-                            3 => 'Sub Navigation 3',
-                            4 => 'Sub Navigation 4',
-                            5 => 'Sub Navigation 5',
-                            6 => 'Sub Navigation 6',
-                            7 => 'Sub Navigation 7',
-                            8 => 'Sub Navigation 8',
-                            9 => 'Sub Navigation 9',
-                            10 => 'Sub Navigation 10',
-                        ])
-                        ->visible(fn(callable $get) => $get('type_button') == 2),
-                ])->columns(2),
-                Section::make()
-                    ->description('Turn On adding URL to link to other website addresses')
-                    ->icon('heroicon-m-information-circle')
-                    ->iconColor('success')
-                    ->schema([
-                        Grid::make(3)->schema([
-                            Select::make('page_id')
-                                ->label('Page')
-                                ->placeholder('Please select page')
-                                ->rules(fn($record) => HeaderButton::getValidationRules($record)['page_id'])
-                                ->validationMessages(HeaderButton::getValidationMessages()['page_id'])
-                                ->options(HeaderButton::getPageOptions())
-                                ->searchable()
-                                ->preload()
-                                ->disableOptionWhen(fn($value) => in_array($value, HeaderButton::getUsedPageIds())),
-                            TextInput::make('name_button')
-                                ->label('Name Button')
-                                ->rules(fn($record) => HeaderButton::getValidationRules($record)['name_button'])
-                                ->validationMessages(HeaderButton::getValidationMessages()['name_button'])
-                                ->dehydrateStateUsing(fn($state) => strtoupper($state))
-                                ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state)))
-                                ->live(onBlur: true),
-                            TextInput::make('slug')
-                                ->disabled()
-                                ->dehydrated(),
+                            1 => 'Nav Position 1',
+                            2 => 'Nav Position 2',
+                            3 => 'Nav Position 3',
+                            4 => 'Nav Position 4',
+                            5 => 'Nav Position 5',
+                            6 => 'Nav Position 6',
+                            7 => 'Nav Position 7',
+                            8 => 'Nav Position 8',
+                            9 => 'Nav Position 9',
+                            10 => 'Nav Position 10',
                         ]),
+                    Grid::make(1)->schema([
+                        Select::make('page_id')
+                            ->label('Page')
+                            ->placeholder('Please select page')
+                            ->rules(fn($record) => HeaderButton::getValidationRules($record)['page_id'])
+                            ->validationMessages(HeaderButton::getValidationMessages()['page_id'])
+                            ->options(HeaderButton::getPageOptions())
+                            ->searchable()
+                            ->preload()
+                            ->disableOptionWhen(fn($value) => in_array($value, HeaderButton::getUsedPageIds())),
                         Toggle::make('is_active_button')
                             ->label('Active Button')
                             ->default(true)
                             ->onColor('primary')
                             ->offColor('danger')
                             ->onIcon('heroicon-o-check-badge')
-                            ->offIcon('heroicon-o-x-circle')
-                            ->columns(1),
+                            ->offIcon('heroicon-o-x-circle'),
+                    ]),
+                ])->columns(3),
+                Section::make()
+                    ->description('Turn On adding URL to link to other website addresses')
+                    ->icon('heroicon-m-information-circle')
+                    ->iconColor('success')
+                    ->schema([
                         Grid::make(2)->schema([
                             Toggle::make('is_active_url')
                                 ->label('Adding URL')
@@ -163,71 +129,9 @@ class NavigasiResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('No')
-                    ->rowIndex(),
-                TextColumn::make('type_button')
-                    ->label('Type Nav')
-                    ->badge()
-                    ->color(fn($record) => match ($record->type_button) {
-                        1 => 'primary',
-                        2 => 'success'
-                    })
-                    ->formatStateUsing(fn($record) => match ($record->type_button) {
-                        1 => 'Top Header',
-                        2 => 'Sub Header'
-                    }),
                 TextColumn::make('name_button')
-                    ->label('Name Nav'),
-                TextColumn::make('position_header')
-                    ->label('Header')
-                    ->formatStateUsing(
-                        fn($record) => $record->type_button == 1
-                            ? match ($record->position_header) {
-                                0 => 'None',
-                                1 => 'Position 1',
-                                2 => 'Position 2',
-                                3 => 'Position 3',
-                                4 => 'Position 4',
-                                5 => 'Position 5',
-                                6 => 'Position 6',
-                                7 => 'Position 7',
-                                8 => 'Position 8',
-                                9 => 'Position 9',
-                                10 => 'Position 10',
-                                default => '-',
-                            }
-                            : '-'
-                    ),
-
-                TextColumn::make('position_sub_header')
-                    ->label('Sub Header')
-                    ->formatStateUsing(
-                        fn($record) => $record->type_button == 2
-                            ? match ($record->position_sub_header) {
-                                0 => 'None',
-                                1 => 'Position 1',
-                                2 => 'Position 2',
-                                3 => 'Position 3',
-                                4 => 'Position 4',
-                                5 => 'Position 5',
-                                6 => 'Position 6',
-                                7 => 'Position 7',
-                                8 => 'Position 8',
-                                9 => 'Position 9',
-                                10 => 'Position 10',
-                                default => '-',
-                            }
-                            : '-'
-                    ),
-                ToggleColumn::make('is_active_button')
-                    ->label('Active Nav')
-                    ->onColor('primary')
-                    ->offColor('danger')
-                    ->onIcon('heroicon-o-check-badge')
-                    ->offIcon('heroicon-o-x-circle'),
-                IconColumn::make('is_active_url')
-                    ->label('Active URL')
-                    ->boolean()
+                    ->label("Name Button"),
+                Textcolumn::make('position'),
             ])
             ->filters([
                 //
