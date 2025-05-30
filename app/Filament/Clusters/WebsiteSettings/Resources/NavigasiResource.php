@@ -39,6 +39,10 @@ class NavigasiResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $pageOptions    = HeaderButton::getPageOptions();
+        $usePageIds     = HeaderButton::getUsedPageIds();
+        $usedPositions  = HeaderButton::getUsedPosition();
+
         return $form
             ->schema([
                 Section::make()->schema([
@@ -61,7 +65,7 @@ class NavigasiResource extends Resource
                         ->rules(fn($record) => HeaderButton::getValidationRules($record)['position'])
                         ->validationMessages(HeaderButton::getValidationMessages()['position'])
                         ->searchable()
-                        ->disableOptionWhen(fn($value, $record) => HeaderButton::getUsedPosition($value, $record?->id))
+                        ->disableOptionWhen(fn($value) => in_array($value, $usedPositions))
                         ->options([
                             1 => 'Nav Position 1',
                             2 => 'Nav Position 2',
@@ -80,10 +84,10 @@ class NavigasiResource extends Resource
                             ->placeholder('Please select page')
                             ->rules(fn($record) => HeaderButton::getValidationRules($record)['page_id'])
                             ->validationMessages(HeaderButton::getValidationMessages()['page_id'])
-                            ->options(HeaderButton::getPageOptions())
+                            ->options($pageOptions)
                             ->searchable()
                             ->preload()
-                            ->disableOptionWhen(fn($value) => in_array($value, HeaderButton::getUsedPageIds())),
+                            ->disableOptionWhen(fn($value) => in_array($value, $usePageIds)),
                         Toggle::make('is_active_button')
                             ->label('Active Button')
                             ->default(true)
@@ -125,14 +129,37 @@ class NavigasiResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()->with('Pages.source');
+    }
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+                TextColumn::make('No')
+                    ->rowIndex(),
                 TextColumn::make('name_button')
-                    ->label("Name Button"),
-                Textcolumn::make('position'),
-            ])
+                    ->label("Name Button")
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('position')
+                    ->formatStateUsing(fn($state) => 'Position' . ' - ' . $state),
+                TextColumn::make('page_id')
+                    ->label('Page')
+                    ->formatStateUsing(fn($state, $record) => $record->page_label)
+                    ->searchable(query: fn($query, $search) => $query->searchByPageTitle($search)),
+                IconColumn::make('is_active_url')
+                    ->label('URL')
+                    ->boolean(),
+                ToggleColumn::make('is_active_button')
+                    ->label('Active Button')
+                    ->onIcon('heroicon-o-check-badge')
+                    ->offIcon('heroicon-o-x-circle')
+                    ->onColor('success')
+                    ->offColor('danger')
+            ])->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

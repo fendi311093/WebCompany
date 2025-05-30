@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\Eloquent\Builder;
 
 class HeaderButton extends Model
 {
@@ -47,16 +48,9 @@ class HeaderButton extends Model
         return $this->hasMany(DropdownMenu::class, 'header_button_id', 'id');
     }
 
-    public static function getUsedPosition($position, $exceptId = null)
+    public static function getUsedPosition()
     {
-        $query = self::query()
-            ->where('position', $position);
-
-        if ($exceptId) {
-            $query->where('id', '!=', $exceptId);
-        }
-
-        return $query->exists();
+        return Self::pluck('position')->toArray();
     }
 
     public static function getValidationRules($record = null): array
@@ -144,5 +138,31 @@ class HeaderButton extends Model
     public static function getUsedPageIds(): array
     {
         return Self::pluck('page_id')->toArray();
+    }
+
+    public function scopeSearchByPageTitle(Builder $query, string $search): Builder
+    {
+        $pageOptions = static::getPageOptions();
+        $pageIds = collect($pageOptions)
+            ->filter(fn($title) => str_contains(strtolower($title), strtolower($search)))
+            ->keys()
+            ->toArray();
+
+        return $query->whereIn('page_id', $pageIds);
+    }
+
+    public function getPageLabelAttribute()
+    {
+        if ($this->Pages && $this->Pages->source) {
+            switch ($this->Pages->source_type) {
+                case 'App\\Models\\Profil':
+                    return $this->Pages->source->name_company;
+                case 'App\\Models\\Customer':
+                    return $this->Pages->source->name_customer;
+                case 'App\\Models\\Content':
+                    return $this->Pages->source->title;
+            }
+        }
+        return 'Unknown Page';
     }
 }
