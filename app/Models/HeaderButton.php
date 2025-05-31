@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 class HeaderButton extends Model
 {
@@ -46,11 +47,6 @@ class HeaderButton extends Model
     public function dropdownButton(): HasMany
     {
         return $this->hasMany(DropdownMenu::class, 'header_button_id', 'id');
-    }
-
-    public static function getUsedPosition()
-    {
-        return Self::pluck('position')->toArray();
     }
 
     public static function getValidationRules($record = null): array
@@ -153,5 +149,61 @@ class HeaderButton extends Model
         ];
 
         return $map[$this->Pages->source_type] ?? '-';
+    }
+
+    public static function getUsedPosition()
+    {
+        return Self::pluck('position')->toArray();
+    }
+
+    // PERCOBAAN KODE BARU
+    public static function getFormData($recordId = null)
+    {
+        static $cache = [];
+
+        if (!isset($cache[$recordId])) {
+            $query = self::query();
+
+            if ($recordId) {
+                $query->where('id', '!=', $recordId);
+            }
+
+            // Ambil semua data yang dibutuhkan dalam 1 query
+            $data = $query->select('page_id', 'position')->get();
+
+            $cache[$recordId] = [
+                'usedPageIds' => $data->pluck('page_id')->toArray(),
+                'usedPositions' => $data->pluck('position')->toArray(),
+            ];
+        }
+
+        return $cache[$recordId];
+    }
+
+    // Untuk page options dengan eager loading
+    public static function getPageOptionsOptimized()
+    {
+        static $pageOptions = null;
+
+        if ($pageOptions === null) {
+
+            $pageOptions = Cache::remember('page_options', now()->addHour(), function () {
+                return Page::with(['source'])
+                    ->where('is_active', true)
+                    ->get()
+                    ->mapWithKeys(function ($page) {
+                        $label = match ($page->source_type) {
+                            'App\Models\Profil' => 'Profil - ' . $page->source->name_company,
+                            'App\Models\Customer' => 'Customer - ' . $page->source->name_customer,
+                            'App\Models\Content' => 'Content - ' . $page->source->title,
+                            default => 'Unknown'
+                        };
+                        return [$page->id => $label];
+                    })
+                    ->toArray();
+            });
+        }
+
+        return $pageOptions;
     }
 }

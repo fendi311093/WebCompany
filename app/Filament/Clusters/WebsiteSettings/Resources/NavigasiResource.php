@@ -40,9 +40,13 @@ class NavigasiResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $pageOptions    = HeaderButton::getPageOptions();
+        /* $pageOptions    = HeaderButton::getPageOptions();
         $usePageIds     = HeaderButton::getUsedPageIds();
-        $usedPositions  = HeaderButton::getUsedPosition();
+        $usedPositions  = HeaderButton::getUsedPosition(); */
+
+        $record = $form->getRecord();
+        $formData = HeaderButton::getFormData($record?->id);
+        $pageOptions = HeaderButton::getPageOptionsOptimized();
 
         return $form
             ->schema([
@@ -67,7 +71,7 @@ class NavigasiResource extends Resource
                         ->rules(fn($record) => HeaderButton::getValidationRules($record)['position'])
                         ->validationMessages(HeaderButton::getValidationMessages()['position'])
                         ->searchable()
-                        ->disableOptionWhen(fn($value) => in_array($value, $usedPositions))
+                        ->disableOptionWhen(fn($value) => in_array($value, $formData['usedPositions']))
                         ->options([
                             1 => 'Nav Position 1',
                             2 => 'Nav Position 2',
@@ -89,7 +93,7 @@ class NavigasiResource extends Resource
                             ->options($pageOptions)
                             ->searchable()
                             ->preload()
-                            ->disableOptionWhen(fn($value) => in_array($value, $usePageIds))
+                            ->disableOptionWhen(fn($value) => in_array($value, $formData['usedPageIds']))
                             ->createOptionForm([
                                 Select::make('source_type')
                                     ->label('Source Type')
