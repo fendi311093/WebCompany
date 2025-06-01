@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
@@ -52,7 +53,10 @@ class Profil extends Model
         static::saved(function ($profil) {
             self::resizePhotoIfNeeded($profil);
             self::resizeLogoIfNeeded($profil);
-            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Profil_' . config('app.env'));
+
+            // clear cache
+            Cache::forget('source_ids_App\Models\Profil_' . config('app.env'));
+            Cache::forget('page_options_' . config('app.env'));
         });
 
         static::updating(function ($profil) {
@@ -69,7 +73,10 @@ class Profil extends Model
             $profil->Pages()->delete();
             self::deletePhotoFile($profil->photo);
             self::deleteLogoFile($profil->logo);
-            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Profil_' . config('app.env'));
+
+            // clear cache
+            Cache::forget('source_ids_App\Models\Profil_' . config('app.env'));
+            Cache::forget('page_options_' . config('app.env'));
         });
     }
 

@@ -10,6 +10,22 @@ class Page extends Model
 {
     protected $fillable = ['source_type', 'source_id', 'style_view', 'is_active'];
 
+    protected static function booted()
+    {
+        parent::booted();
+        static::addGlobalScope('withSource', function ($query) {
+            $query->with('source');
+        });
+
+        static::saved(function () {
+            Cache::forget('page_options_' . config('app.env'));
+        });
+
+        static::deleted(function () {
+            Cache::forget('page_options_' . config('app.env'));
+        });
+    }
+
     public function source()
     {
         return $this->morphTo();

@@ -163,7 +163,7 @@ class HeaderButton extends Model
 
         if ($pageOptions === null) {
 
-            $pageOptions = Cache::remember('page_options', now()->addHour(), function () {
+            $pageOptions = Cache::remember('page_options_' . config('app.env'), now()->addHour(), function () {
                 return Page::with(['source'])
                     ->where('is_active', true)
                     ->get()

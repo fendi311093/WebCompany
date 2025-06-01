@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 
@@ -77,14 +78,20 @@ class Customer extends Model
 
         static::saved(function ($customer) {
             self::optimizeLogoIfNeeded($customer);
-            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Customer_' . config('app.env'));
+
+            // clear cache
+            Cache::forget('source_ids_App\Models\Customer_' . config('app.env'));
+            Cache::forget('page_options_' . config('app.env'));
         });
 
         static::deleting(function ($customer) {
             // Cascade delete ke Page
             $customer->Pages()->delete();
             self::deleteLogoFile($customer->logo);
-            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Customer_' . config('app.env'));
+
+            // clear cache
+            Cache::forget('source_ids_App\Models\Customer_' . config('app.env'));
+            Cache::forget('page_options_' . config('app.env'));
         });
 
         static::updating(function ($customer) {

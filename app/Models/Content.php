@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
@@ -65,7 +66,10 @@ class Content extends Model
         // Event Listener
         static::saving(function ($content) {
             self::resizePhotoIfNeeded($content);
-            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Content_' . config('app.env'));
+
+            // clear cache
+            Cache::forget('source_ids_App\Models\Content_' . config('app.env'));
+            Cache::forget('page_options_' . config('app.env'));
         });
 
         static::updating(function ($content) {
@@ -78,7 +82,10 @@ class Content extends Model
             // Cascade delete ke Page
             $content->Pages()->delete();
             self::deletePhotoFile($content->photo);
-            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Content_' . config('app.env'));
+
+            // clear cache
+            Cache::forget('source_ids_App\Models\Content_' . config('app.env'));
+            Cache::forget('page_options_' . config('app.env'));
         });
     }
 
