@@ -28,12 +28,16 @@ class Photo extends Model
     {
         parent::boot();
 
-        static::created(function ($photo) {
+        static::saved(function ($photo) {
             self::resizePhotoIfNeeded($photo);
+
+            if ($photo->isDirty('file_path')) {
+                self::deletePhotoFile($photo->getOriginal('file_path'));
+            }
         });
 
         static::deleted(function ($photo) {
-            self::deletePhotoFile($photo);
+            self::deletePhotoFile($photo->file_path);
         });
     }
 
@@ -72,13 +76,13 @@ class Photo extends Model
     }
 
     // Hapus photo dari storage
-    protected static function deletePhotoFile($photo)
+    protected static function deletePhotoFile($filePath)
     {
-        if (!$photo) {
+        if (!$filePath) {
             return;
         }
 
-        $fileLocation = storage_path('app/public/' . $photo->file_path);
+        $fileLocation = storage_path('app/public/' . $filePath);
         if (file_exists($fileLocation)) {
             unlink($fileLocation);
         }

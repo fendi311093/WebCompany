@@ -1,4 +1,5 @@
 <x-filament-panels::page>
+
     <div class="mb-4 p-4 bg-primary-50 dark:bg-primary-950 rounded-lg border border-primary-200 dark:border-primary-800">
         <h2 class="text-xl font-bold text-primary-800 dark:text-primary-200 mb-2">Cara Upload Foto</h2>
         <ol class="list-decimal ml-6 text-primary-700 dark:text-primary-300 space-y-1">
@@ -11,5 +12,6 @@
 
     <div class="w-full">
         {{ $this->form }}
-        </div>
+    </div>
+
 </x-filament-panels::page>

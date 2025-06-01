@@ -47,7 +47,9 @@ class UploadPhotos extends Page implements HasForms
                             ->visibility('public')
                             ->downloadable()
                             ->imageResizeMode('cover')
-                            ->helperText('Pilih minimal satu foto untuk upload.')
+                            ->helperText('Upload multiple photos. Max size 11MB each.')
+                            ->maxSize(11000)
+                            ->preserveFilenames(false)
                     ]),
 
                 Actions::make([
@@ -57,8 +59,8 @@ class UploadPhotos extends Page implements HasForms
                         ->color('success')
                         ->size('sm')
                         ->action('create')
-                    ])
-                ->alignment(Alignment::Left)
+                ])
+                    ->alignment(Alignment::Left)
             ]);
     }
 
@@ -77,18 +79,33 @@ class UploadPhotos extends Page implements HasForms
             return;
         }
 
-        $count = 0;
-
         try {
             DB::beginTransaction();
 
-            // Simpan setiap foto ke database
+            $photos = [];
+            $now = now();
+
+            // Siapkan data untuk bulk insert
             foreach ($data['photos'] as $filePath) {
                 if (is_string($filePath) && !empty($filePath)) {
-                    $photo = new Photo();
-                    $photo->file_path = $filePath;
-                    $photo->save();
-                    $count++;
+                    $photos[] = [
+                        'file_path' => $filePath,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+            }
+
+            // Bulk insert ke database
+            if (!empty($photos)) {
+                Photo::insert($photos);
+
+                // Resize photos after insert
+                foreach ($photos as $photoData) {
+                    $photo = Photo::where('file_path', $photoData['file_path'])->first();
+                    if ($photo) {
+                        Photo::resizePhotoIfNeeded($photo);
+                    }
                 }
             }
 
@@ -97,7 +114,7 @@ class UploadPhotos extends Page implements HasForms
             // Notifikasi sukses
             Notification::make()
                 ->title('Upload Berhasil!')
-                ->body("$count foto berhasil disimpan ke database")
+                ->body(count($photos) . " foto berhasil disimpan ke database")
                 ->success()
                 ->send();
 

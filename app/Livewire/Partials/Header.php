@@ -14,7 +14,7 @@ class Header extends Component
     public function mount()
     {
         $this->companyLogo = Profil::first();
-        $this->headerButtons = HeaderButton::orderBy('position_header', 'asc')->get();
+        $this->headerButtons = HeaderButton::orderBy('position', 'asc')->get();
     }
 
     public function render()

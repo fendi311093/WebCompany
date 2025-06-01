@@ -131,7 +131,10 @@ class SliderResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->emptyStateHeading('No Sliders Found')
+            ->emptyStateDescription('You have not created any sliders yet.')
+            ->emptyStateIcon('heroicon-o-squares-2x2');
     }
 
     public static function getRelations(): array

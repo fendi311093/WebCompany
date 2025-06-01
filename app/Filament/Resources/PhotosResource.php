@@ -38,7 +38,7 @@ class PhotosResource extends Resource
                     ->disk('public')
                     ->directory('Photos')
                     ->visibility('public')
-                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg', 'image/gif'])
+                    ->preserveFilenames(false)
             ])
             ->columns(1);
     }
@@ -63,6 +63,12 @@ class PhotosResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->emptyStateHeading('No Photos Found')
+            ->emptyStateDescription('You have not uploaded any photos yet. Click the button below to upload your first photo.')
+            ->emptyStateIcon('heroicon-o-camera')
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make(),
             ]);
     }
 

@@ -63,9 +63,9 @@
                         <div class="hs-carousel-slide">
                             <div class="h-96 md:h-[calc(100vh-106px)] flex flex-col bg-gray-300 dark:bg-gray-700">
                                 <div class="mt-auto w-2/3 md:max-w-lg ps-5 pb-5 md:ps-10 md:pb-10">
-                                    <span class="block text-white">Tidak ada slider</span>
-                                    <span class="block text-white text-xl md:text-3xl">
-                                        Silahkan tambahkan slider melalui admin panel
+                                    <span class="block text-red-500">No Sliders</span>
+                                    <span class="block text-red-500 text-xl md:text-3xl">
+                                        Please add a slider
                                     </span>
                                 </div>
                             </div>
@@ -119,23 +119,6 @@
         </div>
     </div>
     <!-- End Slider -->
-
-    <!-- Debug Section jika slider kosong atau tidak ada foto -->
-    @if ($sliders->count() == 0 || $sliders->whereNull('photo.file_path')->count() > 0)
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative my-4 mx-4" role="alert">
-            <strong class="font-bold">Debug Info:</strong>
-            <div class="mt-2">
-                <p>Jumlah Slider Aktif: {{ $sliders->count() }}</p>
-                @foreach ($sliders as $slider)
-                    <div class="mt-1 p-2 border-t border-red-300">
-                        <p>Slider #{{ $slider->slide_number }}:
-                            Photo ID: {{ $slider->photo_id ?? 'NULL' }},
-                            Photo Path: {{ $slider->photo->file_path ?? 'NULL' }}</p>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
 
     <!-- Clients -->
     <div class="bg-neutral-900">
