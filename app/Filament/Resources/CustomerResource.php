@@ -8,11 +8,13 @@ use App\Models\Customer;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -54,6 +56,14 @@ class CustomerResource extends Resource
                             return "logo-{$safeName}." . $extension;
                         }
                     ),
+                Toggle::make('is_active')
+                    ->label('Active')
+                    ->default(true)
+                    ->inline(false)
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->onIcon('heroicon-o-check-badge')
+                    ->offIcon('heroicon-o-x-circle'),
             ])->columns(1);
     }
 
@@ -67,7 +77,13 @@ class CustomerResource extends Resource
                     ->label('Customer')
                     ->copyable()
                     ->searchable(),
-                ImageColumn::make('logo')
+                ImageColumn::make('logo'),
+                ToggleColumn::make('is_active')
+                    ->label('Active')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->onIcon('heroicon-o-check-badge')
+                    ->offIcon('heroicon-o-x-circle'),
             ])->defaultSort('updated_at', 'desc')
             ->filters([
                 //

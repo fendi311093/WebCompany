@@ -10,7 +10,8 @@ class Customer extends Model
 {
     protected $fillable = [
         'name_customer',
-        'logo'
+        'logo',
+        'is_active'
     ];
 
     public function Pages()
@@ -76,10 +77,14 @@ class Customer extends Model
 
         static::saved(function ($customer) {
             self::optimizeLogoIfNeeded($customer);
+            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Customer_' . config('app.env'));
         });
 
         static::deleting(function ($customer) {
+            // Cascade delete ke Page
+            $customer->Pages()->delete();
             self::deleteLogoFile($customer->logo);
+            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Customer_' . config('app.env'));
         });
 
         static::updating(function ($customer) {

@@ -49,9 +49,10 @@ class Profil extends Model
         parent::booted();
 
         // Event Lisener
-        static::saving(function ($profil) {
+        static::saved(function ($profil) {
             self::resizePhotoIfNeeded($profil);
             self::resizeLogoIfNeeded($profil);
+            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Profil_' . config('app.env'));
         });
 
         static::updating(function ($profil) {
@@ -64,8 +65,11 @@ class Profil extends Model
         });
 
         static::deleting(function ($profil) {
+            // Cascade delete ke Page
+            $profil->Pages()->delete();
             self::deletePhotoFile($profil->photo);
             self::deleteLogoFile($profil->logo);
+            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Profil_' . config('app.env'));
         });
     }
 

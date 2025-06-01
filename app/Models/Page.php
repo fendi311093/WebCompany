@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class Page extends Model
 {
@@ -27,16 +28,25 @@ class Page extends Model
     // ambil semua source_id dan tampilkan nama source
     public static function getAllSourceIds($sourceType): array
     {
-        if ($sourceType === 'App\Models\Profil') {
-            return Profil::pluck('name_company', 'id')->toArray();
+        static $cache = [];
+
+        if (!isset($cache[$sourceType])) {
+            $cache[$sourceType] = Cache::remember("source_ids_{$sourceType}_" . config('app.env'), now()->addHour(), function () use ($sourceType) {
+                return match ($sourceType) {
+                    'App\Models\Profil' => Profil::pluck('name_company', 'id')
+                        ->toArray(),
+                    'App\Models\Customer' => Customer::where('is_active', true)
+                        ->pluck('name_customer', 'id')
+                        ->toArray(),
+                    'App\Models\Content' => Content::where('is_active', true)
+                        ->pluck('title', 'id')
+                        ->toArray(),
+                    default => []
+                };
+            });
         }
-        if ($sourceType === 'App\Models\Customer') {
-            return Customer::pluck('name_customer', 'id')->toArray();
-        }
-        if ($sourceType === 'App\Models\Content') {
-            return Content::pluck('title', 'id')->toArray();
-        }
-        return [];
+
+        return $cache[$sourceType] ?? [];
     }
 
     // ambil semua source_id yang sudah dipakai di Page untuk 

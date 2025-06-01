@@ -40,10 +40,6 @@ class NavigasiResource extends Resource
 
     public static function form(Form $form): Form
     {
-        /* $pageOptions    = HeaderButton::getPageOptions();
-        $usePageIds     = HeaderButton::getUsedPageIds();
-        $usedPositions  = HeaderButton::getUsedPosition(); */
-
         $record = $form->getRecord();
         $formData = HeaderButton::getFormData($record?->id);
         $pageOptions = HeaderButton::getPageOptionsOptimized();

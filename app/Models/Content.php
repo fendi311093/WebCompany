@@ -65,6 +65,7 @@ class Content extends Model
         // Event Listener
         static::saving(function ($content) {
             self::resizePhotoIfNeeded($content);
+            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Content_' . config('app.env'));
         });
 
         static::updating(function ($content) {
@@ -74,7 +75,10 @@ class Content extends Model
         });
 
         static::deleting(function ($content) {
+            // Cascade delete ke Page
+            $content->Pages()->delete();
             self::deletePhotoFile($content->photo);
+            \Illuminate\Support\Facades\Cache::forget('source_ids_App\Models\Content_' . config('app.env'));
         });
     }
 

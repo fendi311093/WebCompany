@@ -118,24 +118,6 @@ class HeaderButton extends Model
         return !$query->exists();
     }
 
-    public static function getPageOptions(): array
-    {
-        return Page::with('source')->get()->mapWithKeys(function ($page) {
-            $label = match ($page->source_type) {
-                'App\Models\Profil' => 'Profil - ' . $page->source->name_company,
-                'App\Models\Customer' => 'Customer - ' . $page->source->name_customer,
-                'App\Models\Content' => 'Content - ' . $page->source->title,
-                default => 'Unknown'
-            };
-            return [$page->id => $label];
-        })->toArray();
-    }
-
-    public static function getUsedPageIds(): array
-    {
-        return Self::pluck('page_id')->toArray();
-    }
-
     public function getPageLabelAttribute() // atribut aksesori 
     {
         if (!$this->Pages) {
@@ -151,12 +133,6 @@ class HeaderButton extends Model
         return $map[$this->Pages->source_type] ?? '-';
     }
 
-    public static function getUsedPosition()
-    {
-        return Self::pluck('position')->toArray();
-    }
-
-    // PERCOBAAN KODE BARU
     public static function getFormData($recordId = null)
     {
         static $cache = [];
