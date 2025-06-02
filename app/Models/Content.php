@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\ResizePhotoJob;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -64,19 +65,18 @@ class Content extends Model
         parent::booted();
 
         // Event Listener
-        static::saving(function ($content) {
-            self::resizePhotoIfNeeded($content);
+        static::saved(function ($content) {
+            if ($content->isDirty('photo')) {
+                self::deletePhotoFile($content->getOriginal('photo'));
+                dispatch(new ResizePhotoJob($content->id, 'Content', 'photo'));
+            }
 
             // clear cache
             Cache::forget('source_ids_App\Models\Content_' . config('app.env'));
             Cache::forget('page_options_' . config('app.env'));
         });
 
-        static::updating(function ($content) {
-            if ($content->isDirty('photo')) {
-                self::deletePhotoFile($content->getOriginal('photo'));
-            }
-        });
+        // static::updating(function ($content) {});
 
         static::deleting(function ($content) {
             // Cascade delete ke Page

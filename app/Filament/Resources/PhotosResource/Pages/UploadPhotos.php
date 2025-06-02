@@ -108,7 +108,7 @@ class UploadPhotos extends Page implements HasForms
                 foreach ($photos as $photoData) {
                     $photo = Photo::where('file_path', $photoData['file_path'])->first();
                     if ($photo) {
-                        dispatch(new ResizePhotoJob($photo->id));
+                        dispatch(new ResizePhotoJob($photo->id, 'Photo', 'file_path'));
                     }
                 }
             }

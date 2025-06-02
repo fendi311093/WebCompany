@@ -32,7 +32,7 @@ class Photo extends Model
         static::updated(function ($photo) {
             if ($photo->isDirty('file_path')) {
                 self::deletePhotoFile($photo->getOriginal('file_path'));
-                dispatch(new ResizePhotoJob($photo->id));
+                dispatch(new ResizePhotoJob($photo->id, 'Photo', 'file_path'));
             }
         });
 
