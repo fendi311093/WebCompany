@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PhotosResource\Pages;
 
 use App\Filament\Resources\PhotosResource;
+use App\Jobs\ResizePhotoJob;
 use App\Models\Photo;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action as FormAction;
@@ -39,9 +40,12 @@ class UploadPhotos extends Page implements HasForms
                     ->schema([
                         FileUpload::make('photos')
                             ->label('Photo')
+                            ->placeholder('Max Upload 10 Photos')
                             ->required()
                             ->image()
                             ->multiple()
+                            ->maxFiles(10)
+                            ->previewable(false)
                             ->disk('public')
                             ->directory('Photos')
                             ->visibility('public')
@@ -104,7 +108,7 @@ class UploadPhotos extends Page implements HasForms
                 foreach ($photos as $photoData) {
                     $photo = Photo::where('file_path', $photoData['file_path'])->first();
                     if ($photo) {
-                        Photo::resizePhotoIfNeeded($photo);
+                        dispatch(new ResizePhotoJob($photo->id));
                     }
                 }
             }
@@ -113,8 +117,8 @@ class UploadPhotos extends Page implements HasForms
 
             // Notifikasi sukses
             Notification::make()
-                ->title('Upload Berhasil!')
-                ->body(count($photos) . " foto berhasil disimpan ke database")
+                ->title('Done. Uploading photos ...!')
+                ->body(count($photos) . " photos uploaded successfully")
                 ->success()
                 ->send();
 

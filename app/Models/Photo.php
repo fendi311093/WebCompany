@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\ResizePhotoJob;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -28,11 +29,9 @@ class Photo extends Model
     {
         parent::boot();
 
-        static::saved(function ($photo) {
-            self::resizePhotoIfNeeded($photo);
-
+        static::updated(function ($photo) {
             if ($photo->isDirty('file_path')) {
-                self::deletePhotoFile($photo->getOriginal('file_path'));
+                dispatch(new ResizePhotoJob($photo->id));
             }
         });
 
