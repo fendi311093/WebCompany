@@ -15,7 +15,7 @@ class CreateProfil extends CreateRecord
     {
         if (Profil::count() > 0) {
             Notification::make()
-                ->title('Hanya boleh ada satu data profil di database.')
+                ->title('There can only be one profile data in the database.')
                 ->danger()
                 ->send();
 

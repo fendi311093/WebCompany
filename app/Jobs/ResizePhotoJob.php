@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Photo;
 use App\Models\Content;
+use App\Models\Profil;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -50,6 +51,10 @@ class ResizePhotoJob implements ShouldQueue
                 break;
             case 'Content':
                 $model = Content::find($this->modelId);
+                $filePath = $model?->photo;
+                break;
+            case 'Profil':
+                $model = Profil::find($this->modelId);
                 $filePath = $model?->photo;
                 break;
             default:

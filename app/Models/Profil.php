@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\ResizePhotoJob;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -51,21 +52,17 @@ class Profil extends Model
 
         // Event Lisener
         static::saved(function ($profil) {
-            self::resizePhotoIfNeeded($profil);
-            self::resizeLogoIfNeeded($profil);
-
-            // clear cache
-            Cache::forget('source_ids_App\Models\Profil_' . config('app.env'));
-            Cache::forget('page_options_' . config('app.env'));
-        });
-
-        static::updating(function ($profil) {
             if ($profil->isDirty('photo')) {
                 self::deletePhotoFile($profil->getOriginal('photo'));
+                dispatch(new ResizePhotoJob($profil->id, 'Profil', 'photo'));
             }
             if ($profil->isDirty('logo')) {
                 self::deleteLogoFile($profil->getOriginal('logo'));
             }
+
+            // clear cache
+            Cache::forget('source_ids_App\Models\Profil_' . config('app.env'));
+            Cache::forget('page_options_' . config('app.env'));
         });
 
         static::deleting(function ($profil) {
@@ -78,78 +75,6 @@ class Profil extends Model
             Cache::forget('source_ids_App\Models\Profil_' . config('app.env'));
             Cache::forget('page_options_' . config('app.env'));
         });
-    }
-
-    // Resize ukuran foto
-    protected static function resizePhotoIfNeeded($profil)
-    {
-        //Cek di field input apakah ada foto
-        if (!$profil->photo) {
-            return;
-        }
-
-        //Lokasi foto
-        $fileLocation = storage_path('app/public/' . $profil->photo);
-
-        //Cek apakah ada foto di lokasi penyimpanan
-        if (!file_exists($fileLocation)) {
-            return;
-        }
-
-        $maxFileSize = 1024 * 1024; //1Mb
-
-        //Ukuran file dibawah 1Mb tidak dilakukan proses resize
-        if (filesize($fileLocation) <= $maxFileSize) {
-            return;
-        }
-
-        //Proses resize
-        $manager = new ImageManager(new Driver());
-        $photo = $manager->read($fileLocation);
-        $photo->scale(width: 800);
-
-        $quality = 80;
-        while (filesize($fileLocation) > $maxFileSize && $quality >= 30) {
-            $photo->save($fileLocation, quality: $quality);
-            clearstatcache(true, $fileLocation);
-            $quality -= 5;
-        }
-    }
-
-    // Resize ukuran logo
-    protected static function resizeLogoIfNeeded($profil)
-    {
-        //Cek di field input apakah ada logo
-        if (!$profil->logo) {
-            return;
-        }
-
-        //Lokasi logo
-        $fileLocation = storage_path('app/public/' . $profil->logo);
-
-        //Cek apakah ada logo di lokasi penyimpanan
-        if (!file_exists($fileLocation)) {
-            return;
-        }
-
-        $maxFileSize = 1024 * 1024; //1Mb
-
-        //Ukuran file dibawah 1Mb tidak dilakukan proses resize
-        if (filesize($fileLocation) <= $maxFileSize) {
-            return;
-        }
-
-        //Proses resize
-        $manager = new ImageManager(new Driver());
-        $logo = $manager->read($fileLocation);
-        $logo->scale(width: 800);
-
-        $quality = 80;
-        while (filesize($fileLocation) > $maxFileSize && $quality >= 30) {
-            $logo->save($fileLocation, quality: $quality);
-            clearstatcache(true, $fileLocation);
-            $quality -= 5;
-        }
     }
 
     //Hapus foto dari storage

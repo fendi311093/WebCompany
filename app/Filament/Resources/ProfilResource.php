@@ -56,7 +56,8 @@ class ProfilResource extends Resource
                                 $profilName = $get('name_company') ?? ($record?->name_company ?? 'Logo');
                                 $saveName = \Illuminate\Support\Str::slug($profilName);
                                 $extension = $file->getClientOriginalExtension();
-                                return "Logo-{$saveName}." . $extension;
+                                $timestamp = now()->format('dmy-His');
+                                return "Logo-{$saveName}-{$timestamp}." . $extension;
                             }
                         ),
                     FileUpload::make('photo')
@@ -70,7 +71,8 @@ class ProfilResource extends Resource
                                 $profilName = $get('name_company') ?? ($record?->name_company ?? 'Profil');
                                 $saveName = \Illuminate\Support\Str::slug($profilName);
                                 $extension = $file->getClientOriginalExtension();
-                                return "Profil-{$saveName}." . $extension;
+                                $timestamp = now()->format('dmy-His');
+                                return "Profil-{$saveName}-{$timestamp}." . $extension;
                             }
                         ),
                 ])->columns(2)
@@ -131,6 +133,7 @@ class ProfilResource extends Resource
         return [
             'index' => Pages\ManageProfils::route('/'),
             'create' => Pages\CreateProfil::route('/create'),
+            'edit' => Pages\EditProfil::route('/{record}/edit'),
         ];
     }
 }
