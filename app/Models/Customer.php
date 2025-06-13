@@ -77,7 +77,9 @@ class Customer extends Model
         parent::booted();
 
         static::saved(function ($customer) {
-            self::optimizeLogoIfNeeded($customer);
+            if ($customer->isDirty('logo')) {
+                self::deleteLogoFile($customer->getOriginal('logo'));
+            }
 
             // clear cache
             Cache::forget('source_ids_App\Models\Customer_' . config('app.env'));
@@ -93,45 +95,6 @@ class Customer extends Model
             Cache::forget('source_ids_App\Models\Customer_' . config('app.env'));
             Cache::forget('page_options_' . config('app.env'));
         });
-
-        static::updating(function ($customer) {
-            if ($customer->isDirty('logo')) {
-                self::deleteLogoFile($customer->getOriginal('logo'));
-            }
-        });
-    }
-
-    /**
-     * Optimasi file logo jika melebihi batas ukuran.
-     */
-    protected static function optimizeLogoIfNeeded($customer)
-    {
-        if (!$customer->logo) {
-            return;
-        }
-
-        $file = storage_path('app/public/' . $customer->logo);
-
-        if (!file_exists($file)) {
-            return;
-        }
-
-        $maxFileSize = 1024 * 1024; // 1 MB
-
-        if (filesize($file) <= $maxFileSize) {
-            return;
-        }
-
-        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
-        $image = $manager->read($file);
-        $image->scale(width: 800);
-
-        $quality = 80;
-        while (filesize($file) > $maxFileSize && $quality >= 30) {
-            $image->save($file, quality: $quality);
-            clearstatcache(true, $file);
-            $quality -= 5;
-        }
     }
 
     /**

@@ -45,6 +45,7 @@ class CustomerResource extends Resource
                 FileUpload::make('logo')
                     ->label('Logo')
                     ->required()
+                    ->maxSize(11000)
                     ->image()
                     ->imageEditor()
                     ->directory('customer_logo')
@@ -53,7 +54,8 @@ class CustomerResource extends Resource
                             $customerName = $get('name_customer') ?? ($record?->name_customer ?? 'customer');
                             $safeName = \Illuminate\Support\Str::slug($customerName);
                             $extension = $file->getClientOriginalExtension();
-                            return "logo-{$safeName}." . $extension;
+                            $timestamp = now()->format('dmy-His');
+                            return "logo-{$safeName}-{$timestamp}." . $extension;
                         }
                     ),
                 Toggle::make('is_active')
