@@ -105,8 +105,10 @@ class ProfilResource extends Resource
                 TextColumn::make('address')
                     ->words(4),
                 TextColumn::make('phone'),
-                ImageColumn::make('logo'),
+                ImageColumn::make('logo')
+                    ->disk('public'),
                 ImageColumn::make('photo')
+                    ->disk('public')
             ])
             ->filters([
                 //
