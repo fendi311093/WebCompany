@@ -106,9 +106,9 @@ class ProfilResource extends Resource
                     ->words(4),
                 TextColumn::make('phone'),
                 ImageColumn::make('logo')
-                    ->url(fn($record) => $record->logo ? asset('storage/' . $record->logo) : null),
+                    ->disk('public'),
                 ImageColumn::make('photo')
-                    ->url(fn($record) => $record->photo ? asset('storage/' . $record->photo) : null)
+                    ->disk('public')
             ])
             ->filters([
                 //
