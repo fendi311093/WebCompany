@@ -54,7 +54,7 @@ class Profil extends Model
         static::saved(function ($profil) {
             if ($profil->isDirty('photo')) {
                 self::deletePhotoFile($profil->getOriginal('photo'));
-                dispatch(new ResizePhotoJob($profil->id, 'Profil', 'photo'));
+                dispatch(new ResizePhotoJob($profil->id, 'Profil', 'photo'))->delay(now()->addMinutes(5));
             }
             if ($profil->isDirty('logo')) {
                 self::deleteLogoFile($profil->getOriginal('logo'));
