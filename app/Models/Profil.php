@@ -63,6 +63,7 @@ class Profil extends Model
             // clear cache
             Cache::forget('source_ids_App\Models\Profil_' . config('app.env'));
             Cache::forget('page_options_' . config('app.env'));
+            Cache::forget('dropdown_menu_page_options');
         });
 
         static::deleting(function ($profil) {
@@ -74,6 +75,7 @@ class Profil extends Model
             // clear cache
             Cache::forget('source_ids_App\Models\Profil_' . config('app.env'));
             Cache::forget('page_options_' . config('app.env'));
+            Cache::forget('dropdown_menu_page_options');
         });
     }
 

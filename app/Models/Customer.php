@@ -84,6 +84,7 @@ class Customer extends Model
             // clear cache
             Cache::forget('source_ids_App\Models\Customer_' . config('app.env'));
             Cache::forget('page_options_' . config('app.env'));
+            Cache::forget('dropdown_menu_page_options');
         });
 
         static::deleting(function ($customer) {
@@ -94,6 +95,7 @@ class Customer extends Model
             // clear cache
             Cache::forget('source_ids_App\Models\Customer_' . config('app.env'));
             Cache::forget('page_options_' . config('app.env'));
+            Cache::forget('dropdown_menu_page_options');
         });
     }
 

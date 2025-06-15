@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->foreignId('headerButton_id')->constrained('header_buttons')->cascadeOnDelete();
-            $table->tinyInteger('position')->default(0);
+            $table->tinyInteger('position');
             $table->foreignId('page_id')->constrained('pages')->cascadeOnDelete();
+            $table->boolean('is_active')->default(true);
             $table->boolean('is_active_url')->default(false);
             $table->string('url')->nullable();
-            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

@@ -30,12 +30,16 @@ class HeaderButton extends Model
             if (empty($model['is_active_url']) || $model['is_active_url'] == 0) {
                 $model['url'] = null;
             }
+
+            Cache::forget('dropdown_menu_header_options');
         });
 
         static::updating(function ($model) {
             if (empty($model['is_active_url']) || $model['is_active_url'] == 0) {
                 $model['url'] = null;
             }
+
+            Cache::forget('dropdown_menu_header_options');
         });
     }
 

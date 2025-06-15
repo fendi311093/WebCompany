@@ -30,7 +30,7 @@ use Illuminate\Support\Str;
 class NavigasiResource extends Resource
 {
     protected static ?string $model = HeaderButton::class;
-    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
+    protected static ?string $navigationIcon = 'heroicon-o-bars-4';
     protected static ?string $cluster = WebsiteSettings::class;
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
     protected static ?int $navigationSort = 3;
@@ -159,12 +159,7 @@ class NavigasiResource extends Resource
                                 ->offColor('danger')
                                 ->onIcon('heroicon-o-check-badge')
                                 ->offIcon('heroicon-o-x-circle')
-                                ->reactive()
-                                ->afterStateUpdated(function ($state, callable $set) {
-                                    if (!$state) {
-                                        $set('url', null);
-                                    }
-                                }),
+                                ->reactive(),
                             TextInput::make('url')
                                 ->label('URL')
                                 ->rules(fn($record) => HeaderButton::getValidationRules($record)['url'])
