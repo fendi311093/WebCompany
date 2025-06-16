@@ -136,15 +136,62 @@ class DropdownMenu extends Model
 
     public static function getHeaderOptions()
     {
+        // Static cache untuk 1 lifecycle PHP (misalnya selama 1 request di Laravel)
         static $headerOptions = null;
 
-        if ($headerOptions === null) {
-            $headerOptions = Cache::remember('dropdown_menu_header_options', now()->addHour(), function () {
-                return HeaderButton::where('is_active_button', true)
-                    ->pluck('name_button', 'id')
-                    ->toArray();
-            });
+        if ($headerOptions !== null) {
+            return $headerOptions;
         }
+
+        // Gunakan cache untuk menyimpan hasil query selama 1 jam
+        $headerOptions = Cache::remember('dropdown_menu_header_options', now()->addHour(), function () {
+            return HeaderButton::where('is_active_button', true)
+                ->pluck('name_button', 'id')
+                ->toArray();
+        });
+
         return $headerOptions;
+    }
+
+
+    public static function validateField($value, $fieldName, $record = null): bool
+    {
+        static $usedValues = [];
+
+        // Jika sedang edit dan nilai tidak berubah, tidak perlu validasi
+        if ($record && $value == $record->{$fieldName}) {
+            return false;
+        }
+
+        // Buat cacheKey berdasarkan field dan ID record (atau 'new')
+        $cacheKey = $fieldName . '_' . ($record->id ?? 'new');
+
+        // Ambil nilai-nilai field dari cache lokal
+        if (!isset($usedValues[$cacheKey])) {
+            $usedValues[$cacheKey] = self::query()
+                ->when($record?->id, fn($q) => $q->where('id', '!=', $record->id))
+                ->pluck($fieldName)
+                ->all(); // Lebih ringan dari toArray()
+        }
+
+        // Cek apakah nilai sudah digunakan
+        return in_array($value, $usedValues[$cacheKey]);
+    }
+
+
+    // Wrapper functions untuk backward compatibility
+    public static function validatePosition($value, $record = null): bool
+    {
+        return self::validateField($value, 'position', $record);
+    }
+
+    public static function validateHeaderButton($value, $record = null): bool
+    {
+        return self::validateField($value, 'headerButton_id', $record);
+    }
+
+    public static function validatePage($value, $record = null): bool
+    {
+        return self::validateField($value, 'page_id', $record);
     }
 }

@@ -61,6 +61,7 @@ class SubNavigationResource extends Resource
                     Select::make('headerButton_id')
                         ->label('Header Button')
                         ->options($headerOptions)
+                        ->disableOptionWhen(fn($value, $record) => DropdownMenu::validateHeaderButton($value, $record))
                         ->rules(fn($record): array => DropdownMenu::getValidationRules($record)['headerButton_id'])
                         ->validationMessages(DropdownMenu::getValidationMessages()['headerButton_id'])
                         ->searchable()
@@ -82,7 +83,8 @@ class SubNavigationResource extends Resource
                             '8' => 'Position 8',
                             '9' => 'Position 9',
                             '10' => 'Position 10',
-                        ]),
+                        ])
+                        ->disableOptionWhen(fn($value, $record) => DropdownMenu::validatePosition($value, $record))
                 ])->columns(2),
                 Section::make()->schema([
                     Select::make('page_id')
@@ -92,7 +94,8 @@ class SubNavigationResource extends Resource
                         ->preload()
                         ->rules(fn($record): array => DropdownMenu::getValidationRules($record)['page_id'])
                         ->validationMessages(DropdownMenu::getValidationMessages()['page_id'])
-                        ->options($pageOptions),
+                        ->options($pageOptions)
+                        ->disableOptionWhen(fn($value, $record) => DropdownMenu::validatePage($value, $record)),
                     Toggle::make('is_active')
                         ->label('Active Dropdown')
                         ->default(true)

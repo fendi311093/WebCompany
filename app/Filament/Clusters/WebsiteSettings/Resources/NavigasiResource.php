@@ -44,6 +44,13 @@ class NavigasiResource extends Resource
         $formData = HeaderButton::getFormData($record?->id);
         $pageOptions = HeaderButton::getPageOptionsOptimized();
 
+        $allSourceIds = [];
+        $usedSourceIds = [];
+        foreach (['App\Models\Profil', 'App\Models\Customer', 'App\Models\Content'] as $type) {
+            $allSourceIds[$type] = Page::getAllSourceIds($type);
+            $usedSourceIds[$type] = HeaderButton::getPageOptionsOptimized($type);
+        }
+
         return $form
             ->schema([
                 Section::make()->schema([
@@ -86,10 +93,16 @@ class NavigasiResource extends Resource
                             ->placeholder('Please select page')
                             ->rules(fn($record) => HeaderButton::getValidationRules($record)['page_id'])
                             ->validationMessages(HeaderButton::getValidationMessages()['page_id'])
-                            ->options($pageOptions)
+                            ->options(function (callable $get) use ($allSourceIds) {
+                                $type = $get('source_type');
+                                return $allSourceIds[$type] ?? [];
+                            })
                             ->searchable()
                             ->preload()
-                            ->disableOptionWhen(fn($value) => in_array($value, $formData['usedPageIds']))
+                            ->disableOptionWhen(function ($value, callable $get) use ($usedSourceIds) {
+                                $type = $get('source_type');
+                                return in_array($value, $usedSourceIds[$type] ?? []);
+                            })
                             ->createOptionForm([
                                 Select::make('source_type')
                                     ->label('Source Type')
@@ -176,7 +189,7 @@ class NavigasiResource extends Resource
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         // mengambl data header button beserta data relasi Pages
-        return parent::getEloquentQuery()->with('Pages');
+        return parent::getEloquentQuery()->with(['Pages', 'Pages.source']);
     }
 
     public static function table(Table $table): Table
