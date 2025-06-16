@@ -154,7 +154,7 @@ class DropdownMenu extends Model
     }
 
 
-    public static function validateField($value, $fieldName, $record = null): bool
+    public static function validateField($value, $fieldName, $record = null, array $scope = []): bool
     {
         static $usedValues = [];
 
@@ -163,15 +163,23 @@ class DropdownMenu extends Model
             return false;
         }
 
-        // Buat cacheKey berdasarkan field dan ID record (atau 'new')
-        $cacheKey = $fieldName . '_' . ($record->id ?? 'new');
+        // Buat cacheKey berdasarkan field, ID record (atau 'new'), dan scope
+        $cacheKey = $fieldName . '_' . ($record->id ?? 'new') . '_' . md5(json_encode($scope));
 
         // Ambil nilai-nilai field dari cache lokal
         if (!isset($usedValues[$cacheKey])) {
-            $usedValues[$cacheKey] = self::query()
-                ->when($record?->id, fn($q) => $q->where('id', '!=', $record->id))
-                ->pluck($fieldName)
-                ->all(); // Lebih ringan dari toArray()
+            $query = self::query();
+
+            // Apply scope (misal: ['headerButton_id' => 1])
+            foreach ($scope as $scopeField => $scopeValue) {
+                $query->where($scopeField, $scopeValue);
+            }
+
+            if ($record?->id) {
+                $query->where('id', '!=', $record->id);
+            }
+
+            $usedValues[$cacheKey] = $query->pluck($fieldName)->all();
         }
 
         // Cek apakah nilai sudah digunakan
@@ -180,9 +188,9 @@ class DropdownMenu extends Model
 
 
     // Wrapper functions untuk backward compatibility
-    public static function validatePosition($value, $record = null): bool
+    public static function validatePosition($value, $record = null, array $scope = []): bool
     {
-        return self::validateField($value, 'position', $record);
+        return self::validateField($value, 'position', $record, $scope);
     }
 
     public static function validateHeaderButton($value, $record = null): bool

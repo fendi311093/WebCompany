@@ -61,12 +61,13 @@ class SubNavigationResource extends Resource
                     Select::make('headerButton_id')
                         ->label('Header Button')
                         ->options($headerOptions)
-                        ->disableOptionWhen(fn($value, $record) => DropdownMenu::validateHeaderButton($value, $record))
+                        // ->disableOptionWhen(fn($value, $record) => DropdownMenu::validateHeaderButton($value, $record))
                         ->rules(fn($record): array => DropdownMenu::getValidationRules($record)['headerButton_id'])
                         ->validationMessages(DropdownMenu::getValidationMessages()['headerButton_id'])
                         ->searchable()
                         ->preload()
-                        ->placeholder('Select a header button'),
+                        ->placeholder('Select a header button')
+                        ->reactive(),
                     Select::make('position')
                         ->placeholder('Select a position')
                         ->searchable()
@@ -84,7 +85,14 @@ class SubNavigationResource extends Resource
                             '9' => 'Position 9',
                             '10' => 'Position 10',
                         ])
-                        ->disableOptionWhen(fn($value, $record) => DropdownMenu::validatePosition($value, $record))
+                        ->disableOptionWhen(function ($value, $record, callable $get) {
+                            $headerButtonId = $get('headerButton_id');
+                            if (!$headerButtonId) {
+                                return false; // Jangan disable jika headerButton_id belum dipilih
+                            }
+                            return DropdownMenu::validatePosition($value, $record, ['headerButton_id' => $headerButtonId]);
+                        })
+                        ->visible(fn(callable $get) => filled($get('headerButton_id'))),
                 ])->columns(2),
                 Section::make()->schema([
                     Select::make('page_id')
