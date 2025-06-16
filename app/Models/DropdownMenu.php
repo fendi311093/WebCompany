@@ -15,7 +15,7 @@ class DropdownMenu extends Model
         return $this->belongsTo(HeaderButton::class, 'headerButton_id', 'id');
     }
 
-    public function page(): BelongsTo
+    public function pages(): BelongsTo
     {
         return $this->belongsTo(Page::class, 'page_id', 'id');
     }
@@ -193,5 +193,30 @@ class DropdownMenu extends Model
     public static function validatePage($value, $record = null): bool
     {
         return self::validateField($value, 'page_id', $record);
+    }
+
+    // Atributes aksesori untuk menampilkan data page
+    public function getPageLabelAttribute()
+    {
+        if (!$this->Pages) {
+            return '-';
+        }
+
+        $modelNames = [
+            Profil::class => 'PROFIL',
+            Customer::class => 'CUSTOMER',
+            Content::class => 'CONTENT'
+        ];
+
+        $map = [
+            Profil::class   => $this->Pages->source->name_company ?? '-',
+            Customer::class => $this->Pages->source->name_customer ?? '-',
+            Content::class  => $this->Pages->source->title ?? '-',
+        ];
+
+        $modelName = $modelNames[$this->Pages->source_type] ?? '';
+        $value = $map[$this->Pages->source_type] ?? '-';
+
+        return "{$modelName} - {$value}";
     }
 }

@@ -186,12 +186,6 @@ class NavigasiResource extends Resource
             ]);
     }
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
-    {
-        // mengambl data header button beserta data relasi Pages
-        return parent::getEloquentQuery()->with(['Pages', 'Pages.source']);
-    }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -240,5 +234,15 @@ class NavigasiResource extends Resource
         return [
             'index' => Pages\ManageNavigasis::route('/'),
         ];
+    }
+  
+    // Untuk optimasi pengambilan data relasi Pages
+    // dengan eager loading, sehingga mengurangi jumlah query yang dieksekusi
+    // dan meningkatkan performa saat menampilkan data di tabel.
+    // Ini akan mengurangi jumlah query yang dieksekusi saat mengambil data
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        // mengambl data header button beserta data relasi Pages
+        return parent::getEloquentQuery()->with(['Pages', 'Pages.source']);
     }
 }

@@ -122,19 +122,28 @@ class HeaderButton extends Model
         return !$query->exists();
     }
 
-    public function getPageLabelAttribute() // atribut aksesori 
+    public function getPageLabelAttribute()
     {
         if (!$this->Pages) {
             return '-';
         }
 
-        $map = [
-            'App\\Models\\Profil'   => $this->Pages->source->name_company ?? '-',
-            'App\\Models\\Customer' => $this->Pages->source->name_customer ?? '-',
-            'App\\Models\\Content'  => $this->Pages->source->title ?? '-',
+        $modelNames = [
+            Profil::class => 'PROFIL',
+            Customer::class => 'CUSTOMER',
+            Content::class => 'CONTENT'
         ];
 
-        return $map[$this->Pages->source_type] ?? '-';
+        $map = [
+            Profil::class   => $this->Pages->source->name_company ?? '-',
+            Customer::class => $this->Pages->source->name_customer ?? '-',
+            Content::class  => $this->Pages->source->title ?? '-',
+        ];
+
+        $modelName = $modelNames[$this->Pages->source_type] ?? '';
+        $value = $map[$this->Pages->source_type] ?? '-';
+
+        return "{$modelName} - {$value}";
     }
 
     public static function getFormData($recordId = null)

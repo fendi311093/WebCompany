@@ -134,6 +134,8 @@ class SubNavigationResource extends Resource
                     ->label('Parent Header'),
                 TextColumn::make('position')
                     ->formatStateUsing(fn($state) => 'POSITION - ' . $state),
+                TextColumn::make('page_label') // Atribute aksesori getPageLabelAttribute
+                    ->label('Page'),
                 IconColumn::make('is_active_url')
                     ->label('Another URL')
                     ->boolean()
@@ -169,5 +171,15 @@ class SubNavigationResource extends Resource
         return [
             'index' => Pages\ManageSubNavigations::route('/'),
         ];
+    }
+
+    // Untuk optimasi pengambilan data relasi Pages
+    // dengan eager loading, sehingga mengurangi jumlah query yang dieksekusi
+    // dan meningkatkan performa saat menampilkan data di tabel.
+    // Ini akan mengurangi jumlah query yang dieksekusi saat mengambil data
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        // mengambl data header button beserta data relasi Pages
+        return parent::getEloquentQuery()->with(['Pages', 'Pages.source']);
     }
 }
