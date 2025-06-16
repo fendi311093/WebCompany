@@ -17,6 +17,7 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\ActionSize;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -95,6 +96,14 @@ class SubNavigationResource extends Resource
                         ->visible(fn(callable $get) => filled($get('headerButton_id'))),
                 ])->columns(2),
                 Section::make()->schema([
+                    Toggle::make('is_active')
+                        ->label('Page Active')
+                        ->default(false)
+                        ->onColor('primary')
+                        ->offColor('danger')
+                        ->onIcon('heroicon-o-check-badge')
+                        ->offIcon('heroicon-o-x-circle')
+                        ->reactive(),
                     Select::make('page_id')
                         ->label('Select Page')
                         ->placeholder('Select a page')
@@ -103,14 +112,8 @@ class SubNavigationResource extends Resource
                         ->rules(fn($record): array => DropdownMenu::getValidationRules($record)['page_id'])
                         ->validationMessages(DropdownMenu::getValidationMessages()['page_id'])
                         ->options($pageOptions)
-                        ->disableOptionWhen(fn($value, $record) => DropdownMenu::validatePage($value, $record)),
-                    Toggle::make('is_active')
-                        ->label('Active Dropdown')
-                        ->default(true)
-                        ->onColor('primary')
-                        ->offColor('danger')
-                        ->onIcon('heroicon-o-check-badge')
-                        ->offIcon('heroicon-o-x-circle'),
+                        // ->disableOptionWhen(fn($value, $record) => DropdownMenu::validatePage($value, $record))
+                        ->visible(fn(callable $get) => $get('is_active') == true),
                 ]),
                 Section::make()->schema([
                     Toggle::make('is_active_url')
@@ -143,7 +146,20 @@ class SubNavigationResource extends Resource
                 TextColumn::make('position')
                     ->formatStateUsing(fn($state) => 'POSITION - ' . $state),
                 TextColumn::make('page_label') // Atribute aksesori getPageLabelAttribute
-                    ->label('Page'),
+                    ->label('Page')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('is_active')
+                    ->label('Active')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-badge')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('primary')
+                    ->falseColor('danger'),
+                TextColumn::make('url')
+                    ->label('URL')
+                    ->icon('heroicon-m-globe-alt')
+                    ->default(fn($record) => $record->is_active_url ? $record->url : '-')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_active_url')
                     ->label('Another URL')
                     ->boolean()
@@ -151,25 +167,26 @@ class SubNavigationResource extends Resource
                     ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('primary')
                     ->falseColor('danger'),
-                ToggleColumn::make('is_active')
-                    ->label('Active')
-                    ->onIcon('heroicon-o-check-badge')
-                    ->offIcon('heroicon-o-x-circle')
-                    ->onColor('primary')
-                    ->offColor('danger'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
+                    ->label('')
+                    ->icon('heroicon-m-wrench-screwdriver')
+                    ->size(ActionSize::Small)
+                    ->Button()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])->emptyStateHeading('No Dropdown Menus Found')
+            ])
+            ->emptyStateHeading('No Dropdown Menus Found')
             ->emptyStateDescription('You can create a new dropdown menu by clicking the button above.')
             ->emptyStateIcon('heroicon-o-bars-arrow-down');
     }
