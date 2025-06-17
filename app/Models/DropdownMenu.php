@@ -25,14 +25,22 @@ class DropdownMenu extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            if (empty($model['is_active_url']) || $model['is_active_url'] == 0) {
-                $model['url'] = null;
+            if ($model->is_active_url == false) {
+                $model->url = null;
+            }
+
+            if ($model->is_active == false) {
+                $model->page_id = null;
             }
         });
 
         static::updating(function ($model) {
-            if (empty($model['is_active_url']) || $model['is_active_url'] == 0) {
-                $model['url'] = null;
+            if ($model->is_active_url == false) {
+                $model->url = null;
+            }
+
+            if ($model->is_active == false) {
+                $model->page_id = null;
             }
         });
     }
@@ -90,10 +98,10 @@ class DropdownMenu extends Model
                 'required' => 'The position is required. Please select a position.',
             ],
             'page_id' => [
-                'required' => 'The page is required. Please select a page.',
+                'required' => 'The page is required when page is active.',
             ],
             'url' => [
-                'required' => 'The URL is required. Please enter a valid URL.',
+                'required' => 'The URL is required when URL is active.',
                 'url' => 'The URL must be a valid URL format. Example: https://example.com',
                 'max' => 'The URL may not be greater than 255 characters.',
             ]
