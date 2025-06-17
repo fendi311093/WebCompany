@@ -15,7 +15,10 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\ActionSize;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -40,7 +43,8 @@ class NavigationWebResource extends Resource
 
         // Cache options at class level to prevent duplicate queries
         if (static::$cachedPageOptions === null) {
-            static::$cachedPageOptions = NavigationWeb::getPages();
+            static::$cachedPageOptions = NavigationWeb::getPagesOptions();
+            // dd(static::$cachedPageOptions);
         }
 
         return $form
@@ -61,7 +65,9 @@ class NavigationWebResource extends Resource
                             ->searchable()
                             ->preload()
                             ->visible(fn(callable $get) => $get('is_active_page') == true)
-                            ->options(static::$cachedPageOptions),
+                            ->options(static::$cachedPageOptions)
+                            ->rules(fn($record): array => NavigationWeb::getValidationRules($record)['page_id'])
+                            ->validationMessages(NavigationWeb::getValidationMessages()['page_id']),
                         Toggle::make('is_active_url')
                             ->label('URL Active')
                             ->default(false)
@@ -75,27 +81,35 @@ class NavigationWebResource extends Resource
                             ->placeholder('https://example.com')
                             ->suffixIcon('heroicon-m-globe-alt')
                             ->visible(fn(callable $get) => $get('is_active_url') == true)
-                            ->required(fn(callable $get) => $get('is_active_url') == true),
+                            ->rules(fn($record): array => NavigationWeb::getValidationRules($record)['link'])
+                            ->validationMessages(NavigationWeb::getValidationMessages()['link']),
                     ])
                 ])->columnSpan(2),
                 Group::make()->schema([
                     Section::make()->schema([
                         Select::make('type')
                             ->label('Type Button')
+                            ->placeholder('Select a type button')
                             ->options([
                                 'header' => 'Header',
                                 'dropdown' => 'Dropdown',
-                            ]),
+                            ])
+                            ->rules(fn($record) => NavigationWeb::getValidationRules($record)['type'])
+                            ->validationMessages(NavigationWeb::getValidationMessages()['type']),
                         TextInput::make('title')
                             ->label('Title')
                             ->dehydrateStateUsing(fn($state): string => strtoupper($state))
                             ->unique(ignoreRecord: true)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
+                            ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state)))
+                            ->rules(fn($record): array => NavigationWeb::getValidationRules($record)['title'])
+                            ->validationMessages(NavigationWeb::getValidationMessages()['title']),
                         TextInput::make('slug')
                             ->placeholder('Auto Generated From Title')
                             ->disabled()
-                            ->dehydrated(),
+                            ->dehydrated()
+                            ->rules(fn($record): array => NavigationWeb::getValidationRules($record)['slug'])
+                            ->validationMessages(NavigationWeb::getValidationMessages()['slug']),
                         Select::make('position')
                             ->placeholder('Select a position')
                             ->searchable()
@@ -111,6 +125,8 @@ class NavigationWebResource extends Resource
                                 '9' => 'Position 9',
                                 '10' => 'Position 10',
                             ])
+                            ->rules(fn($record): array => NavigationWeb::getValidationRules($record)['position'])
+                            ->validationMessages(NavigationWeb::getValidationMessages()['position']),
                     ])
                 ])->columnSpan(1),
             ])->columns(3);
@@ -118,15 +134,70 @@ class NavigationWebResource extends Resource
 
     public static function table(Table $table): Table
     {
+
+        // Cache options at class level to prevent duplicate queries
+        if (static::$cachedPageOptions === null) {
+            static::$cachedPageOptions = NavigationWeb::getPagesOptions();
+            // dd(static::$cachedPageOptions);
+        }
+
         return $table
             ->columns([
+                TextColumn::make('No')
+                    ->rowIndex(),
+                TextColumn::make('type')
+                    ->label('Type Button')
+                    ->formatStateUsing(fn($state): string => strtoupper($state))
+                    ->badge()
+                    ->color(fn($state): string => match ($state) {
+                        'header' => 'primary',
+                        'dropdown' => 'warning'
+                    }),
                 TextColumn::make('title')
+                    ->searchable(),
+                TextColumn::make('position')
+                    ->formatStateUsing(fn($state) => 'POSITION - ' . $state),
+                TextColumn::make('page_id')
+                    ->label('Page')
+                    ->formatStateUsing(function ($state) {
+                        // \Log::info('page_id:', ['state' => $state, 'options' => static::$cachedPageOptions]);
+                        if (!$state || !static::$cachedPageOptions) {
+                            return '-';
+                        }
+                        return static::$cachedPageOptions[$state] ?? '-';
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('is_active_page')
+                    ->label('Page Active')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-badge')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
+                TextColumn::make('link')
+                    ->icon('heroicon-m-globe-alt')
+                    ->default(fn($record) => $record->is_active_link ? $record->link : '-')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('is_active_link')
+                    ->label('Link Active')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-badge')
+                    ->falseIcon('heroicon-m-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
+                    ->label('')
+                    ->icon('heroicon-m-wrench-screwdriver')
+                    ->size(ActionSize::Small)
+                    ->Button()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
