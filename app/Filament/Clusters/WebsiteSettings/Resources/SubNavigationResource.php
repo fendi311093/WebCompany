@@ -97,13 +97,8 @@ class SubNavigationResource extends Resource
                 ])->columns(2),
                 Section::make()->schema([
                     Toggle::make('is_active')
-<<<<<<< HEAD
                         ->label('Active Dropdown')
                         ->default(true)
-=======
-                        ->label('Page Active')
-                        ->default(false)
->>>>>>> f4c3a51296c30b2edbabc12eae02aae05c773063
                         ->onColor('primary')
                         ->offColor('danger')
                         ->onIcon('heroicon-o-check-badge')
@@ -117,11 +112,7 @@ class SubNavigationResource extends Resource
                         ->rules(fn($record): array => DropdownMenu::getValidationRules($record)['page_id'])
                         ->validationMessages(DropdownMenu::getValidationMessages()['page_id'])
                         ->options($pageOptions)
-<<<<<<< HEAD
                         ->disableOptionWhen(fn($value, $record) => DropdownMenu::validatePage($value, $record))
-=======
-                        // ->disableOptionWhen(fn($value, $record) => DropdownMenu::validatePage($value, $record))
->>>>>>> f4c3a51296c30b2edbabc12eae02aae05c773063
                         ->visible(fn(callable $get) => $get('is_active') == true),
                 ]),
                 Section::make()->schema([
@@ -155,34 +146,15 @@ class SubNavigationResource extends Resource
                 TextColumn::make('position')
                     ->formatStateUsing(fn($state) => 'POSITION - ' . $state),
                 TextColumn::make('page_label') // Atribute aksesori getPageLabelAttribute
-<<<<<<< HEAD
-                    ->label('Page'),
-                IconColumn::make('is_active')
-                    ->label('Page Active')
-=======
                     ->label('Page')
                     ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_active')
-                    ->label('Active')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-check-badge')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->trueColor('primary')
-                    ->falseColor('danger'),
-                TextColumn::make('url')
-                    ->label('URL')
-                    ->icon('heroicon-m-globe-alt')
-                    ->default(fn($record) => $record->is_active_url ? $record->url : '-')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('is_active_url')
-                    ->label('Another URL')
->>>>>>> f4c3a51296c30b2edbabc12eae02aae05c773063
+                    ->label('Page Active')
                     ->boolean()
                     ->trueIcon('heroicon-o-check-badge')
                     ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('success')
                     ->falseColor('danger'),
-<<<<<<< HEAD
                 IconColumn::make('is_active_url')
                     ->label('URL Active')
                     ->boolean()
@@ -194,8 +166,7 @@ class SubNavigationResource extends Resource
                     ->label('URL')
                     ->icon('heroicon-m-globe-alt')
                     ->default(fn($record) => $record->is_active_url ? $record->url : '-')
-=======
->>>>>>> f4c3a51296c30b2edbabc12eae02aae05c773063
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
