@@ -68,8 +68,8 @@ class NavigationWebResource extends Resource
                             ->options(static::$cachedPageOptions)
                             ->rules(fn($record): array => NavigationWeb::getValidationRules($record)['page_id'])
                             ->validationMessages(NavigationWeb::getValidationMessages()['page_id']),
-                        Toggle::make('is_active_url')
-                            ->label('URL Active')
+                        Toggle::make('is_active_link')
+                            ->label('Link Active')
                             ->default(false)
                             ->onColor('primary')
                             ->offColor('danger')
@@ -80,7 +80,7 @@ class NavigationWebResource extends Resource
                             ->label('URL Link')
                             ->placeholder('https://example.com')
                             ->suffixIcon('heroicon-m-globe-alt')
-                            ->visible(fn(callable $get) => $get('is_active_url') == true)
+                            ->visible(fn(callable $get) => $get('is_active_link') == true)
                             ->rules(fn($record): array => NavigationWeb::getValidationRules($record)['link'])
                             ->validationMessages(NavigationWeb::getValidationMessages()['link']),
                     ])
@@ -164,12 +164,8 @@ class NavigationWebResource extends Resource
                     ->formatStateUsing(fn($state) => 'POSITION - ' . $state),
                 TextColumn::make('page_id')
                     ->label('Page')
-                    ->formatStateUsing(function ($state) {
-                        if (!$state || !isset(static::$cachedPageOptions[$state])) {
-                            return '-';
-                        }
-                        return static::$cachedPageOptions[$state];
-                    })
+                    ->default('-')
+                    ->formatStateUsing(fn($state) => static::$cachedPageOptions[$state] ?? '-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_active_page')
                     ->label('Page Active')

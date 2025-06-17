@@ -29,22 +29,22 @@ class NavigationWeb extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            if ($model->is_active_page == false) {
-                $model->page_id = null;
-            }
-
             if ($model->is_active_link == false) {
                 $model->link = null;
+            }
+
+            if ($model->is_active_page == false) {
+                $model->page_id = null;
             }
         });
 
         static::updating(function ($model) {
-            if ($model->is_active_page == false) {
-                $model->page_id = null;
-            }
-
             if ($model->is_active_link == false) {
                 $model->link = null;
+            }
+
+            if ($model->is_active_page == false) {
+                $model->page_id = null;
             }
         });
     }
