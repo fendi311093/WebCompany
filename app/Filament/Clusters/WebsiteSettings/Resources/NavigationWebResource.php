@@ -113,6 +113,7 @@ class NavigationWebResource extends Resource
                         Select::make('position')
                             ->placeholder('Select a position')
                             ->searchable()
+                            ->preload()
                             ->options([
                                 '1' => 'Position 1',
                                 '2' => 'Position 2',
@@ -126,7 +127,13 @@ class NavigationWebResource extends Resource
                                 '10' => 'Position 10',
                             ])
                             ->rules(fn($record): array => NavigationWeb::getValidationRules($record)['position'])
-                            ->validationMessages(NavigationWeb::getValidationMessages()['position']),
+                            ->validationMessages(NavigationWeb::getValidationMessages()['position'])
+                            ->disableOptionWhen(function ($value, $record, $get) {
+                                $type = $get('type');
+                                $ignoreId = $record?->id;
+                                $usedPositions = NavigationWeb::getUsedPositionsWithCache($type, $ignoreId);
+                                return in_array($value, $usedPositions);
+                            })
                     ])
                 ])->columnSpan(1),
             ])->columns(3);
@@ -134,11 +141,9 @@ class NavigationWebResource extends Resource
 
     public static function table(Table $table): Table
     {
-
         // Cache options at class level to prevent duplicate queries
         if (static::$cachedPageOptions === null) {
             static::$cachedPageOptions = NavigationWeb::getPagesOptions();
-            // dd(static::$cachedPageOptions);
         }
 
         return $table
@@ -160,11 +165,10 @@ class NavigationWebResource extends Resource
                 TextColumn::make('page_id')
                     ->label('Page')
                     ->formatStateUsing(function ($state) {
-                        // \Log::info('page_id:', ['state' => $state, 'options' => static::$cachedPageOptions]);
-                        if (!$state || !static::$cachedPageOptions) {
+                        if (!$state || !isset(static::$cachedPageOptions[$state])) {
                             return '-';
                         }
-                        return static::$cachedPageOptions[$state] ?? '-';
+                        return static::$cachedPageOptions[$state];
                     })
                     ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_active_page')

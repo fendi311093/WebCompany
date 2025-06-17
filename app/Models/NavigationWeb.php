@@ -24,6 +24,31 @@ class NavigationWeb extends Model
         return $this->belongsTo(Page::class, 'page_id', 'id');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if ($model->is_active_page == false) {
+                $model->page_id = null;
+            }
+
+            if ($model->is_active_link == false) {
+                $model->link = null;
+            }
+        });
+
+        static::updating(function ($model) {
+            if ($model->is_active_page == false) {
+                $model->page_id = null;
+            }
+
+            if ($model->is_active_link == false) {
+                $model->link = null;
+            }
+        });
+    }
+
     //Validation unique title
     protected static function validateUniqueName($title, $ignoreId = null)
     {
@@ -111,5 +136,18 @@ class NavigationWeb extends Model
         });
     }
 
-    //
+    //Get used positions with cache
+    public static function getUsedPositionsWithCache($type, $ignoreId = null)
+    {
+        static $cache = [];
+        $cacheKey = $type . '-' . ($ignoreId ?? 'new');
+        if (!isset($cache[$cacheKey])) {
+            $query = self::where('type', $type);
+            if ($ignoreId) {
+                $query->where('id', '!=', $ignoreId);
+            }
+            $cache[$cacheKey] = $query->pluck('position')->toArray();
+        }
+        return $cache[$cacheKey];
+    }
 }
