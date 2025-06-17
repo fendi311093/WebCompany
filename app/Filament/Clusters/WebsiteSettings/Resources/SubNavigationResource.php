@@ -95,6 +95,14 @@ class SubNavigationResource extends Resource
                         ->visible(fn(callable $get) => filled($get('headerButton_id'))),
                 ])->columns(2),
                 Section::make()->schema([
+                    Toggle::make('is_active')
+                        ->label('Active Dropdown')
+                        ->default(true)
+                        ->onColor('primary')
+                        ->offColor('danger')
+                        ->onIcon('heroicon-o-check-badge')
+                        ->offIcon('heroicon-o-x-circle')
+                        ->reactive(),
                     Select::make('page_id')
                         ->label('Select Page')
                         ->placeholder('Select a page')
@@ -103,14 +111,8 @@ class SubNavigationResource extends Resource
                         ->rules(fn($record): array => DropdownMenu::getValidationRules($record)['page_id'])
                         ->validationMessages(DropdownMenu::getValidationMessages()['page_id'])
                         ->options($pageOptions)
-                        ->disableOptionWhen(fn($value, $record) => DropdownMenu::validatePage($value, $record)),
-                    Toggle::make('is_active')
-                        ->label('Active Dropdown')
-                        ->default(true)
-                        ->onColor('primary')
-                        ->offColor('danger')
-                        ->onIcon('heroicon-o-check-badge')
-                        ->offIcon('heroicon-o-x-circle'),
+                        ->disableOptionWhen(fn($value, $record) => DropdownMenu::validatePage($value, $record))
+                        ->visible(fn(callable $get) => $get('is_active') == true),
                 ]),
                 Section::make()->schema([
                     Toggle::make('is_active_url')
@@ -144,19 +146,24 @@ class SubNavigationResource extends Resource
                     ->formatStateUsing(fn($state) => 'POSITION - ' . $state),
                 TextColumn::make('page_label') // Atribute aksesori getPageLabelAttribute
                     ->label('Page'),
-                IconColumn::make('is_active_url')
-                    ->label('Another URL')
+                IconColumn::make('is_active')
+                    ->label('Page Active')
                     ->boolean()
                     ->trueIcon('heroicon-o-check-badge')
                     ->falseIcon('heroicon-o-x-circle')
-                    ->trueColor('primary')
+                    ->trueColor('success')
                     ->falseColor('danger'),
-                ToggleColumn::make('is_active')
-                    ->label('Active')
-                    ->onIcon('heroicon-o-check-badge')
-                    ->offIcon('heroicon-o-x-circle')
-                    ->onColor('primary')
-                    ->offColor('danger'),
+                IconColumn::make('is_active_url')
+                    ->label('URL Active')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-badge')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
+                TextColumn::make('url')
+                    ->label('URL')
+                    ->icon('heroicon-m-globe-alt')
+                    ->default(fn($record) => $record->is_active_url ? $record->url : '-')
             ])
             ->filters([
                 //

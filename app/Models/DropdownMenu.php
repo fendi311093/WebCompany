@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DropdownMenu extends Model
 {
-    protected $fillable = ['title', 'slug', 'headerButton_id', 'position', 'page_id', 'is_active'];
+    protected $fillable = ['title', 'slug', 'headerButton_id', 'position', 'page_id', 'is_active', 'is_active_url', 'url'];
 
     public function headerButton(): BelongsTo
     {
