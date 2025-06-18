@@ -16,6 +16,7 @@ return new class extends Migration
             $table->enum('type', ['header', 'dropdown']);
             $table->string('title')->unique();
             $table->string('slug');
+            $table->foreignId('parent_id')->nullable()->constrained('navigation_webs')->cascadeOnDelete();
             $table->tinyInteger('position');
             $table->boolean('is_active_page')->default(true);
             $table->foreignId('page_id')->nullable()->constrained('pages')->cascadeOnDelete();

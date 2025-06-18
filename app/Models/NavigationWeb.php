@@ -11,6 +11,7 @@ class NavigationWeb extends Model
     protected $fillable = [
         'type',
         'title',
+        'parent_id',
         'slug',
         'position',
         'is_active_page',
@@ -36,6 +37,8 @@ class NavigationWeb extends Model
             if ($model->is_active_page == false) {
                 $model->page_id = null;
             }
+
+            Cache::forget('navigation_web_parent_options');
         });
 
         static::updating(function ($model) {
@@ -46,6 +49,8 @@ class NavigationWeb extends Model
             if ($model->is_active_page == false) {
                 $model->page_id = null;
             }
+
+            Cache::forget('navigation_web_parent_options');
         });
     }
 
@@ -149,5 +154,20 @@ class NavigationWeb extends Model
             $cache[$cacheKey] = $query->pluck('position')->toArray();
         }
         return $cache[$cacheKey];
+    }
+
+    //Get title type header for option select parent navigation
+    public static function getParentNavigationOptions()
+    {
+        return Cache::remember('navigation_web_parent_options', now()->addDay(), function () {
+            return self::query()
+                ->select(['id', 'title', 'type'])
+                ->where('type', 'header')
+                ->get()
+                ->mapWithKeys(function ($nav) {
+                    return [$nav->id => "HEADER - {$nav->title}"];
+                })
+                ->toArray();
+        });
     }
 }

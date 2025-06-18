@@ -37,14 +37,20 @@ class NavigationWebResource extends Resource
     protected static ?string $pluralModelLabel = 'List of Navigation Webs';
 
     protected static ?array $cachedPageOptions = null;
+    protected static ?array $cachedParentOptions = null;
 
     public static function form(Form $form): Form
     {
 
-        // Cache options at class level to prevent duplicate queries
+        // Cache option untuk pages
         if (static::$cachedPageOptions === null) {
             static::$cachedPageOptions = NavigationWeb::getPagesOptions();
             // dd(static::$cachedPageOptions);
+        }
+
+        //Cache options untuk header
+        if (static::$cachedParentOptions === null) {
+            static::$cachedParentOptions = NavigationWeb::getParentNavigationOptions();
         }
 
         return $form
@@ -84,7 +90,7 @@ class NavigationWebResource extends Resource
                             ->rules(fn($record): array => NavigationWeb::getValidationRules($record)['link'])
                             ->validationMessages(NavigationWeb::getValidationMessages()['link']),
                     ])
-                ])->columnSpan(2),
+                ])->columnSpan(1),
                 Group::make()->schema([
                     Section::make()->schema([
                         Select::make('type')
@@ -95,7 +101,15 @@ class NavigationWebResource extends Resource
                                 'dropdown' => 'Dropdown',
                             ])
                             ->rules(fn($record) => NavigationWeb::getValidationRules($record)['type'])
-                            ->validationMessages(NavigationWeb::getValidationMessages()['type']),
+                            ->validationMessages(NavigationWeb::getValidationMessages()['type'])
+                            ->reactive(),
+                        Select::make('parent_id')
+                            ->label('Parent Navigation')
+                            ->placeholder('Select a parent navigation')
+                            ->searchable()
+                            ->preload()
+                            ->options(static::$cachedParentOptions)
+                            ->visible(fn(callable $get) => $get('type') === 'dropdown'),
                         TextInput::make('title')
                             ->label('Title')
                             ->dehydrateStateUsing(fn($state): string => strtoupper($state))
@@ -136,7 +150,7 @@ class NavigationWebResource extends Resource
                             })
                     ])
                 ])->columnSpan(1),
-            ])->columns(3);
+            ])->columns(2);
     }
 
     public static function table(Table $table): Table
