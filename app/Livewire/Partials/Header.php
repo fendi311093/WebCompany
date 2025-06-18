@@ -2,26 +2,39 @@
 
 namespace App\Livewire\Partials;
 
-use App\Models\HeaderButton;
+use App\Models\NavigationWeb;
 use App\Models\Profil;
 use Livewire\Component;
 
 class Header extends Component
 {
     public $companyLogo;
-    public $headerButtons;
+    public $headerNavigations;
+    public $dropdownNavigations;
 
     public function mount()
     {
         $this->companyLogo = Profil::first();
-        $this->headerButtons = HeaderButton::orderBy('position', 'asc')->get();
+
+        // Ambil data navigation web untuk type header
+        $this->headerNavigations = NavigationWeb::where('type', 'header')
+            ->orderBy('position', 'asc')
+            ->with('PagesRelation')
+            ->get();
+
+        // Ambil data navigation web untuk type dropdown
+        $this->dropdownNavigations = NavigationWeb::where('type', 'dropdown')
+            ->orderBy('position', 'asc')
+            ->with(['PagesRelation', 'parentNavigation'])
+            ->get();
     }
 
     public function render()
     {
         return view('livewire.partials.header', [
             'companyLogo' => $this->companyLogo,
-            'headerButtons' => $this->headerButtons,
+            'headerNavigations' => $this->headerNavigations,
+            'dropdownNavigations' => $this->dropdownNavigations,
         ]);
     }
 }

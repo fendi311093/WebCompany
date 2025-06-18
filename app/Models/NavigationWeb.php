@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Cache;
 
 class NavigationWeb extends Model
@@ -23,6 +24,16 @@ class NavigationWeb extends Model
     public function PagesRelation(): BelongsTo
     {
         return $this->belongsTo(Page::class, 'page_id', 'id');
+    }
+
+    public function parentNavigation(): BelongsTo
+    {
+        return $this->belongsTo(NavigationWeb::class, 'parent_id', 'id');
+    }
+
+    public function childNavigations(): HasMany
+    {
+        return $this->hasMany(NavigationWeb::class, 'parent_id', 'id');
     }
 
     protected static function boot()

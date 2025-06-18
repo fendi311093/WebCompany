@@ -31,7 +31,22 @@
     {{-- Kode ini diperlukan agar elemen UI yang bergantung pada JavaScript tetap berfungsi setelah halaman berubah tanpa
     harus refresh secara manual. --}}
     <script>
+        // Initialize Preline on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.HSStaticMethods && window.HSStaticMethods.autoInit) {
+                window.HSStaticMethods.autoInit();
+            }
+        });
+
+        // Re-initialize Preline after Livewire navigation
         document.addEventListener("livewire:navigated", function() {
+            if (window.HSStaticMethods && window.HSStaticMethods.autoInit) {
+                window.HSStaticMethods.autoInit();
+            }
+        });
+
+        // Additional initialization for dropdowns
+        document.addEventListener("livewire:load", function() {
             if (window.HSStaticMethods && window.HSStaticMethods.autoInit) {
                 window.HSStaticMethods.autoInit();
             }
