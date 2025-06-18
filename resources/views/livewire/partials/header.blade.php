@@ -47,19 +47,25 @@
             aria-labelledby="hs-navbar-floating-dark-collapse">
             <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-y-3 py-2 md:py-0 md:ps-7">
                 <a wire:navigate href="{{ route('Home') }}"
-                    class="{{ request()->routeIs('Home') ? 'group inline-flex items-center gap-x-2 py-2 px-3 bg-[#ff0] font-medium text-sm text-neutral-800 rounded-full focus:outline-hidden' : 'pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300' }}">HOME</a>
+                    class="{{ request()->routeIs('Home') ? 'group inline-flex items-center gap-x-2 py-2 px-3 bg-[#ff0] font-medium text-sm text-neutral-800 rounded-full focus:outline-hidden' : 'inline-flex items-center gap-x-2 py-2 px-3 text-sm text-white hover:text-neutral-300 focus:outline-hidden' }}">
+                    HOME
+                </a>
 
                 @foreach ($headerNavigations as $parentDropdown)
                     @php
                         $childDropdowns = $dropdownNavigations->where('parent_id', $parentDropdown->id);
+                        $isActive = request()->is($parentDropdown->slug);
+                        $activeClass = $isActive
+                            ? 'group inline-flex items-center gap-x-2 py-2 px-3 bg-[#ff0] font-medium text-sm text-neutral-800 rounded-full focus:outline-hidden'
+                            : 'inline-flex items-center gap-x-2 py-2 px-3 text-sm text-white hover:text-neutral-300 focus:outline-hidden';
                     @endphp
                     @if ($childDropdowns->count() > 0)
                         <div
                             class="hs-dropdown [--strategy:static] md:[--strategy:fixed] [--trigger:hover] [--adaptive:none] md:[--adaptive:adaptive] [--is-collapse:true] md:[--is-collapse:false] pe-3 ps-px sm:px-3 md:py-4">
                             @if ($parentDropdown->is_active_page && $parentDropdown->page_id)
                                 <a wire:navigate href="{{ url('/' . $parentDropdown->slug) }}"
-                                    class="hs-dropdown-toggle flex items-center w-full text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300"
-                                    aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                                    class="header-dropdown-parent {{ $activeClass }}" aria-haspopup="menu"
+                                    aria-expanded="false" aria-label="Dropdown">
                                     {{ $parentDropdown->title }}
                                     <svg class="hs-dropdown-open:-rotate-180 md:hs-dropdown-open:rotate-0 duration-300 shrink-0 ms-auto md:ms-1 size-4"
                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -68,10 +74,10 @@
                                         <path d="m6 9 6 6 6-6" />
                                     </svg>
                                 </a>
-                            @elseif ($parentDropdown->is_active_link && $parentDropdown->link)
+                            @elseif($parentDropdown->is_active_link && $parentDropdown->link)
                                 <a href="{{ $parentDropdown->link }}" target="_blank"
-                                    class="hs-dropdown-toggle flex items-center w-full text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300"
-                                    aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                                    class="header-dropdown-parent {{ $activeClass }}" aria-haspopup="menu"
+                                    aria-expanded="false" aria-label="Dropdown">
                                     {{ $parentDropdown->title }}
                                     <svg class="hs-dropdown-open:-rotate-180 md:hs-dropdown-open:rotate-0 duration-300 shrink-0 ms-auto md:ms-1 size-4"
                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -82,8 +88,8 @@
                                 </a>
                             @else
                                 <button id="hs-dropdown-floating-dark-{{ $parentDropdown->id }}" type="button"
-                                    class="hs-dropdown-toggle flex items-center w-full text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300"
-                                    aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                                    class="header-dropdown-parent {{ $activeClass }}" aria-haspopup="menu"
+                                    aria-expanded="false" aria-label="Dropdown">
                                     {{ $parentDropdown->title }}
                                     <svg class="hs-dropdown-open:-rotate-180 md:hs-dropdown-open:rotate-0 duration-300 shrink-0 ms-auto md:ms-1 size-4"
                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -115,7 +121,7 @@
                         </div>
                     @else
                         <a wire:navigate href="{{ url('/' . $parentDropdown->slug) }}"
-                            class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300 {{ request()->is($parentDropdown->slug) ? 'bg-[#ff0] font-medium text-neutral-800 rounded-full' : '' }}">
+                            class="{{ $isActive ? 'group inline-flex items-center gap-x-2 py-2 px-3 bg-[#ff0] font-medium text-sm text-neutral-800 rounded-full focus:outline-hidden' : 'inline-flex items-center gap-x-2 py-2 px-3 text-sm text-white hover:text-neutral-300 focus:outline-hidden' }}">
                             {{ $parentDropdown->title }}
                         </a>
                     @endif

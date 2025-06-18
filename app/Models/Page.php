@@ -20,11 +20,13 @@ class Page extends Model
         static::saved(function () {
             Cache::forget('page_options_' . config('app.env'));
             Cache::forget('dropdown_menu_page_options');
+            Cache::forget('navigation_web_page_options');
         });
 
         static::deleted(function () {
             Cache::forget('page_options_' . config('app.env'));
             Cache::forget('dropdown_menu_page_options');
+            Cache::forget('navigation_web_page_options');
         });
     }
 
