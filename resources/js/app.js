@@ -15,7 +15,7 @@ document.addEventListener('livewire:navigated', () => {
 
 // Cegah navigasi langsung pada parent dropdown di mobile/tablet
 function handleDropdownTouch() {
-    const parents = document.querySelectorAll('.header-dropdown-parent');
+    const parents = document.querySelectorAll('button.header-dropdown-parent');
     parents.forEach(function(el) {
         el.addEventListener('touchend', function(e) {
             if (window.innerWidth < 768) {
@@ -25,7 +25,12 @@ function handleDropdownTouch() {
                     el.click(); // buka dropdown
                     setTimeout(() => { el.removeAttribute('data-tapped'); }, 1500);
                 } else {
-                    el.removeAttribute('data-tapped'); // tap kedua, izinkan navigasi
+                    e.preventDefault();
+                    const url = el.dataset.url;
+                    if (url) {
+                        window.location.href = url;
+                    }
+                    el.removeAttribute('data-tapped');
                 }
             }
         });
