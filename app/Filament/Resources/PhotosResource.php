@@ -7,6 +7,7 @@ use App\Filament\Resources\PhotosResource\RelationManagers;
 use App\Models\Photo;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -28,17 +29,30 @@ class PhotosResource extends Resource
 
     public static function form(Form $form): Form
     {
+        // Closure untuk pengecekan halaman create
+        $isCreatePhoto = fn($livewire) => $livewire instanceof Pages\CreatePhoto;
+
         return $form
             ->schema([
-                FileUpload::make('file_path')
-                    ->label('Upload Photos')
-                    ->required()
-                    ->image()
-                    ->maxSize(11000)
-                    ->disk('public')
-                    ->directory('Photos')
-                    ->visibility('public')
-                    ->preserveFilenames(false)
+                Section::make()
+                    ->description(fn($livewire) => $isCreatePhoto($livewire) ? 'You can select multiple photos at once' : null)
+                    ->icon(fn($livewire) => $isCreatePhoto($livewire) ? 'heroicon-o-information-circle' : null)
+                    ->iconColor(fn($livewire) => $isCreatePhoto($livewire) ? 'success' : null)
+                    ->schema([
+                        FileUpload::make('file_path')
+                            ->label('Photo')
+                            ->multiple(fn($livewire) => $isCreatePhoto($livewire))
+                            ->maxFiles(fn($livewire) => $isCreatePhoto($livewire) ? 10 : 1)
+                            ->image()
+                            ->disk('public')
+                            ->directory('Photos')
+                            ->visibility('public')
+                            // ->downloadable()
+                            ->maxSize(11000)
+                            ->helperText('Max size photo 11MB.')
+                            ->required()
+                            ->previewable(fn($livewire) => !$isCreatePhoto($livewire)),
+                    ])
             ])
             ->columns(1);
     }
@@ -50,7 +64,7 @@ class PhotosResource extends Resource
                 ImageColumn::make('file_path')
                     ->label('Photo')
                     ->disk('public')
-                    ->size(100)
+                    ->circular()
             ])
             ->filters([
                 //
@@ -76,7 +90,8 @@ class PhotosResource extends Resource
     {
         return [
             'index' => Pages\ListPhotos::route('/'),
-            'create' => Pages\UploadPhotos::route('/create'),
+            // 'create' => Pages\UploadPhotos::route('/create'),
+            'create' => Pages\CreatePhoto::route('/create'),
             'edit' => Pages\EditPhoto::route('/{record}/edit'),
         ];
     }

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PhotosResource\Pages;
 use App\Filament\Resources\PhotosResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Notifications\Notification;
 
 class EditPhoto extends EditRecord
 {
@@ -15,5 +16,20 @@ class EditPhoto extends EditRecord
         return [
             Actions\DeleteAction::make(),
         ];
+    }
+
+    protected function getSavedNotification(): ?\Filament\Notifications\Notification
+    {
+        return null;
+    }
+
+    protected function afterSave(): void
+    {
+        \Filament\Notifications\Notification::make()
+            ->title('Photo updated successfully!')
+            ->icon('heroicon-o-camera')
+            ->color('success')
+            ->success()
+            ->send();
     }
 }

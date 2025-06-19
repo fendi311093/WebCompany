@@ -11,14 +11,7 @@ class Photo extends Model
 {
     protected $fillable = [
         'file_path',
-        'gallery_id'
     ];
-
-
-    public function gallery(): BelongsTo
-    {
-        return $this->belongsTo(Gallery::class, 'gallery_id');
-    }
 
     public function slider(): HasOne
     {
