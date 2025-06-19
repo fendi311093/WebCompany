@@ -15,6 +15,8 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class PhotosResource extends Resource
 {
@@ -35,7 +37,7 @@ class PhotosResource extends Resource
         return $form
             ->schema([
                 Section::make()
-                    ->description(fn($livewire) => $isCreatePhoto($livewire) ? 'You can select multiple photos at once' : null)
+                    ->description(fn($livewire) => $isCreatePhoto($livewire) ? 'You can upload multiple photo, max 10' : null)
                     ->icon(fn($livewire) => $isCreatePhoto($livewire) ? 'heroicon-o-information-circle' : null)
                     ->iconColor(fn($livewire) => $isCreatePhoto($livewire) ? 'success' : null)
                     ->schema([
@@ -47,11 +49,34 @@ class PhotosResource extends Resource
                             ->disk('public')
                             ->directory('Photos')
                             ->visibility('public')
-                            // ->downloadable()
                             ->maxSize(11000)
                             ->helperText('Max size photo 11MB.')
                             ->required()
-                            ->previewable(fn($livewire) => !$isCreatePhoto($livewire)),
+                            ->previewable(fn($livewire) => !$isCreatePhoto($livewire))
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) {
+                                // Validasi MIME harus bertipe gambar
+                                if (!Str::startsWith($file->getMimeType(), 'image/')) {
+                                    throw new \Exception('File yang diunggah harus berupa gambar.');
+                                }
+
+                                // Ambil nama asli dan ubah jadi huruf besar
+                                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                                $upperName = strtoupper($originalName);
+
+                                // Bersihkan nama file dari karakter aneh & batasi panjang
+                                $safeName = Str::slug($upperName);
+                                $safeName = Str::limit($safeName, 50, '');
+
+                                // Validasi ekstensi yang diizinkan
+                                $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+                                $guessed = $file->guessExtension();
+                                $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
+
+                                // Tambah timestamp untuk nama unik
+                                $timestamp = now()->format('dmy-His');
+
+                                return "{$safeName}-{$timestamp}.{$extension}";
+                            })
                     ])
             ])
             ->columns(1);

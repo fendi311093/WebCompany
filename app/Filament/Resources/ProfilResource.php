@@ -51,30 +51,50 @@ class ProfilResource extends Resource
                         ->maxSize(11000)
                         ->imageEditor()
                         ->directory('Logo_Profil')
-                        ->getUploadedFileNameForStorageUsing(
-                            function (TemporaryUploadedFile $file, $record, $get): string {
-                                $profilName = $get('name_company') ?? ($record?->name_company ?? 'Logo');
-                                $saveName = \Illuminate\Support\Str::slug($profilName);
-                                $extension = $file->getClientOriginalExtension();
-                                $timestamp = now()->format('dmy-His');
-                                return "Logo-{$saveName}-{$timestamp}." . $extension;
-                            }
-                        ),
+                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, $record, $get): string {
+                            // Ambil nama perusahaan dari input atau data record
+                            $profilName = $get('name_company') ?? ($record?->name_company ?? 'Logo');
+
+                            // Ubah ke huruf besar lalu slug agar rapi dan aman
+                            $upperName = strtoupper($profilName);
+                            $safeName = \Illuminate\Support\Str::slug($upperName);
+                            $safeName = \Illuminate\Support\Str::limit($safeName, 50, '');
+
+                            // Validasi dan pastikan hanya ekstensi gambar tertentu yang diizinkan
+                            $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+                            $guessed = $file->guessExtension();
+                            $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
+
+                            // Tambahkan timestamp agar nama unik
+                            $timestamp = now()->format('dmy-His');
+
+                            return "{$safeName}-{$timestamp}.{$extension}";
+                        }),
                     FileUpload::make('photo')
                         ->required()
                         ->image()
                         ->maxSize(11000)
                         ->imageEditor()
                         ->directory('Photo_Profil')
-                        ->getUploadedFileNameForStorageUsing(
-                            function (TemporaryUploadedFile $file, $record, $get): string {
-                                $profilName = $get('name_company') ?? ($record?->name_company ?? 'Profil');
-                                $saveName = \Illuminate\Support\Str::slug($profilName);
-                                $extension = $file->getClientOriginalExtension();
-                                $timestamp = now()->format('dmy-His');
-                                return "Profil-{$saveName}-{$timestamp}." . $extension;
-                            }
-                        ),
+                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, $record, $get): string {
+                            // Ambil nama perusahaan dari input atau data record
+                            $profilName = $get('name_company') ?? ($record?->name_company ?? 'Photo');
+
+                            // Ubah ke huruf besar lalu slug agar rapi dan aman
+                            $upperName = strtoupper($profilName);
+                            $safeName = \Illuminate\Support\Str::slug($upperName);
+                            $safeName = \Illuminate\Support\Str::limit($safeName, 50, '');
+
+                            // Validasi dan pastikan hanya ekstensi gambar tertentu yang diizinkan
+                            $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+                            $guessed = $file->guessExtension();
+                            $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
+
+                            // Tambahkan timestamp agar nama unik
+                            $timestamp = now()->format('dmy-His');
+
+                            return "{$safeName}-{$timestamp}.{$extension}";
+                        }),
                 ])->columns(2)
                     ->inlineLabel(),
                 Section::make()->schema([

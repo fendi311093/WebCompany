@@ -49,15 +49,25 @@ class CustomerResource extends Resource
                     ->image()
                     ->imageEditor()
                     ->directory('customer_logo')
-                    ->getUploadedFileNameForStorageUsing(
-                        function (TemporaryUploadedFile $file, $record, $get): string {
-                            $customerName = $get('name_customer') ?? ($record?->name_customer ?? 'customer');
-                            $safeName = \Illuminate\Support\Str::slug($customerName);
-                            $extension = $file->getClientOriginalExtension();
-                            $timestamp = now()->format('dmy-His');
-                            return "logo-{$safeName}-{$timestamp}." . $extension;
-                        }
-                    ),
+                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, $record, $get): string {
+                        // Ambil nama perusahaan dari input atau data record
+                        $profilName = $get('name_customer') ?? ($record?->name_customer ?? 'Customer');
+
+                        // Ubah ke huruf besar lalu slug agar rapi dan aman
+                        $upperName = strtoupper($profilName);
+                        $safeName = \Illuminate\Support\Str::slug($upperName);
+                        $safeName = \Illuminate\Support\Str::limit($safeName, 50, '');
+
+                        // Validasi dan pastikan hanya ekstensi gambar tertentu yang diizinkan
+                        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+                        $guessed = $file->guessExtension();
+                        $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
+
+                        // Tambahkan timestamp agar nama unik
+                        $timestamp = now()->format('dmy-His');
+
+                        return "{$safeName}-{$timestamp}.{$extension}";
+                    }),
                 Toggle::make('is_active')
                     ->label('Active')
                     ->default(true)
