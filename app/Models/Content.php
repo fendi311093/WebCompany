@@ -68,7 +68,7 @@ class Content extends Model
         static::saved(function ($content) {
             if ($content->isDirty('photo')) {
                 self::deletePhotoFile($content->getOriginal('photo'));
-                dispatch(new ResizePhotoJob($content->id, 'Content', 'photo'));
+                dispatch(new ResizePhotoJob($content->id, 'Content', 'photo'))->delay(now()->addMinutes(5));
             }
 
             // clear cache
@@ -136,5 +136,23 @@ class Content extends Model
         if (file_exists($fileLocation)) {
             unlink($fileLocation);
         }
+    }
+
+    public static function generateSafeFileName($contentName, $file)
+    {
+        // Ubah ke huruf besar lalu slug agar rapi dan aman
+        $upperName = strtoupper($contentName);
+        $safeName = strtoupper(\Illuminate\Support\Str::slug($upperName));
+        $safeName = \Illuminate\Support\Str::limit($safeName, 50, '');
+
+        // Validasi dan pastikan hanya ekstensi gambar tertentu yang diizinkan
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+        $guessed = $file->guessExtension();
+        $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
+
+        // Tambahkan timestamp agar nama unik
+        $timestamp = now()->format('dmy-His');
+
+        return "{$safeName}-{$timestamp}.{$extension}";
     }
 }

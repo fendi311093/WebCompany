@@ -113,4 +113,19 @@ class Customer extends Model
             unlink($file);
         }
     }
+
+    public static function generateSafeFileName($customerName, $file)
+    {
+        $upperName = strtoupper($customerName);
+        $safeName = strtoupper(\Illuminate\Support\Str::slug($upperName));
+        $safeName = \Illuminate\Support\Str::limit($safeName, 50, '');
+
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+        $guessed = $file->guessExtension();
+        $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
+
+        $timestamp = now()->format('dmy-His');
+
+        return "{$safeName}-{$timestamp}.{$extension}";
+    }
 }

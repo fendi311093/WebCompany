@@ -24,6 +24,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ContentResource extends Resource
 {
@@ -60,7 +61,11 @@ class ContentResource extends Resource
                         ->imageEditor()
                         ->required()
                         ->maxSize(11000)
-                        ->directory('contents'),
+                        ->directory('contents')
+                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, $record, $get): string {
+                            $contentName = $get('title') ?? ($record?->title ?? 'Photo');
+                            return Content::generateSafeFileName($contentName, $file);
+                        }),
                     Toggle::make('is_active')
                         ->label('Card is Active')
                         ->inline()

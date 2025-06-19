@@ -106,4 +106,22 @@ class Profil extends Model
             unlink($fileLocation);
         }
     }
+
+    public static function generateSafeFileName($profilName, $file)
+    {
+        // Ubah ke huruf besar lalu slug agar rapi dan aman
+        $upperName = strtoupper($profilName);
+        $safeName = strtoupper(\Illuminate\Support\Str::slug($upperName));
+        $safeName = \Illuminate\Support\Str::limit($safeName, 50, '');
+
+        // Validasi dan pastikan hanya ekstensi gambar tertentu yang diizinkan
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+        $guessed = $file->guessExtension();
+        $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
+
+        // Tambahkan timestamp agar nama unik
+        $timestamp = now()->format('dmy-His');
+
+        return "{$safeName}-{$timestamp}.{$extension}";
+    }
 }
