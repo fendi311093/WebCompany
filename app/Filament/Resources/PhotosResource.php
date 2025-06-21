@@ -53,29 +53,7 @@ class PhotosResource extends Resource
                             ->helperText('Max size photo 11MB.')
                             ->required()
                             ->previewable(fn($livewire) => !$isCreatePhoto($livewire))
-                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) {
-                                // Validasi MIME harus bertipe gambar
-                                if (!Str::startsWith($file->getMimeType(), 'image/')) {
-                                    throw new \Exception('File yang diunggah harus berupa gambar.');
-                                }
-
-                                // Ambil nama asli
-                                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-
-                                // Bersihkan nama file dari karakter aneh & batasi panjang
-                                $safeName = Str::slug($originalName, '_'); // gunakan underscore jika ingin lebih mirip aslinya
-                                $safeName = strtoupper(Str::limit($safeName, 50, ''));
-
-                                // Validasi ekstensi yang diizinkan
-                                $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-                                $guessed = $file->guessExtension();
-                                $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
-
-                                // Tambah timestamp untuk nama unik
-                                $timestamp = now()->format('dmy_His');
-
-                                return "{$safeName}_{$timestamp}.{$extension}";
-                            })
+                            ->getUploadedFileNameForStorageUsing(fn(TemporaryUploadedFile $file) => Photo::generateSafeFileName($file))
                     ])
             ])
             ->columns(1);
