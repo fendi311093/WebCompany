@@ -33,7 +33,12 @@ class Photo extends Model
                 if ($originalPath) {
                     self::deletePhotoFile($originalPath);
                 }
-                dispatch(new \App\Jobs\ResizePhotoJob($photo->id, 'Photo', 'file_path'))->delay(now()->addMinutes(5));
+
+                // Resize photo jika ukuran lebih dari 1MB
+                $fileLocation = storage_path('app/public/' . $photo->file_path);
+                if (file_exists($fileLocation) && filesize($fileLocation) > 1024 * 1024) {
+                    dispatch(new ResizePhotoJob($photo->id, 'Photo', 'file_path'))->delay(now()->addMinutes(5));
+                }
             }
         });
 

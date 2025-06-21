@@ -71,9 +71,11 @@ class ResizePhotoJob implements ShouldQueue
         }
 
         $maxFileSize = 1024 * 1024; // 1Mb
-        if (filesize($fileLocation) <= $maxFileSize) {
-            return;
-        }
+
+        // Tidak perlu lagi karena sudah ada pengecekan di model PHOTO
+        // if (filesize($fileLocation) <= $maxFileSize) {
+        //     return;
+        // }
 
         $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
         $image = $manager->read($fileLocation);
