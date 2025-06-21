@@ -44,15 +44,27 @@ class CreatePhoto extends CreateRecord
             if (isset($this->photosDataList) && $count > 1) {
                 array_shift($this->photosDataList);
                 foreach ($this->photosDataList as $data) {
-                    $photo = \App\Models\Photo::create($data);
-                    dispatch(new \App\Jobs\ResizePhotoJob($photo->id, 'Photo', 'file_path'));
+                    $photo = Photo::create($data);
+
+                    // Resize photo jika ukuran lebih dari 1Mb
+                    // pengecekan lagi karena tidak menggunakan event listener di model PHOTO
+                    $fileLocation = storage_path('app/public/' . $photo->file_path);
+                    if (file_exists($fileLocation) && filesize($fileLocation) > 1024 * 1024) {
+                        dispatch(new ResizePhotoJob($photo->id, 'Photo', 'file_path'))->delay(now()->addMinutes(5));
+                    }
                 }
             }
-            // Resize untuk record utama
+            // Resize photo jika ukuran lebih dari 1Mb
             $record = $this->record;
             if ($record) {
-                dispatch(new \App\Jobs\ResizePhotoJob($record->id, 'Photo', 'file_path'));
+
+                // pengecekan lagi karena tidak menggunakan event listener di model PHOTO
+                $fileLocation = storage_path('app/public/' . $record->file_path);
+                if (file_exists($fileLocation) && filesize($fileLocation) > 1024 * 1024) {
+                    dispatch(new ResizePhotoJob($record->id, 'Photo', 'file_path'))->delay(now()->addMinutes(5));
+                }
             }
+            
             // Notifikasi sukses
             \Filament\Notifications\Notification::make()
                 ->title('Done. Uploading photos ...!')

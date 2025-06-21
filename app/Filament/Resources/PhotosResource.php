@@ -59,13 +59,12 @@ class PhotosResource extends Resource
                                     throw new \Exception('File yang diunggah harus berupa gambar.');
                                 }
 
-                                // Ambil nama asli dan ubah jadi huruf besar
+                                // Ambil nama asli
                                 $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                                $upperName = strtoupper($originalName);
 
                                 // Bersihkan nama file dari karakter aneh & batasi panjang
-                                $safeName = Str::slug($upperName);
-                                $safeName = Str::limit($safeName, 50, '');
+                                $safeName = Str::slug($originalName, '_'); // gunakan underscore jika ingin lebih mirip aslinya
+                                $safeName = strtoupper(Str::limit($safeName, 50, ''));
 
                                 // Validasi ekstensi yang diizinkan
                                 $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
@@ -73,9 +72,9 @@ class PhotosResource extends Resource
                                 $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
 
                                 // Tambah timestamp untuk nama unik
-                                $timestamp = now()->format('dmy-His');
+                                $timestamp = now()->format('dmy_His');
 
-                                return "{$safeName}-{$timestamp}.{$extension}";
+                                return "{$safeName}_{$timestamp}.{$extension}";
                             })
                     ])
             ])
