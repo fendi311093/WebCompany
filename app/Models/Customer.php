@@ -88,8 +88,10 @@ class Customer extends Model
         });
 
         static::deleting(function ($customer) {
-            // Cascade delete ke Page
+            // Cascade delete ke Page karena relasi morphMany
             $customer->Pages()->delete();
+
+            // Hapus file logo jika ada
             self::deleteLogoFile($customer->logo);
 
             // clear cache

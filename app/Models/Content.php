@@ -84,8 +84,10 @@ class Content extends Model
         // static::updating(function ($content) {});
 
         static::deleting(function ($content) {
-            // Cascade delete ke Page
+
+            // Cascade delete ke Page karena relasi morphMany
             $content->Pages()->delete();
+
             self::deletePhotoFile($content->photo);
 
             // clear cache

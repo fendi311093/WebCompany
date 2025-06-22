@@ -73,8 +73,10 @@ class Profil extends Model
         });
 
         static::deleting(function ($profil) {
-            // Cascade delete ke Page
+
+            // Cascade delete ke Page karena relasi morphMany
             $profil->Pages()->delete();
+
             self::deletePhotoFile($profil->photo);
             self::deleteLogoFile($profil->logo);
 
