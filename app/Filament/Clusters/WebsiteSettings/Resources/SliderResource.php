@@ -34,45 +34,51 @@ class SliderResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
+    protected static ?array $cachedPhotoOptions = null;
+    protected static ?array $usedPhotoIds = null;
+    protected static ?array $usedSlideNumbers = null;
+
     public static function form(Form $form): Form
     {
+
+        if (static::$cachedPhotoOptions === null) {
+            static::$cachedPhotoOptions = Slider::getPhotoOptions();
+        }
+
+        static $usedPhotoIds = null;
+        static $usedSlideNumbers = null;
+
         return $form
             ->schema([
                 Forms\Components\Section::make('')
                     ->schema([
                         Select::make('photo_id')
                             ->label('Select Photo')
-                            ->options(function (?Slider $record = null) {
-                                // Ambil semua ID foto yang sudah digunakan di slider
-                                $usedPhotoIds = $record
-                                    ? Slider::where('id', '!=', $record->id)->pluck('photo_id')->toArray()
-                                    : Slider::pluck('photo_id')->toArray();
-
-                                // Query foto yang belum digunakan atau foto yang sedang diedit
-                                $query = Photo::query();
-                                if (!empty($usedPhotoIds)) {
-                                    $query->whereNotIn('id', $usedPhotoIds);
-
-                                    // Jika sedang mengedit data, tambahkan foto yang digunakan pada slider ini
-                                    if ($record && $record->photo_id) {
-                                        $query->orWhere('id', $record->photo_id);
-                                    }
-                                }
-
-                                // Return hasil query
-                                return $query->get()->pluck('file_path', 'id');
-                            })
+                            ->options(static::$cachedPhotoOptions)
                             ->required()
                             ->searchable()
+                            ->preload()
                             ->reactive()
                             ->helperText('Only show photos that are not used in other sliders')
                             ->afterStateUpdated(fn($state, callable $set) => $set('preview', $state))
-                            ->afterStateHydrated(fn($state, callable $set) => $set('preview', $state)),
+                            ->afterStateHydrated(fn($state, callable $set) => $set('preview', $state))
+                            ->disableOptionWhen(function ($value, $state, $record) use (&$usedPhotoIds) {
+                                // Query hanya sekali per render
+                                if ($usedPhotoIds === null) {
+                                    $usedPhotoIds = Slider::getUsedPhotoIds($record?->id);
+                                }
+                                return in_array($value, $usedPhotoIds);
+                            }),
                         Select::make('slide_number')
                             ->label('Slider Position')
-                            ->options(array_combine(range(1, 10), range(1, 10)))
+                            ->options(collect(range(1, 10))->mapWithKeys(fn($number) => [$number => "SLIDER $number"]))
                             ->required()
-                            ->disableOptionWhen(fn($value) => Slider::getUsedSliderNumber($value)),
+                            ->disableOptionWhen(function ($value, $state, $record) use (&$usedSlideNumbers) {
+                                if ($usedSlideNumbers === null) {
+                                    $usedSlideNumbers = Slider::getUsedSlideNumbers($record?->id);
+                                }
+                                return in_array($value, $usedSlideNumbers);
+                            }),
                         Toggle::make('is_active')
                             ->label('Active')
                             ->default(true)
@@ -80,7 +86,7 @@ class SliderResource extends Resource
                             ->offColor('danger')
                             ->onIcon('heroicon-m-check-badge')
                             ->offIcon('heroicon-m-x-circle'),
-                    ])->columns(2)
+                    ])->columns(1)
                     ->inlineLabel(),
                 Section::make()->schema([
                     ViewField::make('preview')

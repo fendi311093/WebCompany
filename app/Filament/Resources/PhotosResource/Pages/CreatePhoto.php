@@ -8,6 +8,7 @@ use Filament\Resources\Pages\CreateRecord;
 use App\Models\Photo;
 use App\Jobs\ResizePhotoJob;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Cache;
 
 class CreatePhoto extends CreateRecord
 {
@@ -64,7 +65,10 @@ class CreatePhoto extends CreateRecord
                     dispatch(new ResizePhotoJob($record->id, 'Photo', 'file_path'))->delay(now()->addMinutes(5));
                 }
             }
-            
+
+            // Clear cache
+            Cache::forget('slider_photo_options');
+
             // Notifikasi sukses
             \Filament\Notifications\Notification::make()
                 ->title('Done. Uploading photos ...!')

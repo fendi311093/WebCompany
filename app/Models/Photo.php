@@ -6,6 +6,7 @@ use App\Jobs\ResizePhotoJob;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Illuminate\Support\Str;
 
@@ -40,10 +41,16 @@ class Photo extends Model
                     dispatch(new ResizePhotoJob($photo->id, 'Photo', 'file_path'))->delay(now()->addMinutes(5));
                 }
             }
+
+            // Clear cache
+            Cache::forget('slider_photo_options');
         });
 
         static::deleted(function ($photo) {
             self::deletePhotoFile($photo->file_path);
+
+            // Clear cache
+            Cache::forget('slider_photo_options');
         });
     }
 
