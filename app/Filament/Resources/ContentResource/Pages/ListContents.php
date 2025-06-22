@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Clusters\WebsiteSettings\Resources\ContentResource\Pages;
+namespace App\Filament\Resources\ContentResource\Pages;
 
-use App\Filament\Clusters\WebsiteSettings\Resources\ContentResource;
+use App\Filament\Resources\ContentResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 

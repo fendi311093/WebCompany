@@ -10,7 +10,7 @@ use Intervention\Image\ImageManager;
 
 class Content extends Model
 {
-    protected $fillable = ['title', 'slug', 'description', 'photo', 'is_active', 'is_page_active', 'style_view'];
+    protected $fillable = ['title', 'slug', 'description', 'photo', 'is_active'];
 
     public function Pages()
     {
@@ -68,7 +68,12 @@ class Content extends Model
         static::saved(function ($content) {
             if ($content->isDirty('photo')) {
                 self::deletePhotoFile($content->getOriginal('photo'));
-                dispatch(new ResizePhotoJob($content->id, 'Content', 'photo'))->delay(now()->addMinutes(5));
+
+                // Resize photo jika ukuran lebih dari 1MB
+                $fileLocation = storage_path('app/public/' . $content->photo);
+                if (file_exists($fileLocation) && filesize($fileLocation) > 1024 * 1024) {
+                    dispatch(new ResizePhotoJob($content->id, 'Content', 'photo'))->delay(now()->addMinutes(5));
+                }
             }
 
             // clear cache
@@ -142,7 +147,7 @@ class Content extends Model
     {
         // Ubah ke huruf besar lalu slug agar rapi dan aman
         $upperName = strtoupper($contentName);
-        $safeName = strtoupper(\Illuminate\Support\Str::slug($upperName));
+        $safeName = strtoupper(\Illuminate\Support\Str::slug($upperName, '_'));
         $safeName = \Illuminate\Support\Str::limit($safeName, 50, '');
 
         // Validasi dan pastikan hanya ekstensi gambar tertentu yang diizinkan
@@ -151,8 +156,8 @@ class Content extends Model
         $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
 
         // Tambahkan timestamp agar nama unik
-        $timestamp = now()->format('dmy-His');
+        $timestamp = now()->format('dmy_His');
 
-        return "{$safeName}-{$timestamp}.{$extension}";
+        return "{$safeName}_{$timestamp}.{$extension}";
     }
 }

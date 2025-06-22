@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Filament\Clusters\WebsiteSettings\Resources;
+namespace App\Filament\Resources;
 
-use App\Filament\Clusters\WebsiteSettings;
-use App\Filament\Clusters\WebsiteSettings\Resources\ContentResource\Pages;
-use App\Filament\Clusters\WebsiteSettings\Resources\ContentResource\RelationManagers;
+use App\Filament\Resources\ContentResource\Pages;
+use App\Filament\Resources\ContentResource\RelationManagers;
 use App\Models\Content;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
@@ -30,12 +29,13 @@ class ContentResource extends Resource
 {
     protected static ?string $model = Content::class;
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
-    protected static ?string $cluster = WebsiteSettings::class;
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    // protected static ?string $cluster = WebsiteSettings::class;
+    // protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
     protected static ?string $navigationLabel = 'Contents';
     protected static ?string $modelLabel = 'Content';
     protected static ?string $pluralModelLabel = 'List Contents';
-    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationGroup = 'Master Data';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
@@ -77,40 +77,6 @@ class ContentResource extends Resource
                 ])->columns(1)
                     ->columnSpanFull()
                     ->inlineLabel(),
-                Section::make()->schema([
-                    Toggle::make('is_page_active')
-                        ->label('Page is Active')
-                        ->default(false)
-                        ->onColor('info')
-                        ->offColor('danger')
-                        ->onIcon('heroicon-o-check-badge')
-                        ->offIcon('heroicon-o-x-circle')
-                        ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set) {
-                            if (!$state) {
-                                $set('style_view', 0);
-                            }
-                        }),
-                    Select::make('style_view')
-                        ->label('Style View')
-                        ->searchable()
-                        ->options([
-                            0 => 'No Style',
-                            1 => 'Style 1',
-                            2 => 'Style 2',
-                        ])
-                        ->visible(fn(callable $get) => $get('is_page_active') == true)
-                        ->required(fn(callable $get) => $get('is_page_active') == true)
-                        ->default(0)
-                        ->dehydrateStateUsing(function ($state, callable $get) {
-                            return $get('is_page_active') ? $state : 0;
-                        })
-                        ->validationMessages([
-                            'required' => 'Style View is required '
-                        ])
-                ])->columns(2)
-                    ->columnSpanFull()
-                    ->inlineLabel()
             ]);
     }
 
