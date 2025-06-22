@@ -28,7 +28,7 @@ use Illuminate\Support\Str;
 class NavigationWebResource extends Resource
 {
     protected static ?string $model = NavigationWeb::class;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-bars-arrow-down';
     protected static ?string $cluster = WebsiteSettings::class;
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
     protected static ?int $navigationSort = 5;
