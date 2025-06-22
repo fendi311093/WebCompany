@@ -31,6 +31,7 @@ class ProfilResource extends Resource
     protected static ?string $navigationLabel = 'Profil Company';
     protected static ?string $modelLabel = 'Profil';
     protected static ?string $pluralLabel = 'Profil Company';
+    protected static ?string $navigationGroup = 'Master Data';
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -93,8 +94,12 @@ class ProfilResource extends Resource
                 TextColumn::make('name_company')
                     ->label('Name Company'),
                 TextColumn::make('address')
-                    ->words(4),
-                TextColumn::make('phone'),
+                    ->words(5)
+                    ->formatStateUsing(fn($state): string => strtoupper($state))
+                    ->icon('heroicon-o-map-pin'),
+                TextColumn::make('phone')
+                    ->icon('heroicon-o-phone')
+                    ->copyable(),
                 ImageColumn::make('logo')
                     ->disk('public'),
                 ImageColumn::make('photo')

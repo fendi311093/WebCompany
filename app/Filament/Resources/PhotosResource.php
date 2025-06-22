@@ -27,7 +27,7 @@ class PhotosResource extends Resource
     protected static ?string $modelLabel = 'Photos';
     protected static ?string $pluralLabel = 'List Photos';
     protected static ?string $navigationGroup = 'Media';
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 91;
 
     public static function form(Form $form): Form
     {

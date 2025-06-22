@@ -117,15 +117,15 @@ class Customer extends Model
     public static function generateSafeFileName($customerName, $file)
     {
         $upperName = strtoupper($customerName);
-        $safeName = strtoupper(\Illuminate\Support\Str::slug($upperName));
+        $safeName = strtoupper(\Illuminate\Support\Str::slug($upperName, '_'));
         $safeName = \Illuminate\Support\Str::limit($safeName, 50, '');
 
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
         $guessed = $file->guessExtension();
         $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
 
-        $timestamp = now()->format('dmy-His');
+        $timestamp = now()->format('dmy_His');
 
-        return "{$safeName}-{$timestamp}.{$extension}";
+        return "{$safeName}_{$timestamp}.{$extension}";
     }
 }
