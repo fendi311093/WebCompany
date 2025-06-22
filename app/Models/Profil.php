@@ -54,8 +54,14 @@ class Profil extends Model
         static::saved(function ($profil) {
             if ($profil->isDirty('photo')) {
                 self::deletePhotoFile($profil->getOriginal('photo'));
-                dispatch(new ResizePhotoJob($profil->id, 'Profil', 'photo'))->delay(now()->addMinutes(5));
+
+                // Resize photo jika ukuran lebih dari 1MB
+                $fileLocation = storage_path('app/public/' . $profil->photo);
+                if (file_exists($fileLocation) && filesize($fileLocation) > 1024 * 1024) {
+                    dispatch(new ResizePhotoJob($profil->id, 'Profil', 'photo'))->delay(now()->addMinutes(5));
+                }
             }
+
             if ($profil->isDirty('logo')) {
                 self::deleteLogoFile($profil->getOriginal('logo'));
             }
@@ -111,7 +117,7 @@ class Profil extends Model
     {
         // Ubah ke huruf besar lalu slug agar rapi dan aman
         $upperName = strtoupper($profilName);
-        $safeName = strtoupper(\Illuminate\Support\Str::slug($upperName));
+        $safeName = strtoupper(\Illuminate\Support\Str::slug($upperName, '_'));
         $safeName = \Illuminate\Support\Str::limit($safeName, 50, '');
 
         // Validasi dan pastikan hanya ekstensi gambar tertentu yang diizinkan
@@ -120,8 +126,8 @@ class Profil extends Model
         $extension = in_array($guessed, $allowedExtensions) ? ($guessed === 'jpeg' ? 'jpg' : $guessed) : 'jpg';
 
         // Tambahkan timestamp agar nama unik
-        $timestamp = now()->format('dmy-His');
+        $timestamp = now()->format('dmy_His');
 
-        return "{$safeName}-{$timestamp}.{$extension}";
+        return "{$safeName}_{$timestamp}.{$extension}";
     }
 }
