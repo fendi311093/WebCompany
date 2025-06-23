@@ -52,9 +52,6 @@
             }
         });
     </script>
-
-    <!-- Tambahkan Alpine.js di sini untuk kebutuhan dropdown mobile -->
-    <script src="//unpkg.com/alpinejs" defer></script>
 </body>
 
 </html>
