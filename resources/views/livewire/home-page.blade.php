@@ -121,16 +121,19 @@
 
     <!-- Clients -->
     <div class="bg-white dark:bg-neutral-900">
-        <div class="max-w-screen-2xl px-4 xl:px-0 py-3 mx-auto">
+        <div class="px-4 sm:px-6 lg:px-8 py-8">
             <div class="container mx-auto">
                 <div class="text-center mb-6">
-                    <h2 class="text-3xl font-semibold text-neutral-800 dark:text-white">Our Customers</h2>
+                    <h2 class="text-3xl font-semibold text-neutral-800 dark:text-white relative inline-block">
+                        Our Customers
+                        <span class="absolute bottom-0 left-0 w-full h-1 bg-[#1df59b] transform"></span>
+                    </h2>
                 </div>
                 <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
                     @if ($customers->count() > 0)
                         @foreach ($customers as $customer)
                             <img src="{{ url('storage/' . $customer->logo) }}" alt="{{ $customer->name_customer }}"
-                                class="h-10 md:h-14 w-auto mx-4 object-contain transition duration-300 dark:brightness-0 dark:invert" />
+                                class="h-10 md:h-14 w-auto mx-4 object-contain transition duration-300 dark:brightness-125" />
                         @endforeach
                     @else
                         <div class="text-red-500">Tidak ada data customer!</div>
@@ -143,7 +146,7 @@
 
     <!-- Main Content -->
     <div class="bg-white dark:bg-neutral-900">
-        <div class="max-w-screen-2xl px-4 xl:px-0 py-6 mx-auto">
+        <div class="px-4 py-4 sm:px-6 lg:px-8">
             <div class="border border-gray-200 dark:border-neutral-800 rounded-xl">
                 <div
                     class="p-4 lg:p-8 bg-gradient-to-bl from-gray-100 via-white to-gray-50 dark:from-neutral-800 dark:via-neutral-900 dark:to-neutral-950 rounded-xl">

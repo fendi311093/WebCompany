@@ -38,22 +38,42 @@ document.addEventListener('livewire:navigated', handleDropdownTouch);
 document.addEventListener('livewire:load', handleDropdownTouch);
 
 // Dark mode handler
-if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark')
+function initializeDarkMode() {
+    // Check initial dark mode state
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+
+    // Expose functions to window object
+    window.setDarkMode = function() {
+        localStorage.theme = 'dark';
+        document.documentElement.classList.add('dark');
+    };
+
+    window.setLightMode = function() {
+        localStorage.theme = 'light';
+        document.documentElement.classList.remove('dark');
+    };
+
+    // Listen for OS theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!('theme' in localStorage)) {
+            if (e.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+    });
+}
+
+// Initialize dark mode when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDarkMode);
 } else {
-    document.documentElement.classList.remove('dark')
-}
-
-// Whenever the user explicitly chooses light mode
-window.setLightMode = function() {
-    localStorage.theme = 'light'
-    document.documentElement.classList.remove('dark')
-}
-
-// Whenever the user explicitly chooses dark mode
-window.setDarkMode = function() {
-    localStorage.theme = 'dark'
-    document.documentElement.classList.add('dark')
+    initializeDarkMode();
 }
 
 // Whenever the user explicitly chooses to respect the OS preference
