@@ -120,36 +120,30 @@
     <!-- End Slider -->
 
     <!-- Clients -->
-    <div
-        class="bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-800">
-        <div class="px-4 py-12 sm:px-6 lg:px-8">
-            <div class="container mx-auto">
-                <div class="text-center mb-10">
+    <div class="bg-white dark:bg-neutral-900">
+        <div class="px-4 py-8">
+            <div class="max-w-screen-xl mx-auto">
+                <div class="text-center">
                     <h2
                         class="text-3xl font-bold text-gray-900 dark:text-white relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-[#1df59b] after:rounded-full">
                         Our Customers
                     </h2>
-                    <p class="mt-4 text-gray-600 dark:text-gray-300">Trusted by leading companies worldwide</p>
+                    <p class="mt-3 text-gray-600 dark:text-gray-300">Trusted by leading companies worldwide</p>
                 </div>
-                <div
-                    class="border border-gray-200/80 dark:border-neutral-700/50 rounded-2xl shadow-lg dark:shadow-neutral-800/30 backdrop-blur-sm">
-                    <div class="p-8 bg-white/80 dark:bg-neutral-800/80 rounded-2xl">
-                        <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-                            @if ($customers->count() > 0)
-                                @foreach ($customers as $customer)
-                                    <div class="group relative p-4 transition-all duration-300 hover:scale-110">
-                                        <div
-                                            class="absolute inset-0 bg-gradient-to-r from-[#1df59b]/10 to-white/10 dark:from-[#1df59b]/5 dark:to-neutral-800/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        </div>
-                                        <img src="{{ url('storage/' . $customer->logo) }}"
-                                            alt="{{ $customer->name_customer }}"
-                                            class="h-12 md:h-16 w-auto object-contain transition duration-300 dark:brightness-110 relative z-10" />
-                                    </div>
-                                @endforeach
-                            @else
-                                <div class="text-red-500 py-8">Tidak ada data customer!</div>
-                            @endif
-                        </div>
+                <div class="container mx-auto px-4 py-8">
+                    <div class="flex flex-wrap justify-center items-center gap-4 md:gap-8 max-w-5xl mx-auto">
+                        @if ($customers->where('is_active', true)->count() > 0)
+                            @foreach ($customers->where('is_active', true) as $customer)
+                                <div
+                                    class="group transition-all duration-300 hover:scale-110 flex justify-center items-center w-1/2 sm:w-1/3 lg:w-1/4 p-4">
+                                    <img src="{{ url('storage/' . $customer->logo) }}"
+                                        alt="{{ $customer->name_customer }}"
+                                        class="h-16 w-auto object-contain transition duration-300 drop-shadow-2xl dark:brightness-110 light:contrast-125 light:brightness-90 mix-blend-multiply dark:mix-blend-normal" />
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="text-red-500 py-8">Tidak ada data customer!</div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -158,12 +152,11 @@
     <!-- End Clients -->
 
     <!-- Main Content -->
-    <div
-        class="bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-800">
-        <div class="px-4 py-12 sm:px-6 lg:px-8">
+    <div class="bg-white dark:bg-neutral-900">
+        <div class="px-4 py-1">
             <div
                 class="border border-gray-200/80 dark:border-neutral-700/50 rounded-2xl shadow-lg dark:shadow-neutral-800/30 backdrop-blur-sm">
-                <div class="p-4 lg:p-8 bg-white/80 dark:bg-neutral-800/80 rounded-2xl">
+                <div class="p-4 lg:p-8 bg-white dark:bg-neutral-800 rounded-2xl">
                     <!-- Grid -->
                     <div class="flex flex-wrap justify-center items-stretch gap-8">
                         @if ($contents->count() > 0)
@@ -172,13 +165,13 @@
                                 <a class="group flex flex-col h-full focus:outline-hidden w-full sm:w-[calc(50%-2rem)] lg:w-[calc(33.333%-2rem)]"
                                     href="#">
                                     <div
-                                        class="relative w-full h-64 rounded-xl overflow-hidden shadow-md dark:shadow-neutral-800/50 bg-gray-100 dark:bg-neutral-800/50">
-                                        <img class="w-full h-full object-cover object-center bg-gray-100 dark:bg-neutral-800 rounded-xl group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out"
+                                        class="relative w-full h-64 rounded-xl overflow-hidden shadow-md dark:shadow-neutral-800/50 bg-white dark:bg-neutral-800">
+                                        <img class="w-full h-full object-cover object-center bg-white dark:bg-neutral-800 rounded-xl group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out"
                                             src="{{ url('storage/' . $content->photo) }}" alt="{{ $content->title }}"
                                             loading="lazy">
                                     </div>
                                     <div
-                                        class="mt-4 p-4 rounded-xl bg-white/70 dark:bg-neutral-800/70 backdrop-blur-sm border border-gray-100 dark:border-neutral-700/50 shadow-sm">
+                                        class="mt-4 p-4 rounded-xl bg-white dark:bg-neutral-800 backdrop-blur-sm border border-gray-100 dark:border-neutral-700/50 shadow-sm">
                                         <h3
                                             class="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
                                             {{ $content->title }}
