@@ -2,7 +2,7 @@
 <header
     class="sticky top-4 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full before:absolute before:inset-0 before:max-w-5xl before:mx-2 lg:before:mx-auto before:rounded-[26px] before:bg-neutral-800/30 before:backdrop-blur-md">
     <nav
-        class="relative max-w-5xl w-full flex flex-wrap md:flex-nowrap basis-full items-center justify-between py-3 ps-5 pe-2 md:py-6 mx-2 lg:mx-auto">
+        class="relative max-w-5xl w-full flex flex-wrap md:flex-nowrap basis-full items-center justify-between py-3 ps-5 pe-2 md:py-4 mx-2 lg:mx-auto">
         <div class="flex items-center">
             <!-- Logo -->
             <a class="flex-none rounded-md text-xl inline-block font-semibold focus:outline-hidden focus:opacity-80 transition-transform duration-300 ease-in-out hover:scale-110"
