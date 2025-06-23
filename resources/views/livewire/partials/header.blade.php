@@ -2,17 +2,17 @@
 <header
     class="sticky top-4 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full before:absolute before:inset-0 before:max-w-5xl before:mx-2 lg:before:mx-auto before:rounded-[26px] before:bg-neutral-800/30 before:backdrop-blur-md">
     <nav
-        class="relative max-w-5xl w-full flex flex-wrap md:flex-nowrap basis-full items-center justify-between py-2 ps-5 pe-2 md:py-0 mx-2 lg:mx-auto">
+        class="relative max-w-5xl w-full flex flex-wrap md:flex-nowrap basis-full items-center justify-between py-3 ps-5 pe-2 md:py-6 mx-2 lg:mx-auto">
         <div class="flex items-center">
             <!-- Logo -->
             <a class="flex-none rounded-md text-xl inline-block font-semibold focus:outline-hidden focus:opacity-80 transition-transform duration-300 ease-in-out hover:scale-110"
                 href="/" aria-label="{{ $companyLogo->name_company ?? 'Logo' }}">
                 @if ($companyLogo && $companyLogo->logo)
                     <img src="{{ asset('storage/' . $companyLogo->logo) }}" alt="{{ $companyLogo->name_company }}"
-                        class="w-28 h-auto rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
+                        class="h-10 md:h-12 w-auto rounded-xl transition-all duration-300">
                 @else
                     <span
-                        class="text-white text-2xl font-bold rounded-xl">{{ $companyLogo->name_company ?? 'LOGO' }}</span>
+                        class="text-white text-lg md:text-2xl font-bold rounded-xl">{{ $companyLogo->name_company ?? 'LOGO' }}</span>
                 @endif
             </a>
             <!-- End Logo -->
@@ -54,10 +54,10 @@
         <div id="hs-navbar-floating-dark"
             class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow md:block"
             aria-labelledby="hs-navbar-floating-dark-collapse">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-y-3 py-2 md:py-0 md:ps-7">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-y-3 gap-x-2 py-2 md:py-0 md:ps-7">
                 <!-- Home Button -->
                 <a wire:navigate href="{{ route('Home') }}"
-                    class="{{ request()->routeIs('Home') ? 'group inline-flex items-center gap-x-2 py-2 px-3 bg-[#1df59b] font-medium text-sm text-neutral-800 rounded-full focus:outline-hidden' : 'inline-flex items-center gap-x-2 py-2 px-3 text-sm text-white hover:bg-[#1df59b] hover:text-neutral-800 transition-colors duration-200 rounded-full focus:outline-hidden' }}">
+                    class="{{ request()->routeIs('Home') ? 'group inline-flex items-center gap-x-2 py-2 px-2 md:py-3 md:px-4 text-sm md:text-lg bg-[#1df59b] font-medium text-neutral-900 rounded-full focus:outline-hidden' : 'inline-flex items-center gap-x-2 py-2 px-2 md:py-3 md:px-4 text-sm md:text-lg font-medium text-neutral-900 dark:text-white hover:bg-[#1df59b] transition-colors duration-200 rounded-full focus:outline-hidden' }}">
                     HOME
                 </a>
 
@@ -66,7 +66,7 @@
                     @if ($nav->is_active_page)
                         <a wire:navigate
                             href="{{ $nav->is_active_link ? $nav->link : ($nav->page_id ? '/' . $nav->slug : '#') }}"
-                            class="{{ request()->path() === $nav->slug ? 'group inline-flex items-center gap-x-2 py-2 px-3 bg-[#1df59b] font-medium text-sm text-neutral-800 rounded-full focus:outline-hidden' : 'inline-flex items-center gap-x-2 py-2 px-3 text-sm text-white hover:bg-[#1df59b] hover:text-neutral-800 transition-colors duration-200 rounded-full focus:outline-hidden' }}">
+                            class="{{ request()->path() === $nav->slug ? 'group inline-flex items-center gap-x-2 py-2 px-2 md:py-3 md:px-4 text-sm md:text-lg bg-[#1df59b] font-medium text-neutral-800 rounded-full focus:outline-hidden' : 'inline-flex items-center gap-x-2 py-2 px-2 md:py-3 md:px-4 text-sm md:text-lg font-medium text-neutral-900 dark:text-white hover:bg-[#1df59b] transition-colors duration-200 rounded-full focus:outline-hidden' }}">
                             {{ $nav->title }}
                         </a>
                     @else
@@ -75,7 +75,7 @@
                             <div
                                 class="hs-dropdown [--strategy:static] sm:[--strategy:fixed] [--adaptive:none] sm:[--trigger:hover] sm:py-4">
                                 <button type="button"
-                                    class="hs-dropdown-toggle flex items-center gap-x-2 py-2 px-3 text-sm text-white hover:bg-[#1df59b] hover:text-neutral-800 transition-colors duration-200 rounded-full focus:outline-hidden">
+                                    class="hs-dropdown-toggle flex items-center gap-x-2 py-2 px-2 md:py-3 md:px-4 text-sm md:text-lg text-white hover:bg-[#1df59b] hover:text-neutral-800 transition-colors duration-200 rounded-full focus:outline-hidden">
                                     {{ $nav->title }}
                                     <svg class="hs-dropdown-open:rotate-180 size-4" xmlns="http://www.w3.org/2000/svg"
                                         width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -90,7 +90,7 @@
                                     @foreach ($dropdownNavigations->where('parent_id', $nav->id)->sortBy('position') as $childNav)
                                         <a wire:navigate
                                             href="{{ $childNav->is_active_link ? $childNav->link : ($childNav->page_id ? '/' . $childNav->slug : '#') }}"
-                                            class="flex items-center gap-x-3.5 py-2 px-3 text-sm text-neutral-800 hover:bg-[#19cc83] rounded-lg font-medium">
+                                            class="flex items-center gap-x-3.5 py-2 px-2 md:py-3 md:px-4 text-sm md:text-lg text-neutral-800 hover:bg-[#19cc83] rounded-lg font-medium">
                                             {{ $childNav->title }}
                                             <svg class="size-4 ml-auto" xmlns="http://www.w3.org/2000/svg"
                                                 width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -105,7 +105,7 @@
                         @else
                             <!-- Regular Header Button -->
                             <button type="button"
-                                class="inline-flex items-center gap-x-2 py-2 px-3 text-sm text-white hover:bg-[#1df59b] hover:text-neutral-800 transition-colors duration-200 rounded-full focus:outline-hidden">
+                                class="inline-flex items-center gap-x-2 py-2 px-2 md:py-3 md:px-4 text-sm md:text-lg text-white hover:bg-[#1df59b] hover:text-neutral-800 transition-colors duration-200 rounded-full focus:outline-hidden">
                                 {{ $nav->title }}
                             </button>
                         @endif

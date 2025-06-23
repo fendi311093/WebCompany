@@ -60,7 +60,7 @@
 
 {{-- Mengatur layout flex untuk memastikan footer tetap berada di bagian bawah halaman --}}
 
-<body class="bg-white dark:bg-neutral-900 min-h-screen" x-cloak>
+<body class="bg-white dark:bg-neutral-900 min-h-screen flex flex-col" x-cloak>
     @livewire('partials.header')
     <Main id="content" class="flex-1">
         {{ $slot }}
