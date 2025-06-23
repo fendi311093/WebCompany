@@ -9,7 +9,7 @@
         }'
             class="relative">
             <div
-                class="hs-carousel relative overflow-hidden w-full h-96 md:h-[calc(100vh-106px)] bg-white dark:bg-neutral-800 rounded-2xl">
+                class="hs-carousel relative overflow-hidden w-full h-96 md:h-[calc(100vh-106px)] bg-white dark:bg-neutral-800 rounded-2xl shadow-xl dark:shadow-neutral-800/50 border border-gray-100 dark:border-neutral-700">
                 <div
                     class="hs-carousel-body absolute top-0 bottom-0 start-0 flex flex-nowrap transition-transform duration-700 opacity-0">
 
@@ -30,12 +30,12 @@
 
                                         <!-- Gradient overlay for better text visibility -->
                                         <div
-                                            class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70">
+                                            class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-60 dark:opacity-50">
                                         </div>
                                     </div>
 
                                     <!-- Content -->
-                                    <div class="mt-auto relative z-10 w-full md:w-2/3 p-6 md:p-10">
+                                    {{-- <div class="mt-auto relative z-10 w-full md:w-2/3 p-6 md:p-10">
                                         <span
                                             class="inline-block mb-1 px-3 py-1 bg-[#1df59b] text-neutral-800 text-2xl font-semibold rounded-full">
                                             24/7 Service
@@ -52,7 +52,7 @@
                                                     d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                                             </svg>
                                         </a>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                             <!-- End Slider Item -->
@@ -120,24 +120,37 @@
     <!-- End Slider -->
 
     <!-- Clients -->
-    <div class="bg-white dark:bg-neutral-900">
-        <div class="px-4 sm:px-6 lg:px-8 py-8">
+    <div
+        class="bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-800">
+        <div class="px-4 py-12 sm:px-6 lg:px-8">
             <div class="container mx-auto">
-                <div class="text-center mb-6">
-                    <h2 class="text-3xl font-semibold text-neutral-800 dark:text-white relative inline-block">
+                <div class="text-center mb-10">
+                    <h2
+                        class="text-3xl font-bold text-gray-900 dark:text-white relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-[#1df59b] after:rounded-full">
                         Our Customers
-                        <span class="absolute bottom-0 left-0 w-full h-1 bg-[#1df59b] transform"></span>
                     </h2>
+                    <p class="mt-4 text-gray-600 dark:text-gray-300">Trusted by leading companies worldwide</p>
                 </div>
-                <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-                    @if ($customers->count() > 0)
-                        @foreach ($customers as $customer)
-                            <img src="{{ url('storage/' . $customer->logo) }}" alt="{{ $customer->name_customer }}"
-                                class="h-10 md:h-14 w-auto mx-4 object-contain transition duration-300 dark:brightness-125" />
-                        @endforeach
-                    @else
-                        <div class="text-red-500">Tidak ada data customer!</div>
-                    @endif
+                <div
+                    class="border border-gray-200/80 dark:border-neutral-700/50 rounded-2xl shadow-lg dark:shadow-neutral-800/30 backdrop-blur-sm">
+                    <div class="p-8 bg-white/80 dark:bg-neutral-800/80 rounded-2xl">
+                        <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+                            @if ($customers->count() > 0)
+                                @foreach ($customers as $customer)
+                                    <div class="group relative p-4 transition-all duration-300 hover:scale-110">
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-r from-[#1df59b]/10 to-white/10 dark:from-[#1df59b]/5 dark:to-neutral-800/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        </div>
+                                        <img src="{{ url('storage/' . $customer->logo) }}"
+                                            alt="{{ $customer->name_customer }}"
+                                            class="h-12 md:h-16 w-auto object-contain transition duration-300 dark:brightness-110 relative z-10" />
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="text-red-500 py-8">Tidak ada data customer!</div>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -145,11 +158,12 @@
     <!-- End Clients -->
 
     <!-- Main Content -->
-    <div class="bg-white dark:bg-neutral-900">
-        <div class="px-4 py-4 sm:px-6 lg:px-8">
-            <div class="border border-gray-200 dark:border-neutral-800 rounded-xl">
-                <div
-                    class="p-4 lg:p-8 bg-gradient-to-bl from-gray-100 via-white to-gray-50 dark:from-neutral-800 dark:via-neutral-900 dark:to-neutral-950 rounded-xl">
+    <div
+        class="bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-800">
+        <div class="px-4 py-12 sm:px-6 lg:px-8">
+            <div
+                class="border border-gray-200/80 dark:border-neutral-700/50 rounded-2xl shadow-lg dark:shadow-neutral-800/30 backdrop-blur-sm">
+                <div class="p-4 lg:p-8 bg-white/80 dark:bg-neutral-800/80 rounded-2xl">
                     <!-- Grid -->
                     <div class="flex flex-wrap justify-center items-stretch gap-8">
                         @if ($contents->count() > 0)
@@ -158,26 +172,27 @@
                                 <a class="group flex flex-col h-full focus:outline-hidden w-full sm:w-[calc(50%-2rem)] lg:w-[calc(33.333%-2rem)]"
                                     href="#">
                                     <div
-                                        class="relative w-full h-64 rounded-xl overflow-hidden bg-gray-100 dark:bg-neutral-800">
+                                        class="relative w-full h-64 rounded-xl overflow-hidden shadow-md dark:shadow-neutral-800/50 bg-gray-100 dark:bg-neutral-800/50">
                                         <img class="w-full h-full object-cover object-center bg-gray-100 dark:bg-neutral-800 rounded-xl group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out"
                                             src="{{ url('storage/' . $content->photo) }}" alt="{{ $content->title }}"
                                             loading="lazy">
                                     </div>
-                                    <div class="mt-4 flex flex-col h-full">
+                                    <div
+                                        class="mt-4 p-4 rounded-xl bg-white/70 dark:bg-neutral-800/70 backdrop-blur-sm border border-gray-100 dark:border-neutral-700/50 shadow-sm">
                                         <h3
-                                            class="text-xl font-semibold text-neutral-800 dark:text-gray-400 group-hover:text-neutral-600 dark:group-hover:text-gray-300 transition-colors line-clamp-2">
+                                            class="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
                                             {{ $content->title }}
                                         </h3>
-                                        <p class="mt-3 text-neutral-600 dark:text-gray-200 line-clamp-3">
+                                        <p class="mt-3 text-gray-600 dark:text-gray-300 line-clamp-3">
                                             {{ $content->description }}
                                         </p>
                                         <p
-                                            class="mt-5 inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 group-hover:underline group-focus:underline font-medium dark:text-blue-500">
+                                            class="mt-5 inline-flex items-center gap-x-1 text-sm font-medium text-primary-600 decoration-2 group-hover:underline dark:text-primary-400">
                                             Read more
-                                            <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
-                                                width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round">
+                                            <svg class="shrink-0 size-4 transition-transform group-hover:translate-x-1"
+                                                xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="m9 18 6-6-6-6" />
                                             </svg>
                                         </p>
@@ -190,7 +205,6 @@
                         @endif
                     </div>
                     <!-- End Grid -->
-
                 </div>
             </div>
         </div>
