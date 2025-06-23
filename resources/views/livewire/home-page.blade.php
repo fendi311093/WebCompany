@@ -9,7 +9,7 @@
         }'
             class="relative">
             <div
-                class="hs-carousel relative overflow-hidden w-full h-96 md:h-[calc(100vh-106px)] bg-gray-100 rounded-2xl dark:bg-neutral-800">
+                class="hs-carousel relative overflow-hidden w-full h-96 md:h-[calc(100vh-106px)] bg-white dark:bg-neutral-800 rounded-2xl">
                 <div
                     class="hs-carousel-body absolute top-0 bottom-0 start-0 flex flex-nowrap transition-transform duration-700 opacity-0">
 
@@ -21,12 +21,11 @@
                                     <!-- Background Image -->
                                     <div class="absolute inset-0 w-full h-full overflow-hidden">
                                         <div class="w-full h-full transform scale-[1.02]">
-                                            <!-- Slight scale to avoid white edges -->
                                             <img src="{{ asset('storage/' . $slider->photo->file_path) }}"
                                                 alt="Slider Image #{{ $slider->slide_number }}"
                                                 class="w-full h-full object-cover object-center"
                                                 style="object-position: center center; max-width: none; max-height: none;"
-                                                onerror="this.onerror=null; this.classList.add('bg-gray-800', 'p-4'); this.src=''; this.alt='Image not found';">
+                                                onerror="this.onerror=null; this.classList.add('bg-gray-100', 'dark:bg-gray-800', 'p-4'); this.src=''; this.alt='Image not found';">
                                         </div>
 
                                         <!-- Gradient overlay for better text visibility -->
@@ -38,14 +37,14 @@
                                     <!-- Content -->
                                     <div class="mt-auto relative z-10 w-full md:w-2/3 p-6 md:p-10">
                                         <span
-                                            class="inline-block mb-1 px-3 py-1 bg-primary-500 text-white text-2xl font-semibold rounded-full">
+                                            class="inline-block mb-1 px-3 py-1 bg-[#1df59b] text-neutral-800 text-2xl font-semibold rounded-full">
                                             24/7 Service
                                         </span>
                                         <p class="text-white text-xl md:text-4xl font-bold mb-4">
                                             We are open for 24 hours from Monday to Sunday.
                                         </p>
                                         <a href="#"
-                                            class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-white text-black hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none py-3 px-4">
+                                            class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-white text-neutral-800 hover:bg-gray-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700 disabled:opacity-50 disabled:pointer-events-none py-3 px-4 transition-colors duration-200">
                                             Lihat Detail
                                             <svg class="w-2 h-3" xmlns="http://www.w3.org/2000/svg" fill="none"
                                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -61,7 +60,7 @@
                     @else
                         <!-- Default Slider jika tidak ada data -->
                         <div class="hs-carousel-slide">
-                            <div class="h-96 md:h-[calc(100vh-106px)] flex flex-col bg-gray-300 dark:bg-gray-700">
+                            <div class="h-96 md:h-[calc(100vh-106px)] flex flex-col bg-gray-100 dark:bg-gray-800">
                                 <div class="mt-auto w-2/3 md:max-w-lg ps-5 pb-5 md:ps-10 md:pb-10">
                                     <span class="block text-red-500">No Sliders</span>
                                     <span class="block text-red-500 text-xl md:text-3xl">
@@ -121,17 +120,17 @@
     <!-- End Slider -->
 
     <!-- Clients -->
-    <div class="bg-neutral-900">
+    <div class="bg-white dark:bg-neutral-900">
         <div class="max-w-screen-2xl px-4 xl:px-0 py-3 mx-auto">
             <div class="container mx-auto">
                 <div class="text-center mb-6">
-                    <h2 class="text-3xl font-semibold text-white">Our Customers</h2>
+                    <h2 class="text-3xl font-semibold text-neutral-800 dark:text-white">Our Customers</h2>
                 </div>
                 <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
                     @if ($customers->count() > 0)
                         @foreach ($customers as $customer)
                             <img src="{{ url('storage/' . $customer->logo) }}" alt="{{ $customer->name_customer }}"
-                                class="h-10 md:h-14 w-auto mx-4 object-contain transition duration-300" />
+                                class="h-10 md:h-14 w-auto mx-4 object-contain transition duration-300 dark:brightness-0 dark:invert" />
                         @endforeach
                     @else
                         <div class="text-red-500">Tidak ada data customer!</div>
@@ -143,10 +142,11 @@
     <!-- End Clients -->
 
     <!-- Main Content -->
-    <div class="bg-neutral-900">
+    <div class="bg-white dark:bg-neutral-900">
         <div class="max-w-screen-2xl px-4 xl:px-0 py-6 mx-auto">
-            <div class="border border-neutral-800 rounded-xl">
-                <div class="p-4 lg:p-8 bg-gradient-to-bl from-neutral-800 via-neutral-900 to-neutral-950 rounded-xl">
+            <div class="border border-gray-200 dark:border-neutral-800 rounded-xl">
+                <div
+                    class="p-4 lg:p-8 bg-gradient-to-bl from-gray-100 via-white to-gray-50 dark:from-neutral-800 dark:via-neutral-900 dark:to-neutral-950 rounded-xl">
                     <!-- Grid -->
                     <div class="flex flex-wrap justify-center items-stretch gap-8">
                         @if ($contents->count() > 0)
@@ -154,17 +154,18 @@
                                 <!-- Card -->
                                 <a class="group flex flex-col h-full focus:outline-hidden w-full sm:w-[calc(50%-2rem)] lg:w-[calc(33.333%-2rem)]"
                                     href="#">
-                                    <div class="relative w-full h-64 rounded-xl overflow-hidden bg-neutral-800">
-                                        <img class="w-full h-full object-cover object-center bg-neutral-800 rounded-xl group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out"
+                                    <div
+                                        class="relative w-full h-64 rounded-xl overflow-hidden bg-gray-100 dark:bg-neutral-800">
+                                        <img class="w-full h-full object-cover object-center bg-gray-100 dark:bg-neutral-800 rounded-xl group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out"
                                             src="{{ url('storage/' . $content->photo) }}" alt="{{ $content->title }}"
                                             loading="lazy">
                                     </div>
                                     <div class="mt-4 flex flex-col h-full">
                                         <h3
-                                            class="text-xl font-semibold text-gray-400 group-hover:text-gray-300 transition-colors line-clamp-2">
+                                            class="text-xl font-semibold text-neutral-800 dark:text-gray-400 group-hover:text-neutral-600 dark:group-hover:text-gray-300 transition-colors line-clamp-2">
                                             {{ $content->title }}
                                         </h3>
-                                        <p class="mt-3 text-gray-200 line-clamp-3">
+                                        <p class="mt-3 text-neutral-600 dark:text-gray-200 line-clamp-3">
                                             {{ $content->description }}
                                         </p>
                                         <p
