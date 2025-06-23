@@ -1,17 +1,13 @@
 import './bootstrap';
+import Alpine from 'alpinejs';
+import { HSStaticMethods } from 'preline/preline';
 
-// Import Preline
-import 'preline'
+window.Alpine = Alpine;
+Alpine.start();
 
 // Initialize Preline
-document.addEventListener('DOMContentLoaded', () => {
-    HSStaticMethods.autoInit();
-});
-
-// Re-initialize Preline after Livewire navigation
-document.addEventListener('livewire:navigated', () => {
-    HSStaticMethods.autoInit();
-});
+document.addEventListener('DOMContentLoaded', () => HSStaticMethods.autoInit());
+document.addEventListener('livewire:navigated', () => HSStaticMethods.autoInit());
 
 // Cegah navigasi langsung pada parent dropdown di mobile/tablet
 function handleDropdownTouch() {
@@ -40,3 +36,32 @@ function handleDropdownTouch() {
 document.addEventListener('DOMContentLoaded', handleDropdownTouch);
 document.addEventListener('livewire:navigated', handleDropdownTouch);
 document.addEventListener('livewire:load', handleDropdownTouch);
+
+// Dark mode handler
+if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark')
+} else {
+    document.documentElement.classList.remove('dark')
+}
+
+// Whenever the user explicitly chooses light mode
+window.setLightMode = function() {
+    localStorage.theme = 'light'
+    document.documentElement.classList.remove('dark')
+}
+
+// Whenever the user explicitly chooses dark mode
+window.setDarkMode = function() {
+    localStorage.theme = 'dark'
+    document.documentElement.classList.add('dark')
+}
+
+// Whenever the user explicitly chooses to respect the OS preference
+window.setSystemMode = function() {
+    localStorage.removeItem('theme')
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark')
+    } else {
+        document.documentElement.classList.remove('dark')
+    }
+}
