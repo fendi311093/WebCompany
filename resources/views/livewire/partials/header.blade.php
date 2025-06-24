@@ -9,7 +9,7 @@
                 href="/" aria-label="{{ $companyLogo->name_company ?? 'Logo' }}">
                 @if ($companyLogo && $companyLogo->logo)
                     <img src="{{ asset('storage/' . $companyLogo->logo) }}" alt="{{ $companyLogo->name_company }}"
-                        class="h-8 md:h-10 w-auto rounded-xl transition-all duration-300">
+                        class="h-12 md:h-14 w-auto rounded-xl transition-all duration-300">
                 @else
                     <span
                         class="text-white text-base md:text-xl font-bold rounded-xl">{{ $companyLogo->name_company ?? 'LOGO' }}</span>
