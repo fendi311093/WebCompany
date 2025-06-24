@@ -131,19 +131,29 @@
                     <p class="mt-3 text-gray-600 dark:text-gray-300">Trusted by leading companies worldwide</p>
                 </div>
                 <div class="container mx-auto px-2 py-2">
-                    <div class="flex flex-wrap justify-center items-center gap-1 max-w-7xl mx-auto">
-                        @if ($customers->where('is_active', true)->count() > 0)
-                            @foreach ($customers->where('is_active', true) as $customer)
-                                <div
-                                    class="group transition-all duration-300 hover:scale-110 flex justify-center items-center w-[20%] sm:w-[15%] lg:w-[12%]">
-                                    <img src="{{ url('storage/' . $customer->logo) }}"
-                                        alt="{{ $customer->name_customer }}"
-                                        class="h-16 w-auto object-contain transition duration-300 drop-shadow-2xl dark:brightness-110 light:contrast-125 light:brightness-90 mix-blend-multiply dark:mix-blend-normal" />
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="text-red-500 py-8">Tidak ada data customer!</div>
-                        @endif
+                    @php
+                        $activeCustomers = $customers->where('is_active', true);
+                        $count = $activeCustomers->count();
+                        // Maksimal 6 kolom agar tetap responsif
+                        $cols = min($count, 6);
+                    @endphp
+
+                    <div class="flex justify-center">
+                        <div class="grid gap-6"
+                            style="grid-template-columns: repeat({{ $cols }}, minmax(0, 1fr));">
+                            @if ($count > 0)
+                                @foreach ($activeCustomers as $customer)
+                                    <div
+                                        class="group transition-all duration-300 hover:scale-110 flex justify-center items-center w-full">
+                                        <img src="{{ url('storage/' . $customer->logo) }}"
+                                            alt="{{ $customer->name_customer }}"
+                                            class="h-16 w-auto object-contain transition duration-300 drop-shadow-2xl dark:brightness-110 light:contrast-125 light:brightness-90 mix-blend-multiply dark:mix-blend-normal" />
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="text-red-500 py-8">Tidak ada data customer!</div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>

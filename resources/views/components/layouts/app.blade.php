@@ -22,7 +22,15 @@
 
 {{-- Mengatur layout flex untuk memastikan footer tetap berada di bagian bawah halaman --}}
 
-<body x-data="{ darkMode: localStorage.getItem('theme') === 'dark' }" x-init="$watch('darkMode', val => localStorage.setItem('theme', val ? 'dark' : 'light'))" :class="{ 'dark': darkMode }"
+<body x-data="{ darkMode: localStorage.getItem('theme') === 'dark' }" x-init="$watch('darkMode', val => {
+    localStorage.setItem('theme', val ? 'dark' : 'light');
+    if (val) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+});
+if (darkMode) document.documentElement.classList.add('dark');" :class="{ 'dark': darkMode }"
     class="bg-white dark:bg-neutral-900 min-h-screen flex flex-col" x-cloak>
 
     @livewire('partials.header')
@@ -35,11 +43,6 @@
     @livewireScripts
 
     <script>
-        // Handle dark mode
-        if (!localStorage.theme) {
-            localStorage.theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
         // Handle SPA navigation
         document.addEventListener('livewire:init', () => {
             Livewire.on('page-load', () => {
