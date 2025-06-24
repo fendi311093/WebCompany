@@ -75,7 +75,7 @@
                             <div
                                 class="hs-dropdown [--strategy:static] sm:[--strategy:fixed] [--adaptive:none] sm:[--trigger:hover] sm:py-2">
                                 <button type="button"
-                                    class="hs-dropdown-toggle flex items-center gap-x-2 py-1.5 px-2 md:py-2 md:px-3 text-sm md:text-base text-white hover:bg-[#1df59b] hover:text-neutral-800 transition-colors duration-200 rounded-full focus:outline-hidden">
+                                    class="hs-dropdown-toggle flex items-center gap-x-2 py-1.5 px-2 md:py-2 md:px-3 text-sm md:text-base text-neutral-900 dark:text-white hover:bg-[#1df59b] font-medium transition-colors duration-200 rounded-full focus:outline-hidden">
                                     {{ $nav->title }}
                                     <svg class="hs-dropdown-open:rotate-180 size-3" xmlns="http://www.w3.org/2000/svg"
                                         width="24" height="24" viewBox="0 0 24 24" fill="none"
