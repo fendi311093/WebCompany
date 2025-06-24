@@ -1,13 +1,24 @@
 import './bootstrap';
-import Alpine from 'alpinejs';
+import 'preline';
+import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
 import { HSStaticMethods } from 'preline/preline';
-
-window.Alpine = Alpine;
-Alpine.start();
 
 // Initialize Preline
 document.addEventListener('DOMContentLoaded', () => HSStaticMethods.autoInit());
 document.addEventListener('livewire:navigated', () => HSStaticMethods.autoInit());
+
+// Initialize Alpine and Livewire only once
+if (!window.Livewire && !window.Alpine) {
+    // Initialize Alpine first
+    Alpine.start();
+
+    // Then initialize Livewire with SPA mode
+    Livewire.start({
+        navigate: {
+            enabled: true
+        }
+    });
+}
 
 // Cegah navigasi langsung pada parent dropdown di mobile/tablet
 function handleDropdownTouch() {

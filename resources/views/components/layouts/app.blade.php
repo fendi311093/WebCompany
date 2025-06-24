@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ darkMode: localStorage.getItem('theme') === 'dark' }" :class="{ 'dark': darkMode }"
-    class="scroll-smooth">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 
 <head>
     <meta charset="utf-8">
@@ -16,43 +15,6 @@
 
     <title>{{ $title ?? config('app.name') }}</title>
 
-    <!-- Dark mode script -->
-    <script>
-        // Check if theme is set in localStorage
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia(
-                '(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-
-        // Make Alpine functions available globally
-        window.setDarkMode = function() {
-            localStorage.theme = 'dark';
-            document.documentElement.classList.add('dark');
-            window.Alpine && window.Alpine.store('darkMode').toggle(true);
-        };
-
-        window.setLightMode = function() {
-            localStorage.theme = 'light';
-            document.documentElement.classList.remove('dark');
-            window.Alpine && window.Alpine.store('darkMode').toggle(false);
-        };
-    </script>
-
-    <!-- Alpine.js Store for Dark Mode -->
-    <script defer>
-        document.addEventListener('alpine:init', () => {
-            Alpine.store('darkMode', {
-                on: localStorage.theme === 'dark',
-                toggle(value) {
-                    this.on = value;
-                    value ? setDarkMode() : setLightMode();
-                }
-            })
-        })
-    </script>
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @filamentStyles
     @livewireStyles
@@ -60,14 +22,34 @@
 
 {{-- Mengatur layout flex untuk memastikan footer tetap berada di bagian bawah halaman --}}
 
-<body class="bg-white dark:bg-neutral-900 min-h-screen flex flex-col" x-cloak>
+<body x-data="{ darkMode: localStorage.getItem('theme') === 'dark' }" x-init="$watch('darkMode', val => localStorage.setItem('theme', val ? 'dark' : 'light'))" :class="{ 'dark': darkMode }"
+    class="bg-white dark:bg-neutral-900 min-h-screen flex flex-col" x-cloak>
+
     @livewire('partials.header')
     <Main id="content" class="flex-1">
         {{ $slot }}
     </Main>
     @livewire('partials.footer')
+
     @filamentScripts
     @livewireScripts
+
+    <script>
+        // Handle dark mode
+        if (!localStorage.theme) {
+            localStorage.theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        // Handle SPA navigation
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('page-load', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

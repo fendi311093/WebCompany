@@ -162,7 +162,8 @@
                         @if ($contents->count() > 0)
                             @foreach ($contents as $content)
                                 <!-- Card -->
-                                <a class="group flex flex-col h-full focus:outline-hidden w-full sm:w-[calc(50%-2rem)] lg:w-[calc(33.333%-2rem)]"
+                                <a wire:navigate
+                                    class="group flex flex-col h-full focus:outline-hidden w-full sm:w-[calc(50%-2rem)] lg:w-[calc(33.333%-2rem)]"
                                     href="#">
                                     <div
                                         class="relative w-full h-64 rounded-xl overflow-hidden shadow-md dark:shadow-neutral-800/50 bg-white dark:bg-neutral-800">
