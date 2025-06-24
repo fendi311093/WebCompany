@@ -12,6 +12,7 @@
  	 initial-scale=1 → Menetapkan skala awal halaman agar tidak diperbesar atau diperkecil secara otomatis.
  	 shrink-to-fit=no → Mencegah browser mengecilkan elemen halaman agar sesuai dengan layar. --}}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{{ asset('DKD_LOGO_ONLY.png') }}">
 
     <title>{{ $title ?? config('app.name') }}</title>
 
