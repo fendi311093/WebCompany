@@ -1,3 +1,5 @@
+@props(['title' => config('app.name')])
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 
@@ -14,7 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ asset('DKD_LOGO_ONLY.png') }}">
 
-    <title>{{ $title ?? config('app.name') }}</title>
+    <title x-data="{ title: '{{ $title }}' }" x-text="title" x-on:title-updated.window="title = $event.detail"></title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @filamentStyles
