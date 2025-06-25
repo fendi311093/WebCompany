@@ -21,22 +21,7 @@ class NavigationWeb extends Model
         'link',
     ];
 
-    public function PagesRelation(): BelongsTo
-    {
-        return $this->belongsTo(Page::class, 'page_id', 'id');
-    }
-
-    public function parentNavigation(): BelongsTo
-    {
-        return $this->belongsTo(NavigationWeb::class, 'parent_id', 'id');
-    }
-
-    public function childNavigations(): HasMany
-    {
-        return $this->hasMany(NavigationWeb::class, 'parent_id', 'id');
-    }
-
-    protected static function boot()
+    protected static function booted()
     {
         parent::boot();
 
@@ -63,6 +48,26 @@ class NavigationWeb extends Model
 
             Cache::forget('navigation_web_parent_options');
         });
+
+        // Add global scope to always load PagesRelation
+        static::addGlobalScope('withPagesRelation', function ($query) {
+            $query->with('PagesRelation');
+        });
+    }
+
+    public function PagesRelation(): BelongsTo
+    {
+        return $this->belongsTo(Page::class, 'page_id', 'id');
+    }
+
+    public function parentNavigation(): BelongsTo
+    {
+        return $this->belongsTo(NavigationWeb::class, 'parent_id', 'id');
+    }
+
+    public function childNavigations(): HasMany
+    {
+        return $this->hasMany(NavigationWeb::class, 'parent_id', 'id');
     }
 
     //Validation unique title

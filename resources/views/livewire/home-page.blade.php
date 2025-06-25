@@ -131,12 +131,6 @@
                     <p class="mt-3 text-gray-600 dark:text-gray-300">Trusted by leading companies worldwide</p>
                 </div>
                 <div class="max-w-[1920px] mx-auto px-4">
-                    @php
-                        $activeCustomers = $customers->where('is_active', true);
-                        $count = $activeCustomers->count();
-                        // Maksimal 6 kolom agar tetap responsif
-                        $cols = min($count, 6);
-                    @endphp
 
                     @if ($activeCustomers->count() > 0)
                         <div class="flex flex-wrap justify-center items-center gap-8 max-w-7xl mx-auto">
@@ -173,12 +167,6 @@
                 <div class="p-4 lg:p-8 bg-white dark:bg-neutral-800 rounded-2xl">
                     <!-- Grid -->
                     <div class="flex flex-wrap justify-center items-stretch gap-8">
-                        @php
-                            $pages = \App\Models\Page::where('source_type', 'App\Models\Content')
-                                ->where('is_active', true)
-                                ->get();
-                        @endphp
-
                         @if ($pages->count() > 0)
                             @foreach ($pages as $page)
                                 <!-- Card -->

@@ -19,13 +19,12 @@ class Header extends Component
         // Ambil data navigation web untuk type header
         $this->headerNavigations = NavigationWeb::where('type', 'header')
             ->orderBy('position', 'asc')
-            ->with('PagesRelation')
             ->get();
 
         // Ambil data navigation web untuk type dropdown
         $this->dropdownNavigations = NavigationWeb::where('type', 'dropdown')
             ->orderBy('position', 'asc')
-            ->with(['PagesRelation', 'parentNavigation'])
+            ->with('parentNavigation')
             ->get();
     }
 
