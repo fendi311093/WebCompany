@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Cache;
 
 class Page extends Model
@@ -33,6 +34,11 @@ class Page extends Model
     public function source()
     {
         return $this->morphTo();
+    }
+
+    public function navigationWeb(): HasOne
+    {
+        return $this->hasOne(NavigationWeb::class, 'page_id', 'id');
     }
 
     public function HeaderButtons(): HasMany

@@ -138,7 +138,7 @@
                         $cols = min($count, 6);
                     @endphp
 
-                    @if ($count > 0)
+                    @if ($activeCustomers->count() > 0)
                         <div class="flex flex-wrap justify-center items-center gap-8 max-w-7xl mx-auto">
                             @foreach ($activeCustomers as $index => $customer)
                                 <div
@@ -173,26 +173,32 @@
                 <div class="p-4 lg:p-8 bg-white dark:bg-neutral-800 rounded-2xl">
                     <!-- Grid -->
                     <div class="flex flex-wrap justify-center items-stretch gap-8">
-                        @if ($contents->count() > 0)
-                            @foreach ($contents as $content)
+                        @php
+                            $pages = \App\Models\Page::where('source_type', 'App\Models\Content')
+                                ->where('is_active', true)
+                                ->get();
+                        @endphp
+
+                        @if ($pages->count() > 0)
+                            @foreach ($pages as $page)
                                 <!-- Card -->
                                 <a wire:navigate
                                     class="group flex flex-col h-full focus:outline-hidden w-full sm:w-[calc(50%-2rem)] lg:w-[calc(33.333%-2rem)]"
-                                    href="#">
+                                    href="{{ route('ViewDinamis', ['slug' => $page->source->slug]) }}">
                                     <div
                                         class="relative w-full h-64 rounded-xl overflow-hidden shadow-md dark:shadow-neutral-800/50 bg-white dark:bg-neutral-800">
                                         <img class="w-full h-full object-cover object-center bg-white dark:bg-neutral-800 rounded-xl group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out"
-                                            src="{{ url('storage/' . $content->photo) }}" alt="{{ $content->title }}"
-                                            loading="lazy">
+                                            src="{{ url('storage/' . $page->source->photo) }}"
+                                            alt="{{ $page->source->title }}" loading="lazy">
                                     </div>
                                     <div
                                         class="mt-4 p-4 rounded-xl bg-white dark:bg-neutral-800 backdrop-blur-sm border border-gray-100 dark:border-neutral-700/50 shadow-sm">
                                         <h3
                                             class="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
-                                            {{ $content->title }}
+                                            {{ $page->source->title }}
                                         </h3>
                                         <p class="mt-3 text-gray-600 dark:text-gray-300 line-clamp-3">
-                                            {{ $content->description }}
+                                            {{ $page->source->description }}
                                         </p>
                                         <p
                                             class="mt-5 inline-flex items-center gap-x-1 text-sm font-medium text-primary-600 decoration-2 group-hover:underline dark:text-primary-400">
@@ -209,7 +215,7 @@
                                 <!-- End Card -->
                             @endforeach
                         @else
-                            <div class="text-red-500">No content data!</div>
+                            <div class="text-red-500">Tidak ada halaman konten yang aktif!</div>
                         @endif
                     </div>
                     <!-- End Grid -->
