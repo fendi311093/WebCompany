@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('profils', function (Blueprint $table) {
             $table->id();
             $table->string('name_company');
+            $table->string('slug')->unique();
             $table->string('address');
             $table->string('phone');
             $table->string('photo');

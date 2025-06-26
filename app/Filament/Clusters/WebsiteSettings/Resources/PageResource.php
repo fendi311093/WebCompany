@@ -40,7 +40,7 @@ class PageResource extends Resource
         return $form
             ->schema([
                 Select::make('source_type')
-                    ->label('Source Type')
+                    ->label('Data Type')
                     ->options([
                         'App\Models\Profil' => 'Profil',
                         'App\Models\Customer' => 'Customer',
@@ -49,7 +49,7 @@ class PageResource extends Resource
                     ->required()
                     ->reactive(),
                 Select::make('source_id')
-                    ->label('Select Page')
+                    ->label('Select Options')
                     ->preload()
                     ->searchable()
                     ->options(function (callable $get) {
@@ -75,7 +75,7 @@ class PageResource extends Resource
                     ->required()
                     ->options([
                         1 => 'Style 1',
-                        2 => 'Style 2'
+                        // 2 => 'Style 2'
                     ])
                     ->default(1),
                 Toggle::make('is_active')

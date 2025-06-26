@@ -23,4 +23,10 @@ class CreateProfil extends CreateRecord
         }
         return $data;
     }
+
+    // Get the URL to redirect after creating the record
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

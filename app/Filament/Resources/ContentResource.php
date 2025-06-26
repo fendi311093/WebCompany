@@ -125,7 +125,7 @@ class ContentResource extends Resource
         return [
             'index' => Pages\ListContents::route('/'),
             'create' => Pages\CreateContent::route('/create'),
-            'edit' => Pages\EditContent::route('/{record}/edit'),
+            'edit' => Pages\EditContent::route('/{record:slug}/edit'),
         ];
     }
 }

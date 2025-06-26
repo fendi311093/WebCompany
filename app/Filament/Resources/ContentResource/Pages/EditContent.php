@@ -16,4 +16,10 @@ class EditContent extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    // Get the URL to redirect after creating the record
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

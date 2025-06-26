@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use Illuminate\Support\Str;
 
 use function PHPUnit\Framework\fileExists;
 
@@ -18,8 +19,15 @@ class Profil extends Model
         'phone',
         'logo',
         'photo',
-        'description'
+        'description',
+        'slug'
     ];
+
+    // Menggunakan route key name slug
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public function Pages()
     {
@@ -49,6 +57,17 @@ class Profil extends Model
     protected static function booted()
     {
         parent::booted();
+
+        // Event untuk generate slug
+        static::creating(function ($profil) {
+            $profil->slug = Str::slug($profil->name_company);
+        });
+
+        static::updating(function ($profil) {
+            if ($profil->isDirty('name_company')) {
+                $profil->slug = Str::slug($profil->name_company);
+            }
+        });
 
         // Event Lisener
         static::saved(function ($profil) {

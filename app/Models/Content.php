@@ -12,6 +12,11 @@ class Content extends Model
 {
     protected $fillable = ['title', 'slug', 'description', 'photo', 'is_active'];
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function Pages()
     {
         return $this->morphMany(Page::class, 'source');

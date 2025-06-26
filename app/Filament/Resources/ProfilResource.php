@@ -38,35 +38,39 @@ class ProfilResource extends Resource
     {
         return $form
             ->schema([
-                Section::make()->schema([
-                    TextInput::make('name_company')
-                        ->label('Name Company')
-                        ->dehydrateStateUsing(fn($state) => strtoupper($state))
-                        ->rules(fn($record) => Profil::getValidationRules($record)['name_company']),
-                    TextInput::make('phone')
-                        ->numeric()
-                        ->rules(fn($record) => Profil::getValidationRules($record)['phone']),
-                    FileUpload::make('logo')
-                        ->required()
-                        ->image()
-                        ->maxSize(11000)
-                        ->imageEditor()
-                        ->directory('Logo_Profil')
-                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, $record, $get): string {
-                            $profilName = $get('name_company') ?? ($record?->name_company ?? 'Logo');
-                            return Profil::generateSafeFileName($profilName, $file);
-                        }),
-                    FileUpload::make('photo')
-                        ->required()
-                        ->image()
-                        ->maxSize(11000)
-                        ->imageEditor()
-                        ->directory('Photo_Profil')
-                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, $record, $get): string {
-                            $profilName = $get('name_company') ?? ($record?->name_company ?? 'Photo');
-                            return Profil::generateSafeFileName($profilName, $file);
-                        }),
-                ])->columns(2)
+                Section::make()
+                    ->description('There can only be one company profile data.')
+                    ->icon('heroicon-o-information-circle')
+                    ->iconColor('success')
+                    ->schema([
+                        TextInput::make('name_company')
+                            ->label('Name Company')
+                            ->dehydrateStateUsing(fn($state) => strtoupper($state))
+                            ->rules(fn($record) => Profil::getValidationRules($record)['name_company']),
+                        TextInput::make('phone')
+                            ->numeric()
+                            ->rules(fn($record) => Profil::getValidationRules($record)['phone']),
+                        FileUpload::make('logo')
+                            ->required()
+                            ->image()
+                            ->maxSize(11000)
+                            ->imageEditor()
+                            ->directory('Logo_Profil')
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, $record, $get): string {
+                                $profilName = $get('name_company') ?? ($record?->name_company ?? 'Logo');
+                                return Profil::generateSafeFileName($profilName, $file);
+                            }),
+                        FileUpload::make('photo')
+                            ->required()
+                            ->image()
+                            ->maxSize(11000)
+                            ->imageEditor()
+                            ->directory('Photo_Profil')
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, $record, $get): string {
+                                $profilName = $get('name_company') ?? ($record?->name_company ?? 'Photo');
+                                return Profil::generateSafeFileName($profilName, $file);
+                            }),
+                    ])->columns(2)
                     ->inlineLabel(),
                 Section::make()->schema([
                     MarkdownEditor::make('address')
@@ -130,7 +134,7 @@ class ProfilResource extends Resource
         return [
             'index' => Pages\ManageProfils::route('/'),
             'create' => Pages\CreateProfil::route('/create'),
-            'edit' => Pages\EditProfil::route('/{record}/edit'),
+            'edit' => Pages\EditProfil::route('/{record:slug}/edit'),
         ];
     }
 }
