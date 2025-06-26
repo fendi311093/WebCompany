@@ -1,71 +1,158 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Web Company - Panduan Pengoperasian
 
-## LIBRARY
+Web Company adalah sistem manajemen konten (CMS) berbasis Laravel yang dilengkapi dengan panel admin Filament. Sistem ini dirancang untuk mengelola konten website perusahaan dengan mudah dan efisien.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Persyaratan Sistem
 
--   [Intervention Image v3](https://intervention.io/).
--   [Powerful dependency injection container](https://laravel.com/docs/container).
--   Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
--   Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
--   Database agnostic [schema migrations](https://laravel.com/docs/migrations).
--   [Robust background job processing](https://laravel.com/docs/queues).
--   [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+-   PHP >= 8.1
+-   Composer
+-   Node.js & NPM
+-   MySQL/MariaDB
+-   Web Server (Apache/Nginx)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Instalasi
 
-## MENU PROFIL COMPANY
+1. Clone repositori ini
+2. Jalankan `composer install`
+3. Salin `.env.example` ke `.env` dan sesuaikan konfigurasi database
+4. Jalankan `php artisan key:generate`
+5. Jalankan `php artisan migrate`
+6. Jalankan `npm install`
+7. Jalankan `npm run dev` untuk development atau `npm run build` untuk production
 
--[ProfilResource.php]
-->[CreateResource.php], ada beberap Fitur : - mencegah pembuatan lebih dari satu data profil di database
-Penjelasan Kode - [mutateFormDataBeforeCreate(array $data): array] → Fungsi ini dipanggil sebelum data disimpan ke database dalam proses create. - [Profil::count() > 0] → Mengecek apakah sudah ada data profil di database. Jika ada (count() > 0), maka proses pembuatan data baru akan dicegah. - [Notification::make()] → Membuat dan menampilkan notifikasi ke pengguna, memberitahu bahwa hanya boleh ada satu profil. - [$this->halt();] → Menghentikan eksekusi sebelum data benar-benar disimpan ke database.
-->Model [Profil.php], Fitur : - Library resize image (https://image.intervention.io/v3/getting-started/installation) - Resize photo jika [> 1Mb] - Delete photo di storage ketika proses Edit & Delete data - Custom validasi rule
+## Fitur Utama
 
-### FrontEnd
+### 1. Manajemen Profil Perusahaan
 
-    Solusi untuk style markdown tampil di blade
-    - Install plugin tailwind [Typography]
-      npm install -D @tailwindcss/typography
-    - [tailwind.config.js]
-       plugins: [
-         require('@tailwindcss/typography'),
-     - Tambahkan [prose] di class. Contoh :
-        <div class="prose prose-invert text-gray-200 max-w-none">
-            {!! str($profil->description)->markdown()->sanitizeHtml() !!}
-        </div>
+-   Pengelolaan informasi profil perusahaan
+-   Hanya dapat membuat satu profil perusahaan
+-   Mendukung format markdown untuk deskripsi
+-   Optimasi gambar otomatis (resize jika > 1MB)
 
-### BackEnd
+### 2. Manajemen Konten
 
--   **[PageResource.php]
-       Menghubungkan 3 table ke dalam [PageResource]
-       - Gunakan [morph]
-          1. [Migration Page]
-              [$table->morphs('source')] Akan membuwat source_type & source_id bersamaan yg nanti digunakan untuk menyimpan relasi dari 3
-              table tersebut
-          2. [Relasi Morph di 3 model]
-             - Di model Profil, Content & Customer :
-              public function Pages()
-              {
-                return $this->morphMany(Page::class, 'source');
-              }
-             - Di Model [Page]
-              public function source()
-              {
-                  return $this->morphTo();
-              }
+-   Pengelolaan artikel dan konten website
+-   Editor markdown yang user-friendly
+-   Pengaturan SEO untuk setiap konten
+-   Sistem kategorisasi konten
 
-## Contributing
+### 3. Galeri Foto
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+-   Upload multiple foto
+-   Optimasi otomatis untuk performa
+-   Pengelolaan album dan kategori foto
+-   Preview foto sebelum upload
 
-## Code of Conduct
+### 4. Manajemen Slider
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+-   Pengaturan slider halaman utama
+-   Kustomisasi judul dan deskripsi
+-   Pengaturan urutan tampilan
 
-## Security Vulnerabilities
+### 5. Manajemen Navigasi
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+-   Pengaturan menu website
+-   Struktur menu yang fleksibel
+-   Pengaturan link internal/eksternal
 
-## License
+### 6. Manajemen Pelanggan
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+-   Database pelanggan terintegrasi
+-   Riwayat interaksi pelanggan
+-   Pengategorian pelanggan
+
+## Panduan Penggunaan
+
+### Panel Admin
+
+1. Akses panel admin di `/admin`
+2. Login menggunakan kredensial administrator
+3. Navigasi menggunakan menu di sidebar kiri
+
+### Pengaturan Profil Perusahaan
+
+-   Buka menu "Profil" di panel admin
+-   Isi informasi perusahaan (hanya bisa satu profil)
+-   Gunakan format markdown untuk deskripsi
+-   Upload logo perusahaan (akan dioptimasi otomatis)
+
+### Pengelolaan Konten
+
+1. Buka menu "Konten"
+2. Pilih "Tambah Konten" untuk konten baru
+3. Isi judul, konten, dan SEO metadata
+4. Gunakan editor markdown untuk formatting
+5. Simpan dan preview sebelum publish
+
+### Upload dan Manajemen Foto
+
+1. Buka menu "Foto"
+2. Gunakan fitur drag & drop untuk upload
+3. Atur kategori dan deskripsi
+4. Foto akan dioptimasi otomatis
+
+### Pengaturan Slider
+
+1. Buka menu "Slider"
+2. Upload gambar slider
+3. Atur judul dan deskripsi
+4. Atur urutan tampilan
+
+### Pengaturan Navigasi
+
+1. Buka menu "Navigasi"
+2. Tambah item menu baru
+3. Atur hierarki menu
+4. Tentukan link tujuan
+
+## Optimasi Frontend
+
+### Markdown Styling
+
+Untuk menampilkan konten markdown dengan baik:
+
+1. Pastikan @tailwindcss/typography terinstall
+2. Gunakan class `prose` pada container
+
+```html
+<div class="prose prose-invert text-gray-200 max-w-none">
+    {!! str($content->description)->markdown()->sanitizeHtml() !!}
+</div>
+```
+
+## Troubleshooting
+
+### Masalah Umum
+
+1. **Gambar tidak muncul**
+
+    - Periksa permission folder storage
+    - Jalankan `php artisan storage:link`
+
+2. **Optimasi gambar gagal**
+
+    - Pastikan ekstensi GD/Imagick terinstall
+    - Periksa permission folder temp
+
+3. **Frontend tidak ter-update**
+    - Jalankan `npm run build`
+    - Clear cache browser
+
+## Keamanan
+
+-   Selalu update dependencies secara berkala
+-   Gunakan strong password
+-   Aktifkan HTTPS
+-   Backup database secara rutin
+
+## Dukungan
+
+Untuk bantuan teknis, silakan:
+
+1. Buka issue di repositori
+2. Dokumentasi lengkap tersedia di `/docs`
+3. Kontak tim support
+
+## Lisensi
+
+Sistem ini dilisensikan di bawah [MIT license](https://opensource.org/licenses/MIT).
