@@ -128,10 +128,9 @@
                         class="text-3xl font-bold text-gray-900 dark:text-white relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-[#1df59b] after:rounded-full">
                         Our Customers
                     </h2>
-                    <p class="mt-3 text-gray-600 dark:text-gray-300">Trusted by leading companies worldwide</p>
+                    <p class="my-3 text-gray-600 dark:text-gray-300">Trusted by leading companies worldwide</p>
                 </div>
                 <div class="max-w-[1920px] mx-auto px-4">
-
                     @if ($activeCustomers->count() > 0)
                         <div class="flex flex-wrap justify-center items-center gap-8 max-w-7xl mx-auto">
                             @foreach ($activeCustomers as $index => $customer)
@@ -143,7 +142,8 @@
                                     lg:w-[calc(20%-1.6rem)] 
                                     xl:w-[calc(16.666%-1.7rem)] 
                                     2xl:w-[calc(12.5%-1.75rem)] 
-                                    flex items-center justify-center h-24 min-w-[150px] max-w-[200px]">
+                                    flex items-center justify-center h-24 min-w-[150px] max-w-[200px]
+                                    p-4 bg-white dark:bg-neutral-800 rounded-xl shadow-lg dark:shadow-neutral-800/30 border border-gray-200/80 dark:border-neutral-700/50">
                                     <img src="{{ url('storage/' . $customer->logo) }}"
                                         alt="{{ $customer->name_customer }}"
                                         class="max-h-16 w-auto object-contain transition duration-300 drop-shadow-2xl dark:brightness-110 light:contrast-125 light:brightness-90 mix-blend-multiply dark:mix-blend-normal" />
