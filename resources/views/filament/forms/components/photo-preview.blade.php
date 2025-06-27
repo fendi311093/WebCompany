@@ -1,13 +1,6 @@
 @php
     $photoId = $getState();
-    $photoPath = null;
-
-    if ($photoId) {
-        $photo = \App\Models\Photo::find($photoId);
-        if ($photo) {
-            $photoPath = $photo->file_path;
-        }
-    }
+    $photoPath = \App\Models\Photo::getFilePathByHashedId($photoId);
 @endphp
 
 <div class="flex justify-center">

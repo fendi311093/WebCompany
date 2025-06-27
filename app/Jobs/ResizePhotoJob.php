@@ -70,7 +70,7 @@ class ResizePhotoJob implements ShouldQueue
             return;
         }
 
-        $maxFileSize = 1024 * 1024; // 1Mb
+        $maxFileSize = 3 * 1024 * 1024; // 3Mb
 
         // Tidak perlu lagi karena sudah ada pengecekan di model PHOTO
         // if (filesize($fileLocation) <= $maxFileSize) {
@@ -79,13 +79,21 @@ class ResizePhotoJob implements ShouldQueue
 
         $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
         $image = $manager->read($fileLocation);
-        $image->scale(width: 800);
 
-        $quality = 80;
-        while (filesize($fileLocation) > $maxFileSize && $quality >= 30) {
+        // Dapatkan dimensi asli gambar
+        $originalWidth = $image->width();
+        $originalHeight = $image->height();
+
+        // Kurangi ukuran sebesar 10% dari ukuran asli
+        $newWidth = (int)($originalWidth * 0.9);
+        $image->scale(width: $newWidth);
+
+        // Mulai dengan kualitas tinggi dan kurangi secara bertahap
+        $quality = 96;
+        while (filesize($fileLocation) > $maxFileSize && $quality >= 86) {
             $image->save($fileLocation, quality: $quality);
             clearstatcache(true, $fileLocation);
-            $quality -= 5;
+            $quality -= 2; // Kurangi kualitas secara lebih halus
         }
     }
 }

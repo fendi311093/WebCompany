@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Illuminate\Support\Str;
+use Vinkla\Hashids\Facades\Hashids;
 
 class Photo extends Model
 {
@@ -90,5 +91,44 @@ class Photo extends Model
         $timestamp = now()->format('dmy_His');
 
         return "{$safeName}_{$timestamp}.{$extension}";
+    }
+
+    //Proses HashID untuk URL
+    // Mengenkripsi ID asli menjadi string terenkripsi
+    public function getRouteKey(): string
+    {
+        return Hashids::encode($this->getKey());
+    }
+
+    // Mendekripsi ID terenkripsi kembali ke ID asli
+    public function resolveRouteBinding($value, $field = null)
+    {
+        $id = Hashids::decode($value);
+        return $this->find($id[0] ?? null);
+    }
+
+    // Mendapatkan ID terenkripsi untuk digunakan di tempat lain
+    public function getHashedId(): string
+    {
+        return Hashids::encode($this->id);
+    }
+
+    // Mencari record berdasarkan ID terenkripsi
+    public static function findByHashedId($hashedId): ?self
+    {
+        if (!$hashedId) {
+            return null;
+        }
+
+        $id = Hashids::decode($hashedId)[0] ?? null;
+        return $id ? self::find($id) : null;
+    }
+
+
+    // Mendapatkan path photo berdasarkan ID terenkripsi untuk digunakan di blade preview photo di Slider
+    public static function getFilePathByHashedId($hashedId): ?string
+    {
+        $photo = self::findByHashedId($hashedId);
+        return $photo ? $photo->file_path : null;
     }
 }

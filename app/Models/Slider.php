@@ -27,7 +27,7 @@ class Slider extends Model
                 ->orderByDesc('created_at')
                 ->get()
                 ->mapWithKeys(function ($photo) {
-                    return [$photo->id => basename($photo->file_path)];
+                    return [$photo->getRouteKey() => basename($photo->file_path)];
                 })
                 ->toArray();
         });

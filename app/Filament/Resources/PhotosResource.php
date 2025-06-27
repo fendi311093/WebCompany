@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Illuminate\Database\Eloquent\Model;
 
 class PhotosResource extends Resource
 {
@@ -28,6 +29,12 @@ class PhotosResource extends Resource
     protected static ?string $pluralLabel = 'List Photos';
     protected static ?string $navigationGroup = 'Media';
     protected static ?int $navigationSort = 91;
+
+    // Di Filament, method ini digunakan untuk menemukan record berdasarkan ID di URL
+    public static function resolveRecordRouteBinding(int|string $key): ?Model
+    {
+        return static::getModel()::findByHashedId($key);
+    }
 
     public static function form(Form $form): Form
     {
