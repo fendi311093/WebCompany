@@ -20,6 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class SliderResource extends Resource
 {
@@ -37,6 +38,12 @@ class SliderResource extends Resource
     protected static ?array $cachedPhotoOptions = null;
     protected static ?array $usedPhotoIds = null;
     protected static ?array $usedSlideNumbers = null;
+
+    //Menumukan record id berdasarkan ID ter-enkripsi
+    public static function resolveRecordRouteBinding(int|string $key): ?Model
+    {
+        return static::getModel()::findByHashedId($key);
+    }
 
     public static function form(Form $form): Form
     {
