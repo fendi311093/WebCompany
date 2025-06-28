@@ -94,6 +94,7 @@ class Photo extends Model
     }
 
     //Proses HashID untuk URL
+
     // Mengenkripsi ID asli menjadi string terenkripsi
     public function getRouteKey(): string
     {
@@ -123,7 +124,6 @@ class Photo extends Model
         $id = Hashids::decode($hashedId)[0] ?? null;
         return $id ? self::find($id) : null;
     }
-
 
     // Mendapatkan path photo berdasarkan ID terenkripsi untuk digunakan di blade preview photo di Slider
     public static function getFilePathByHashedId($hashedId): ?string

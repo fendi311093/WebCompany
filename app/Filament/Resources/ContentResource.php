@@ -21,6 +21,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -36,6 +37,12 @@ class ContentResource extends Resource
     protected static ?string $pluralModelLabel = 'List Contents';
     protected static ?string $navigationGroup = 'Master Data';
     protected static ?int $navigationSort = 3;
+
+    // Di Filament, method ini digunakan untuk menemukan record berdasarkan ID di URL
+    public static function resolveRecordRouteBinding(int|string $key): ?Model
+    {
+        return static::getModel()::findByHashedId($key);
+    }
 
     public static function form(Form $form): Form
     {
@@ -125,7 +132,7 @@ class ContentResource extends Resource
         return [
             'index' => Pages\ListContents::route('/'),
             'create' => Pages\CreateContent::route('/create'),
-            'edit' => Pages\EditContent::route('/{record:slug}/edit'),
+            'edit' => Pages\EditContent::route('/{record}/edit'),
         ];
     }
 }

@@ -7,15 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use Vinkla\Hashids\Facades\Hashids;
 
 class Content extends Model
 {
     protected $fillable = ['title', 'slug', 'description', 'photo', 'is_active'];
-
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
 
     public function Pages()
     {
@@ -166,5 +162,38 @@ class Content extends Model
         $timestamp = now()->format('dmy_His');
 
         return "{$safeName}_{$timestamp}.{$extension}";
+    }
+
+    // Proses HashID untuk URL
+
+    // men-Enkripsi ID asli menjadi string
+    public function getRouteKey(): string
+    {
+        return Hashids::encode($this->id);
+    }
+
+    //men-Deskripsi ID terenkripsi kembali ke ID asli
+    public function resolveRouteBinding($value, $field = null)
+    {
+        $id = Hashids::decode($value); // Mendekripsi ID terenkripsi
+        return $this->find($id[0] ?? null); // Mengembalikan model berdasarkan ID yang didekripsi
+    }
+
+    // Mendapatkan ID ter-enkripsi untuk digunakan di model lain
+    public function getHashedId(): string
+    {
+        return Hashids::encode($this->id);
+    }
+
+    // Mencari record berdasarkan ID yg ter-enkripsi di Edit form
+    public static function findByHashedId($hashedId): ?self
+    {
+        // Cek apakah hashedId valid
+        if (!$hashedId) {
+            return null;
+        }
+
+        $id = Hashids::decode($hashedId)[0] ?? null;
+        return $id ? self::find($id) : null; // Mengembalikan model berdasarkan ID yang didekripsi
     }
 }
