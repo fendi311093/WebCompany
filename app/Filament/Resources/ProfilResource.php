@@ -21,6 +21,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
+use Illuminate\Database\Eloquent\Model;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ProfilResource extends Resource
@@ -33,6 +34,12 @@ class ProfilResource extends Resource
     protected static ?string $pluralLabel = 'Profil Company';
     protected static ?string $navigationGroup = 'Master Data';
     protected static ?int $navigationSort = 1;
+
+    // Di Filament, method ini digunakan untuk menemukan record berdasarkan ID di URL
+    public static function resolveRecordRouteBinding(int|string $key): ?Model
+    {
+        return static::getModel()::findByHashedId($key);
+    }
 
     public static function form(Form $form): Form
     {
@@ -134,7 +141,7 @@ class ProfilResource extends Resource
         return [
             'index' => Pages\ManageProfils::route('/'),
             'create' => Pages\CreateProfil::route('/create'),
-            'edit' => Pages\EditProfil::route('/{record:slug}/edit'),
+            'edit' => Pages\EditProfil::route('/{record}/edit'),
         ];
     }
 }

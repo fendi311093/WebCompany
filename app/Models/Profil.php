@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Illuminate\Support\Str;
+use Vinkla\Hashids\Facades\Hashids;
 
 use function PHPUnit\Framework\fileExists;
 
@@ -22,12 +23,6 @@ class Profil extends Model
         'description',
         'slug'
     ];
-
-    // Menggunakan route key name slug
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
 
     public function Pages()
     {
@@ -150,5 +145,37 @@ class Profil extends Model
         $timestamp = now()->format('dmy_His');
 
         return "{$safeName}_{$timestamp}.{$extension}";
+    }
+
+    // HashId
+
+    // men-Enkripsi ID asli menjadi string
+    public function getRouteKey()
+    {
+        return Hashids::encode($this->id);
+    }
+
+    // Mengembalikan ID ter-enkripsi menjadi ID asli
+    public function resolveRouteBinding($value, $field = null)
+    {
+        $id = Hashids::decode($value);
+        return $this->find($id[0] ?? null);
+    }
+
+    // Mendapatkan ID ter-enkripsi untuk digunakan di model lain
+    public function getHashedId()
+    {
+        return Hashids::encode($this->id);
+    }
+
+    // Mencari record berdasarkan ID yg ter-enkripsi di Edit form
+    public static function findByHashedId($hashedId): ?self
+    {
+        if (!$hashedId) {
+            return null;
+        }
+
+        $id = Hashids::decode($hashedId)[0] ?? null;
+        return $id ? self::find($id) : null;
     }
 }
