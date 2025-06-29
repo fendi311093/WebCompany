@@ -22,6 +22,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
@@ -38,6 +39,12 @@ class NavigationWebResource extends Resource
 
     protected static ?array $cachedPageOptions = null;
     protected static ?array $cachedParentOptions = null;
+
+    // Di Filament, method ini digunakan untuk menemukan record berdasarkan ID di URL
+    public static function resolveRecordRouteBinding(int|string $key): ?Model
+    {
+        return static::getModel()::findByHashedId($key);
+    }
 
     public static function form(Form $form): Form
     {

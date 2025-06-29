@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Cache;
+use Vinkla\Hashids\Facades\Hashids;
 
 class NavigationWeb extends Model
 {
@@ -185,5 +186,25 @@ class NavigationWeb extends Model
                 })
                 ->toArray();
         });
+    }
+
+    // HashId
+
+    // men-Enkripsi ID asli menjadi string
+    public function getRouteKey()
+    {
+        return Hashids::encode($this->id);
+    }
+
+    // Mencari record berdasarkan ID yg ter-enkripsi di Edit form
+    public static function findByHashedId($hashedId): ?self
+    {
+        // Cek apakah hashedId valid
+        if (!$hashedId) {
+            return null;
+        }
+
+        $id = Hashids::decode($hashedId)[0] ?? null;
+        return $id ? self::find($id) : null; // Mengembalikan model berdasarkan ID yang didekripsi
     }
 }

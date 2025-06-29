@@ -41,16 +41,6 @@ class Page extends Model
         return $this->hasOne(NavigationWeb::class, 'page_id', 'id');
     }
 
-    public function HeaderButtons(): HasMany
-    {
-        return $this->hasMany(HeaderButton::class, 'page_id', 'id');
-    }
-
-    public function dropdownMenus(): HasMany
-    {
-        return $this->hasMany(DropdownMenu::class, 'page_id', 'id');
-    }
-
     // ambil semua source_id dan tampilkan nama source
     public static function getAllSourceIds($sourceType): array
     {
