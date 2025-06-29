@@ -28,6 +28,7 @@ Web Company adalah sistem manajemen konten (CMS) berbasis Laravel yang dilengkap
 -   Hanya dapat membuat satu profil perusahaan
 -   Mendukung format markdown untuk deskripsi
 -   Optimasi gambar otomatis (resize jika > 1MB)
+-   Sistem hashids untuk keamanan URL
 
 ### 2. Manajemen Konten
 
@@ -35,31 +36,51 @@ Web Company adalah sistem manajemen konten (CMS) berbasis Laravel yang dilengkap
 -   Editor markdown yang user-friendly
 -   Pengaturan SEO untuk setiap konten
 -   Sistem kategorisasi konten
+-   Slug otomatis untuk URL yang SEO-friendly
+-   Sistem hashids untuk keamanan URL
 
 ### 3. Galeri Foto
 
--   Upload multiple foto
--   Optimasi otomatis untuk performa
+-   Upload multiple foto dengan drag & drop
+-   Optimasi otomatis untuk performa (resize jika > 1MB)
 -   Pengelolaan album dan kategori foto
 -   Preview foto sebelum upload
+-   Sistem hashids untuk keamanan URL
+-   Background job untuk optimasi gambar
 
 ### 4. Manajemen Slider
 
 -   Pengaturan slider halaman utama
 -   Kustomisasi judul dan deskripsi
 -   Pengaturan urutan tampilan
+-   Integrasi dengan galeri foto
+-   Sistem hashids untuk keamanan URL
 
-### 5. Manajemen Navigasi
+### 5. Manajemen Halaman (Pages)
 
--   Pengaturan menu website
+-   Sistem halaman dinamis yang fleksibel
+-   Mendukung multiple source types (Profil, Customer, Content)
+-   Pengaturan style view untuk setiap halaman
+-   Status aktif/nonaktif per halaman
+-   Validasi untuk mencegah duplikasi source
+-   Cache system untuk performa optimal
+
+### 6. Manajemen Navigasi Website
+
+-   Pengaturan menu website yang dinamis
 -   Struktur menu yang fleksibel
+-   Integrasi dengan sistem Pages
 -   Pengaturan link internal/eksternal
+-   Slug otomatis untuk URL yang SEO-friendly
+-   Pengaturan urutan menu
 
-### 6. Manajemen Pelanggan
+### 7. Manajemen Pelanggan
 
 -   Database pelanggan terintegrasi
 -   Riwayat interaksi pelanggan
 -   Pengategorian pelanggan
+-   Status aktif/nonaktif pelanggan
+-   Integrasi dengan sistem Pages
 
 ## Panduan Penggunaan
 
@@ -68,6 +89,7 @@ Web Company adalah sistem manajemen konten (CMS) berbasis Laravel yang dilengkap
 1. Akses panel admin di `/admin`
 2. Login menggunakan kredensial administrator
 3. Navigasi menggunakan menu di sidebar kiri
+4. Gunakan cluster "Website Settings" untuk pengaturan website
 
 ### Pengaturan Profil Perusahaan
 
@@ -90,20 +112,52 @@ Web Company adalah sistem manajemen konten (CMS) berbasis Laravel yang dilengkap
 2. Gunakan fitur drag & drop untuk upload
 3. Atur kategori dan deskripsi
 4. Foto akan dioptimasi otomatis
+5. Gunakan fitur "Upload Photos" untuk multiple upload
 
 ### Pengaturan Slider
 
 1. Buka menu "Slider"
-2. Upload gambar slider
+2. Upload gambar slider atau pilih dari galeri foto
 3. Atur judul dan deskripsi
 4. Atur urutan tampilan
 
-### Pengaturan Navigasi
+### Pengaturan Halaman (Pages)
 
-1. Buka menu "Navigasi"
+1. Buka menu "Pages" di cluster Website Settings
+2. Pilih "Data Type" (Profil, Customer, atau Content)
+3. Pilih data yang akan dijadikan halaman
+4. Atur "Style Page" sesuai kebutuhan
+5. Aktifkan/nonaktifkan halaman
+6. Sistem akan mencegah duplikasi source
+
+### Pengaturan Navigasi Website
+
+1. Buka menu "Navigation Web" di cluster Website Settings
 2. Tambah item menu baru
-3. Atur hierarki menu
-4. Tentukan link tujuan
+3. Pilih tipe menu (Page, URL, atau Dropdown)
+4. Jika memilih Page, pilih halaman yang sudah dibuat
+5. Atur hierarki menu dengan parent-child
+6. Tentukan slug untuk URL
+
+## Struktur Halaman Dinamis
+
+### Source Types yang Didukung
+
+1. **Profil**: Menampilkan halaman profil perusahaan
+2. **Customer**: Menampilkan halaman pelanggan
+3. **Content**: Menampilkan halaman konten/artikel
+
+### Style Views
+
+-   **Style 1**: Layout standar untuk halaman dinamis
+-   **Style 2**: Layout alternatif (dapat dikembangkan lebih lanjut)
+
+### Sistem Cache
+
+-   Cache untuk opsi dropdown di form Pages
+-   Cache untuk menu navigasi
+-   Cache untuk data source IDs
+-   Cache otomatis ter-reset saat ada perubahan
 
 ## Optimasi Frontend
 
@@ -120,6 +174,13 @@ Untuk menampilkan konten markdown dengan baik:
 </div>
 ```
 
+### Livewire Components
+
+-   **HomePage**: Halaman utama website
+-   **AboutUs**: Halaman tentang kami
+-   **ViewDinamis**: Halaman dinamis berdasarkan slug
+-   **Header/Footer**: Komponen partial untuk layout
+
 ## Troubleshooting
 
 ### Masalah Umum
@@ -133,10 +194,22 @@ Untuk menampilkan konten markdown dengan baik:
 
     - Pastikan ekstensi GD/Imagick terinstall
     - Periksa permission folder temp
+    - Periksa queue worker berjalan
 
 3. **Frontend tidak ter-update**
+
     - Jalankan `npm run build`
     - Clear cache browser
+
+4. **Cache tidak ter-update**
+
+    - Clear cache aplikasi: `php artisan cache:clear`
+    - Restart queue worker jika menggunakan background jobs
+
+5. **Halaman dinamis tidak muncul**
+    - Periksa status aktif halaman di Pages
+    - Periksa navigasi sudah terhubung dengan benar
+    - Periksa slug di Navigation Web
 
 ## Keamanan
 
@@ -144,6 +217,8 @@ Untuk menampilkan konten markdown dengan baik:
 -   Gunakan strong password
 -   Aktifkan HTTPS
 -   Backup database secara rutin
+-   Sistem hashids untuk keamanan URL
+-   Validasi input di semua form
 
 ## Dukungan
 
