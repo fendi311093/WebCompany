@@ -10,9 +10,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
@@ -66,40 +63,10 @@ class PhotosResource extends Resource
             ->columns(1);
     }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                ImageColumn::make('file_path')
-                    ->label('Photo')
-                    ->disk('public')
-                    ->circular()
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
-            ->emptyStateHeading('No Photos Found')
-            ->emptyStateDescription('You have not uploaded any photos yet. Click the button below to upload your first photo.')
-            ->emptyStateIcon('heroicon-o-camera')
-            ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
-            ]);
-    }
-
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListPhotos::route('/'),
-            // 'create' => Pages\UploadPhotos::route('/create'),
             'create' => Pages\CreatePhoto::route('/create'),
             'edit' => Pages\EditPhoto::route('/{record}/edit'),
         ];
