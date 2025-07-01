@@ -30,10 +30,14 @@
         </div>
 
         <!-- Gallery Grid -->
-        @if ($this->getPhotos()->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-8">
-                @foreach ($this->getPhotos() as $photo)
-                    <div
+        @php
+            $photos = $this->getPhotos();
+        @endphp
+        @if ($photos->count() > 0)
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-8">
+                @foreach ($photos as $photo)
+                    <div x-data="{ showActions: false }" @mouseenter="showActions = true" @mouseleave="showActions = false"
+                        @click.away="showActions = false" @touchstart.prevent="showActions = !showActions"
                         class="group relative bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col">
                         <!-- Photo Container -->
                         <div
@@ -43,12 +47,17 @@
                                 loading="lazy" />
 
                             <!-- Overlay with actions -->
-                            <div
-                                class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
-                                <div
-                                    class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex space-x-2">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 transition-all duration-300 flex items-center justify-center"
+                                :class="{ 'bg-opacity-50': showActions }" @click="if (!showActions) showActions = true">
+                                <div class="transition-opacity duration-300 flex space-x-2"
+                                    :class="{
+                                        'opacity-100 pointer-events-auto': showActions,
+                                        'opacity-0 pointer-events-none': !
+                                            showActions
+                                    }">
                                     <!-- Edit Button -->
-                                    <a href="{{ route('filament.admin.resources.photos.edit', $photo->getHashedId()) }}"
+                                    <a wire:navigate
+                                        href="{{ route('filament.admin.resources.photos.edit', $photo->getHashedId()) }}"
                                         class="inline-flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition-colors duration-200 shadow-lg"
                                         title="Edit Photo">
                                         <x-filament::icon icon="heroicon-o-pencil" class="w-5 h-5" />
@@ -67,16 +76,16 @@
                                             <div
                                                 class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg w-full max-w-sm mx-auto">
                                                 <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
-                                                    Konfirmasi Hapus</h3>
-                                                <p class="mb-4 text-gray-600 dark:text-gray-300">Apakah Anda yakin ingin
-                                                    menghapus foto ini?</p>
+                                                    Confirm Delete</h3>
+                                                <p class="mb-4 text-gray-600 dark:text-gray-300">Are you sure you want
+                                                    to delete this photo ?</p>
                                                 <div class="flex justify-end gap-2">
                                                     <button @click="open = false"
-                                                        class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600">Batal</button>
+                                                        class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600">Cancel</button>
                                                     <button
                                                         @click="$wire.deletePhoto({{ $photo->id }}); open = false"
-                                                        class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">Ya,
-                                                        Hapus</button>
+                                                        class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">Yes,
+                                                        Delete</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -108,23 +117,50 @@
                     </div>
                 @endforeach
             </div>
-            <div class="mt-8 flex flex-col items-center gap-2">
+            <div class="mt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div class="flex items-center gap-4">
-                    <span class="text-sm text-gray-700">
-                        Showing {{ $this->getPhotos()->firstItem() }} to {{ $this->getPhotos()->lastItem() }} of
-                        {{ $this->getPhotos()->total() }} results
-                    </span>
-                    <form method="GET" class="flex items-center">
-                        <label class="mr-2 text-sm">Per page</label>
+                    <form method="GET" class="flex items-center gap-2">
+                        <label class="text-sm text-gray-700 dark:text-gray-200">Per page</label>
                         <select name="perPage" onchange="this.form.submit()"
-                            class="border border-green-600 rounded-lg px-2 py-1 text-sm focus:ring-0 focus:border-green-600">
+                            class="border border-green-600 dark:border-green-400 rounded-lg px-6 py-1 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-600 focus:border-green-600 transition">
                             @foreach ([10, 25, 50, 100] as $size)
                                 <option value="{{ $size }}"
-                                    {{ request('perPage', 10) == $size ? 'selected' : '' }}>{{ $size }}
-                                </option>
+                                    {{ request('perPage', 10) == $size ? 'selected' : '' }}>{{ $size }}</option>
                             @endforeach
                         </select>
                     </form>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-700 dark:text-gray-200">
+                        Showing {{ $photos->firstItem() }} to {{ $photos->lastItem() }} of
+                        {{ $photos->total() }} results
+                    </span>
+                    <!-- Custom Pagination -->
+                    <div class="flex gap-1">
+                        @if ($photos->onFirstPage())
+                            <span
+                                class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed">&laquo;</span>
+                        @else
+                            <a href="{{ $photos->previousPageUrl() }}"
+                                class="px-3 py-1 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-green-900 transition">&laquo;</a>
+                        @endif
+                        @foreach ($photos->getUrlRange(1, $photos->lastPage()) as $page => $url)
+                            @if ($page == $photos->currentPage())
+                                <span
+                                    class="px-3 py-1 rounded bg-green-600 text-white font-semibold">{{ $page }}</span>
+                            @else
+                                <a href="{{ $url }}"
+                                    class="px-3 py-1 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-green-900 transition">{{ $page }}</a>
+                            @endif
+                        @endforeach
+                        @if ($photos->hasMorePages())
+                            <a href="{{ $photos->nextPageUrl() }}"
+                                class="px-3 py-1 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-green-900 transition">&raquo;</a>
+                        @else
+                            <span
+                                class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed">&raquo;</span>
+                        @endif
+                    </div>
                 </div>
             </div>
         @else
