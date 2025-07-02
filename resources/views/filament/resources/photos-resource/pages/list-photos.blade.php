@@ -1,4 +1,7 @@
 <x-filament-panels::page>
+    @php
+        $photos = $this->getPhotos();
+    @endphp
     <div class="space-y-6">
         <!-- Gallery Header -->
         <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
@@ -8,7 +11,7 @@
                         List Photos
                     </h2>
                     <p class="text-gray-500 dark:text-gray-400 mt-1">
-                        {{ $this->getPhotos()->total() }} photos in your collection
+                        {{ $photos->total() }} photos in your collection
                     </p>
                 </div>
                 <div x-data="{ loading: false }" class="flex items-center space-x-2">
@@ -30,9 +33,6 @@
         </div>
 
         <!-- Gallery Grid -->
-        @php
-            $photos = $this->getPhotos();
-        @endphp
         @if ($photos->count() > 0)
             <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-8">
                 @foreach ($photos as $photo)
@@ -103,7 +103,7 @@
                                         {{ basename($photo->file_path) }}
                                     </p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">
-                                        {{ $photo->created_at->format('M d, Y H:i') }}
+                                        {{ $photo->updated_at->format('M d, Y H:i') }}
                                     </p>
                                 </div>
                                 <div class="flex items-center space-x-1">

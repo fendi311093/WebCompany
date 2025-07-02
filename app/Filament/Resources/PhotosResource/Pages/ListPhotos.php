@@ -28,7 +28,7 @@ class ListPhotos extends Page
 
     public function getPhotos()
     {
-        return Photo::latest()->paginate($this->perPage); // 'paginate' -> Menghasilkan instance $paginator
+        return Photo::latest()->paginate($this->perPage);
     }
 
     protected function getHeaderActions(): array
