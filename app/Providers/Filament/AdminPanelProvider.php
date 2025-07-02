@@ -65,6 +65,9 @@ class AdminPanelProvider extends PanelProvider
                 'warning' => Color::Orange,
             ])
             ->spa()
-            ->sidebarCollapsibleOnDesktop(true);
+            ->sidebarCollapsibleOnDesktop(true)
+            ->brandName('Web Company')
+            ->brandLogo(asset('DKD_LOGO_ONLY.png'))
+            ->brandLogoHeight('3rem');
     }
 }
