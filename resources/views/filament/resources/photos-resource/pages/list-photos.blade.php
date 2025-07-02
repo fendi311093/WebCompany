@@ -8,7 +8,7 @@
                         List Photos
                     </h2>
                     <p class="text-gray-500 dark:text-gray-400 mt-1">
-                        {{ $this->getPhotos()->count() }} photos in your collection
+                        {{ $this->getPhotos()->total() }} photos in your collection
                     </p>
                 </div>
                 <div x-data="{ loading: false }" class="flex items-center space-x-2">
@@ -117,51 +117,8 @@
                     </div>
                 @endforeach
             </div>
-            <div class="mt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <form method="GET" class="flex items-center gap-2">
-                        <label class="text-sm text-gray-700 dark:text-gray-200">Per page</label>
-                        <select name="perPage" onchange="this.form.submit()"
-                            class="border border-green-600 dark:border-green-400 rounded-lg px-6 py-1 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-600 focus:border-green-600 transition">
-                            @foreach ([10, 25, 50, 100] as $size)
-                                <option value="{{ $size }}"
-                                    {{ request('perPage', 10) == $size ? 'selected' : '' }}>{{ $size }}</option>
-                            @endforeach
-                        </select>
-                    </form>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-sm text-gray-700 dark:text-gray-200">
-                        Showing {{ $photos->firstItem() }} to {{ $photos->lastItem() }} of
-                        {{ $photos->total() }} results
-                    </span>
-                    <!-- Custom Pagination -->
-                    <div class="flex gap-1">
-                        @if ($photos->onFirstPage())
-                            <span
-                                class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed">&laquo;</span>
-                        @else
-                            <a href="{{ $photos->previousPageUrl() }}"
-                                class="px-3 py-1 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-green-900 transition">&laquo;</a>
-                        @endif
-                        @foreach ($photos->getUrlRange(1, $photos->lastPage()) as $page => $url)
-                            @if ($page == $photos->currentPage())
-                                <span
-                                    class="px-3 py-1 rounded bg-green-600 text-white font-semibold">{{ $page }}</span>
-                            @else
-                                <a href="{{ $url }}"
-                                    class="px-3 py-1 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-green-900 transition">{{ $page }}</a>
-                            @endif
-                        @endforeach
-                        @if ($photos->hasMorePages())
-                            <a href="{{ $photos->nextPageUrl() }}"
-                                class="px-3 py-1 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-green-900 transition">&raquo;</a>
-                        @else
-                            <span
-                                class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed">&raquo;</span>
-                        @endif
-                    </div>
-                </div>
+            <div class="mt-4">
+                {{ $photos->links('components.pagination-custom', ['scrollTo' => false]) }}
             </div>
         @else
             <!-- Empty State -->

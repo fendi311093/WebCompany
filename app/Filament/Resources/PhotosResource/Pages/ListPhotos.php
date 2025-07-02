@@ -8,19 +8,33 @@ use Filament\Resources\Pages\Page;
 use App\Models\Photo;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Livewire\WithPagination;
 
 class ListPhotos extends Page
 {
+    use WithPagination;
+
     protected static string $resource = PhotosResource::class;
 
     protected static string $view = 'filament.resources.photos-resource.pages.list-photos';
     protected static ?string $title = '';
 
-    public int $perPage = 10;
-
-    public function mount(): void
+    public function getPhotos()
     {
-        $this->perPage = request('perPage', 10);
+        return Photo::latest()->paginate(10);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            // Action::make('upload')
+            //     ->label('Upload Multiple')
+            //     ->icon('heroicon-o-cloud-arrow-up')
+            //     ->color('warning')
+            //     ->url(route('filament.admin.resources.photos.upload')),
+            // Actions\CreateAction::make()
+            //     ->label('New photo'),
+        ];
     }
 
     public function deletePhoto($photoId): void
@@ -36,23 +50,5 @@ class ListPhotos extends Page
                 ->success()
                 ->send();
         }
-    }
-
-    public function getPhotos()
-    {
-        return \App\Models\Photo::latest()->paginate($this->perPage)->withQueryString();
-    }
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            // Action::make('upload')
-            //     ->label('Upload Multiple')
-            //     ->icon('heroicon-o-cloud-arrow-up')
-            //     ->color('warning')
-            //     ->url(route('filament.admin.resources.photos.upload')),
-            // Actions\CreateAction::make()
-            //     ->label('New photo'),
-        ];
     }
 }
