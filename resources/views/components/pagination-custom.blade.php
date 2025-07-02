@@ -13,12 +13,34 @@
         : '';
 @endphp
 
+<style>
+    select.no-arrow {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: none;
+    }
+
+    select.no-arrow::-ms-expand {
+        display: none;
+    }
+</style>
+
 <div id="pagination-section">
-    @if ($paginator->hasPages())
-        <div
-            class="filament-tables-pagination-container p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex-1 min-w-0">
+    <div
+        class="filament-tables-pagination-container p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4 flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">Per page</label>
+                    <select wire:model.live="perPage"
+                        class="no-arrow h-10 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+                <div class="hidden md:block">
                     <p class="text-sm font-medium text-gray-700 dark:text-gray-200">
                         {{ trans_choice('Showing :from to :to of :total photos', $paginator->total(), [
                             'from' => $paginator->firstItem() ?: 0,
@@ -27,6 +49,8 @@
                         ]) }}
                     </p>
                 </div>
+            </div>
+            @if ($paginator->hasPages())
                 <nav role="navigation" aria-label="Pagination Navigation" class="flex items-center justify-end gap-2">
                     {{-- Previous Page Link --}}
                     @if ($paginator->onFirstPage())
@@ -39,7 +63,7 @@
                     @else
                         <button type="button" wire:click="previousPage('{{ $paginator->getPageName() }}')"
                             x-on:click="{{ $scrollIntoViewJsSnippet }}" wire:loading.attr="disabled"
-                            wire:loading.class="opacity-70 cursor-wait"
+                            wire:loading.class="opacity-70"
                             class="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 transition-colors duration-200 disabled:opacity-70">
                             <span wire:loading.remove wire:target="previousPage">
                                 <x-filament::icon alias="tables::pagination.buttons.previous"
@@ -82,7 +106,7 @@
                                             <button type="button"
                                                 wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')"
                                                 x-on:click="{{ $scrollIntoViewJsSnippet }}" wire:loading.attr="disabled"
-                                                wire:loading.class="opacity-70 cursor-wait"
+                                                wire:loading.class="opacity-70"
                                                 class="inline-flex items-center justify-center w-10 h-10 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 disabled:opacity-70">
                                                 <span wire:loading.remove
                                                     wire:target="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')">
@@ -112,7 +136,7 @@
                     @if ($paginator->hasMorePages())
                         <button type="button" wire:click="nextPage('{{ $paginator->getPageName() }}')"
                             x-on:click="{{ $scrollIntoViewJsSnippet }}" wire:loading.attr="disabled"
-                            wire:loading.class="opacity-70 cursor-wait"
+                            wire:loading.class="opacity-70"
                             class="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 transition-colors duration-200 disabled:opacity-70">
                             <span class="mr-2 hidden sm:inline">Next</span>
                             <span wire:loading.remove wire:target="nextPage">
@@ -139,7 +163,7 @@
                         </span>
                     @endif
                 </nav>
-            </div>
+            @endif
         </div>
-    @endif
+    </div>
 </div>

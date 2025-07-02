@@ -19,9 +19,16 @@ class ListPhotos extends Page
     protected static string $view = 'filament.resources.photos-resource.pages.list-photos';
     protected static ?string $title = '';
 
+    public $perPage = 10;
+
+    public function updatedPerPage()
+    {
+        $this->resetPage();
+    }
+
     public function getPhotos()
     {
-        return Photo::latest()->paginate(10);
+        return Photo::latest()->paginate($this->perPage); // 'paginate' -> Menghasilkan instance $paginator
     }
 
     protected function getHeaderActions(): array
