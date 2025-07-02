@@ -47,6 +47,13 @@ Web Company adalah sistem manajemen konten (CMS) berbasis Laravel yang dilengkap
 -   Preview foto sebelum upload
 -   Sistem hashids untuk keamanan URL
 -   Background job untuk optimasi gambar
+-   Sistem paginasi kustom dengan fitur:
+    -   Pemilihan jumlah item per halaman (10, 25, 50)
+    -   Navigasi halaman yang responsif
+    -   Indikator loading yang smooth
+    -   Tampilan yang konsisten dengan tema Filament
+    -   Optimasi untuk dark mode
+    -   Smooth scroll saat pergantian halaman
 
 ### 4. Manajemen Slider
 
@@ -210,23 +217,6 @@ Untuk menampilkan konten markdown dengan baik:
     - Periksa status aktif halaman di Pages
     - Periksa navigasi sudah terhubung dengan benar
     - Periksa slug di Navigation Web
-
-## Keamanan
-
--   Selalu update dependencies secara berkala
--   Gunakan strong password
--   Aktifkan HTTPS
--   Backup database secara rutin
--   Sistem hashids untuk keamanan URL
--   Validasi input di semua form
-
-## Dukungan
-
-Untuk bantuan teknis, silakan:
-
-1. Buka issue di repositori
-2. Dokumentasi lengkap tersedia di `/docs`
-3. Kontak tim support
 
 ## Lisensi
 
