@@ -22,7 +22,7 @@
                     Cancel
                 </x-filament::button>
 
-                <x-filament::button color="danger" wire:click="deletePhoto({{ $photoToDelete }})"
+                <x-filament::button color="danger" wire:click="deletePhoto('{{ $photoToDelete }}')"
                     @click="$dispatch('close-modal', { id: 'confirm-delete-modal' })" wire:loading.attr="disabled">
                     Yes, Delete
                 </x-filament::button>
@@ -99,7 +99,8 @@
                                                 class="mr-2 h-3.5 w-3.5 text-gray-400 group-hover:text-blue-500" />
                                             Edit
                                         </a>
-                                        <button type="button" wire:click="$set('photoToDelete', {{ $photo->id }})"
+                                        <button type="button"
+                                            wire:click="$set('photoToDelete', '{{ $photo->getHashedId() }}')"
                                             @click="$dispatch('open-modal', { id: 'confirm-delete-modal' }); showDropdown = false"
                                             class="group flex w-full items-center px-3 py-1.5 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                             <x-filament::icon icon="heroicon-m-trash"
@@ -128,7 +129,8 @@
                                         </a>
 
                                         <!-- Delete Button -->
-                                        <button type="button" wire:click="$set('photoToDelete', {{ $photo->id }})"
+                                        <button type="button"
+                                            wire:click="$set('photoToDelete', '{{ $photo->getHashedId() }}')"
                                             @click="$dispatch('open-modal', { id: 'confirm-delete-modal' })"
                                             class="inline-flex items-center justify-center w-14 h-14 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-full transition-colors duration-200 shadow-lg transform hover:scale-105 active:scale-95"
                                             title="Delete Photo">
