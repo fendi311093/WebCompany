@@ -74,7 +74,7 @@
                         class="group relative bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col">
                         <!-- Photo Container with Hover Actions (Desktop Only) -->
                         <div
-                            class="relative flex-1 aspect-[4/3] flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+                            class="relative flex-1 aspect-[4/3] flex items-center justify-center bg-gray-100 dark:bg-gray-700 overflow-hidden">
                             <!-- Mobile Action Button -->
                             <div class="md:hidden absolute top-2 right-2 z-10">
                                 <button type="button" @click="showDropdown = !showDropdown"
@@ -112,12 +112,11 @@
                             </div>
 
                             <img src="{{ Storage::disk('public')->url($photo->file_path) }}" alt="Photo"
-                                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                loading="lazy" />
+                                class="w-full h-full object-cover" loading="lazy" />
 
                             <!-- Desktop Hover Overlay -->
                             <div
-                                class="hidden md:flex absolute inset-0 bg-black/50 transition-all duration-300 opacity-0 group-hover:opacity-100">
+                                class="hidden md:block absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                 <div class="absolute inset-0 flex items-center justify-center">
                                     <div class="flex items-center space-x-4">
                                         <!-- Edit Button -->
