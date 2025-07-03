@@ -16,6 +16,7 @@ class ListPhotos extends ListRecords
     protected static string $view = 'filament.resources.photos-resource.pages.list-photos';
     protected static ?string $title = '';
 
+    public $photoToDelete = null;
     public $perPage = 10;
 
     public function updatedPerPage()

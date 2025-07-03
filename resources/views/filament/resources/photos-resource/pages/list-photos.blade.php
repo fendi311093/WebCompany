@@ -3,6 +3,33 @@
         $photos = $this->getPhotos();
     @endphp
 
+    <!-- Global Delete Confirmation Modal -->
+    <x-filament::modal id="confirm-delete-modal" width="sm" alignment="center">
+        <x-slot name="trigger"></x-slot>
+
+        <x-slot name="heading">
+            Confirm Delete
+        </x-slot>
+
+        <x-slot name="description">
+            Are you sure you want to delete this photo?
+        </x-slot>
+
+        <x-slot name="footer">
+            <div class="flex justify-end gap-x-3">
+                <x-filament::button color="gray"
+                    @click="$dispatch('close-modal', { id: 'confirm-delete-modal' }); $dispatch('notification-cleared')">
+                    Cancel
+                </x-filament::button>
+
+                <x-filament::button color="danger" wire:click="deletePhoto({{ $photoToDelete }})"
+                    @click="$dispatch('close-modal', { id: 'confirm-delete-modal' })" wire:loading.attr="disabled">
+                    Yes, Delete
+                </x-filament::button>
+            </div>
+        </x-slot>
+    </x-filament::modal>
+
     <div class="space-y-6">
         <!-- Gallery Header -->
         <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
@@ -16,7 +43,8 @@
                     </p>
                 </div>
                 <div x-data="{ loading: false }" class="flex items-center space-x-2">
-                    <a wire:navigate href="{{ route('filament.admin.resources.photos.create') }}" @click="loading = true"
+                    <a wire:navigate href="{{ route('filament.admin.resources.photos.create') }}"
+                        @click="loading = true"
                         class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
                         <svg x-show="loading" class="animate-spin w-5 h-5 mr-2 text-white" fill="none"
                             viewBox="0 0 24 24">
@@ -37,7 +65,11 @@
         @if ($photos->count() > 0)
             <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-8">
                 @foreach ($photos as $photo)
-                    <div x-data="{ showActions: false, showDropdown: false }" @mouseenter.outside="showDropdown = false"
+                    <div x-data="{ showActions: false, showDropdown: false }" x-init="document.addEventListener('DOMContentLoaded', () => {
+                        Livewire.hook('message.processed', () => {
+                            Alpine.initTree(document.body);
+                        });
+                    });" @mouseenter.outside="showDropdown = false"
                         @click.away="showDropdown = false"
                         class="group relative bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col">
                         <!-- Photo Container with Hover Actions (Desktop Only) -->
@@ -67,8 +99,8 @@
                                                 class="mr-2 h-3.5 w-3.5 text-gray-400 group-hover:text-blue-500" />
                                             Edit
                                         </a>
-                                        <button type="button"
-                                            @click="showDropdown = false; $dispatch('open-modal', { id: 'confirm-delete-{{ $photo->id }}' })"
+                                        <button type="button" wire:click="$set('photoToDelete', {{ $photo->id }})"
+                                            @click="$dispatch('open-modal', { id: 'confirm-delete-modal' }); showDropdown = false"
                                             class="group flex w-full items-center px-3 py-1.5 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                             <x-filament::icon icon="heroicon-m-trash"
                                                 class="mr-2 h-3.5 w-3.5 text-gray-400 group-hover:text-red-500" />
@@ -96,8 +128,8 @@
                                         </a>
 
                                         <!-- Delete Button -->
-                                        <button type="button"
-                                            @click="$dispatch('open-modal', { id: 'confirm-delete-{{ $photo->id }}' })"
+                                        <button type="button" wire:click="$set('photoToDelete', {{ $photo->id }})"
+                                            @click="$dispatch('open-modal', { id: 'confirm-delete-modal' })"
                                             class="inline-flex items-center justify-center w-14 h-14 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-full transition-colors duration-200 shadow-lg transform hover:scale-105 active:scale-95"
                                             title="Delete Photo">
                                             <x-filament::icon icon="heroicon-o-trash" class="w-7 h-7" />
@@ -126,35 +158,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Delete Confirmation Modal -->
-                        <x-filament::modal id="confirm-delete-{{ $photo->id }}" width="sm" alignment="center">
-                            <x-slot name="trigger"></x-slot>
-
-                            <x-slot name="heading">
-                                Konfirmasi Hapus
-                            </x-slot>
-
-                            <x-slot name="description">
-                                Apakah Anda yakin ingin menghapus foto ini?
-                            </x-slot>
-
-                            <x-slot name="footer">
-                                <div class="flex justify-end gap-x-3">
-                                    <x-filament::button color="gray"
-                                        @click="$dispatch('close-modal', { id: 'confirm-delete-{{ $photo->id }}' }); $dispatch('notification-cleared')">
-                                        Batal
-                                    </x-filament::button>
-
-                                    <x-filament::button color="danger"
-                                        x-on:click="$wire.deletePhoto({{ $photo->id }}); $dispatch('close-modal', { id: 'confirm-delete-{{ $photo->id }}' })"
-                                        wire:loading.attr="disabled">
-                                        Ya, Hapus
-                                    </x-filament::button>
-                                </div>
-                            </x-slot>
-                        </x-filament::modal>
-                        <!-- End Delete Confirmation Modal -->
                     </div>
                 @endforeach
             </div>

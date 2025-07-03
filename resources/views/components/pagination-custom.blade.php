@@ -107,9 +107,10 @@
                                                 wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')"
                                                 x-on:click="{{ $scrollIntoViewJsSnippet }}" wire:loading.attr="disabled"
                                                 wire:loading.class="opacity-70"
-                                                class="inline-flex items-center justify-center w-10 h-10 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 disabled:opacity-70">
+                                                class="inline-flex items-center justify-center w-10 h-10 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-all duration-200 disabled:opacity-70 relative">
                                                 <span wire:loading.remove
-                                                    wire:target="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')">
+                                                    wire:target="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')"
+                                                    class="z-10">
                                                     {{ $page }}
                                                 </span>
                                                 <span wire:loading
