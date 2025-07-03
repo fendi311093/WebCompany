@@ -8,6 +8,8 @@ use Filament\Resources\Pages\ListRecords;
 use App\Models\Photo;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Storage;
+use Vinkla\Hashids\Facades\Hashids;
 
 class ListPhotos extends ListRecords
 {
@@ -37,9 +39,20 @@ class ListPhotos extends ListRecords
         ];
     }
 
-    public function deletePhoto($photoId): void
+    public function deletePhoto($hashedId): void
     {
-        $photo = Photo::find($photoId);
+        $id = Hashids::decode($hashedId)[0] ?? null;
+        
+        if (!$id) {
+            Notification::make()
+                ->title('Error')
+                ->body('Invalid photo ID')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        $photo = Photo::find($id);
 
         if ($photo) {
             $photo->delete();
