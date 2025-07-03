@@ -4,16 +4,13 @@ namespace App\Filament\Resources\PhotosResource\Pages;
 
 use App\Filament\Resources\PhotosResource;
 use Filament\Actions;
-use Filament\Resources\Pages\Page;
+use Filament\Resources\Pages\ListRecords;
 use App\Models\Photo;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
-use Livewire\WithPagination;
 
-class ListPhotos extends Page
+class ListPhotos extends ListRecords
 {
-    use WithPagination;
-
     protected static string $resource = PhotosResource::class;
 
     protected static string $view = 'filament.resources.photos-resource.pages.list-photos';
@@ -34,13 +31,8 @@ class ListPhotos extends Page
     protected function getHeaderActions(): array
     {
         return [
-            // Action::make('upload')
-            //     ->label('Upload Multiple')
-            //     ->icon('heroicon-o-cloud-arrow-up')
-            //     ->color('warning')
-            //     ->url(route('filament.admin.resources.photos.upload')),
-            // Actions\CreateAction::make()
-            //     ->label('New photo'),
+            Actions\CreateAction::make()
+                ->label('New photo'),
         ];
     }
 
@@ -55,6 +47,7 @@ class ListPhotos extends Page
                 ->title('Photo deleted')
                 ->body('The photo has been deleted successfully.')
                 ->success()
+                ->seconds(4)
                 ->send();
         }
     }

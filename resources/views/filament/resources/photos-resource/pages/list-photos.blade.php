@@ -2,6 +2,7 @@
     @php
         $photos = $this->getPhotos();
     @endphp
+
     <div class="space-y-6">
         <!-- Gallery Header -->
         <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
@@ -36,22 +37,54 @@
         @if ($photos->count() > 0)
             <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-8">
                 @foreach ($photos as $photo)
-                    <div x-data="{ showActions: false }" @mouseenter="showActions = true" @mouseleave="showActions = false"
-                        @click.away="showActions = false" @touchstart="showActions = true"
+                    <div x-data="{ showActions: false, showDropdown: false }" @mouseenter.outside="showDropdown = false"
+                        @click.away="showDropdown = false"
                         class="group relative bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col">
-                        <!-- Photo Container -->
+                        <!-- Photo Container with Hover Actions (Desktop Only) -->
                         <div
                             class="relative flex-1 aspect-[4/3] flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+                            <!-- Mobile Action Button -->
+                            <div class="md:hidden absolute top-2 right-2 z-10">
+                                <button type="button" @click="showDropdown = !showDropdown"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-900/40 text-white hover:bg-gray-900/60 focus:outline-none backdrop-blur-sm">
+                                    <x-filament::icon icon="heroicon-m-ellipsis-vertical" class="w-5 h-5" />
+                                </button>
+
+                                <!-- Mobile Dropdown Menu -->
+                                <div x-show="showDropdown" x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-75"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute right-0 mt-1 w-24 rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5">
+                                    <div class="py-1">
+                                        <a wire:navigate
+                                            href="{{ route('filament.admin.resources.photos.edit', $photo->getHashedId()) }}"
+                                            @click="$dispatch('notification-cleared')"
+                                            class="group flex items-center px-3 py-1.5 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <x-filament::icon icon="heroicon-m-pencil"
+                                                class="mr-2 h-3.5 w-3.5 text-gray-400 group-hover:text-blue-500" />
+                                            Edit
+                                        </a>
+                                        <button type="button"
+                                            @click="showDropdown = false; $dispatch('open-modal', { id: 'confirm-delete-{{ $photo->id }}' })"
+                                            class="group flex w-full items-center px-3 py-1.5 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <x-filament::icon icon="heroicon-m-trash"
+                                                class="mr-2 h-3.5 w-3.5 text-gray-400 group-hover:text-red-500" />
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <img src="{{ Storage::disk('public')->url($photo->file_path) }}" alt="Photo"
                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 loading="lazy" />
 
-                            <!-- Overlay with actions -->
-                            <div class="absolute inset-0 bg-black/50 transition-all duration-300" x-show="showActions"
-                                x-transition:enter="transition ease-out duration-200"
-                                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                                x-transition:leave="transition ease-in duration-150"
-                                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                            <!-- Desktop Hover Overlay -->
+                            <div
+                                class="hidden md:flex absolute inset-0 bg-black/50 transition-all duration-300 opacity-0 group-hover:opacity-100">
                                 <div class="absolute inset-0 flex items-center justify-center">
                                     <div class="flex items-center space-x-4">
                                         <!-- Edit Button -->
@@ -62,51 +95,13 @@
                                             <x-filament::icon icon="heroicon-o-pencil" class="w-7 h-7" />
                                         </a>
 
-                                        <!-- Delete Button & Modal -->
-                                        <div x-data="{ open: false }">
-                                            <button type="button" @click="open = true"
-                                                class="inline-flex items-center justify-center w-14 h-14 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-full transition-colors duration-200 shadow-lg transform hover:scale-105 active:scale-95"
-                                                title="Delete Photo">
-                                                <x-filament::icon icon="heroicon-o-trash" class="w-7 h-7" />
-                                            </button>
-
-                                            <!-- Modal Konfirmasi -->
-                                            <div x-show="open" x-cloak @click.away="open = false"
-                                                class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
-                                                x-transition:enter="ease-out duration-300"
-                                                x-transition:enter-start="opacity-0"
-                                                x-transition:enter-end="opacity-100"
-                                                x-transition:leave="ease-in duration-200"
-                                                x-transition:leave-start="opacity-100"
-                                                x-transition:leave-end="opacity-0">
-                                                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-2xl w-full max-w-sm mx-4 sm:mx-auto"
-                                                    @click.stop x-transition:enter="ease-out duration-300"
-                                                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                                                    x-transition:leave="ease-in duration-200"
-                                                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                                                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-                                                    <h3
-                                                        class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
-                                                        Konfirmasi Hapus
-                                                    </h3>
-                                                    <p class="mb-4 text-gray-600 dark:text-gray-300">
-                                                        Apakah Anda yakin ingin menghapus foto ini?
-                                                    </p>
-                                                    <div class="flex justify-end gap-3">
-                                                        <button type="button" @click="open = false"
-                                                            class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                                                            Batal
-                                                        </button>
-                                                        <button type="button"
-                                                            @click="$wire.deletePhoto({{ $photo->id }}); open = false"
-                                                            class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                                            Ya, Hapus
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <!-- Delete Button -->
+                                        <button type="button"
+                                            @click="$dispatch('open-modal', { id: 'confirm-delete-{{ $photo->id }}' })"
+                                            class="inline-flex items-center justify-center w-14 h-14 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-full transition-colors duration-200 shadow-lg transform hover:scale-105 active:scale-95"
+                                            title="Delete Photo">
+                                            <x-filament::icon icon="heroicon-o-trash" class="w-7 h-7" />
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -131,6 +126,35 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Delete Confirmation Modal -->
+                        <x-filament::modal id="confirm-delete-{{ $photo->id }}" width="sm" alignment="center">
+                            <x-slot name="trigger"></x-slot>
+
+                            <x-slot name="heading">
+                                Konfirmasi Hapus
+                            </x-slot>
+
+                            <x-slot name="description">
+                                Apakah Anda yakin ingin menghapus foto ini?
+                            </x-slot>
+
+                            <x-slot name="footer">
+                                <div class="flex justify-end gap-x-3">
+                                    <x-filament::button color="gray"
+                                        @click="$dispatch('close-modal', { id: 'confirm-delete-{{ $photo->id }}' }); $dispatch('notification-cleared')">
+                                        Batal
+                                    </x-filament::button>
+
+                                    <x-filament::button color="danger"
+                                        x-on:click="$wire.deletePhoto({{ $photo->id }}); $dispatch('close-modal', { id: 'confirm-delete-{{ $photo->id }}' })"
+                                        wire:loading.attr="disabled">
+                                        Ya, Hapus
+                                    </x-filament::button>
+                                </div>
+                            </x-slot>
+                        </x-filament::modal>
+                        <!-- End Delete Confirmation Modal -->
                     </div>
                 @endforeach
             </div>
